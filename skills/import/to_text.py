@@ -239,6 +239,8 @@ def convert(src, dst):
 
 
 def main(argv):
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # Windows consoles default to cp1252
     if len(argv) != 3:
         print(__doc__)
         return 1

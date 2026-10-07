@@ -105,6 +105,8 @@ def export_bundle(brain, out):
 
 
 def main(argv):
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # Windows consoles default to cp1252
     if len(argv) != 4 or argv[1] not in ("anki", "json", "bundle"):
         print(__doc__)
         return 1
@@ -115,7 +117,7 @@ def main(argv):
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     n = {"anki": export_anki, "json": export_json, "bundle": export_bundle}[kind](brain, out)
     unit = {"anki": "cards", "json": "notes", "bundle": "files"}[kind]
-    print(f"{n} {unit} → {out}")
+    print(f"{n} {unit} -> {out}")
     return 0
 
 
