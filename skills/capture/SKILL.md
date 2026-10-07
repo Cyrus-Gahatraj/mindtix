@@ -1,10 +1,12 @@
 ---
 name: capture
 description: Put things into a mindtix brain. Two jobs. (1) Turn anything the user says or pastes (an idea, a link, code, a lecture, a poem line, a fact about themselves) into a clean, linked note in the right folder. (2) Process their raw notes and imports in raw/ into topic pages in knowledge/ and facts in self/, projects/ and hobbies/. Use when the user says "capture", "save this", "note this", "remember this", "process my notes", "elaborate", "import this", pastes something to keep, or after files are added to raw/.
-user-invocable: false
+argument-hint: "[text to save | notes]"
 ---
 
 # Capture
+
+Input: $ARGUMENTS. Empty or "notes" means job B; anything else is job A.
 
 Work from the brain root (the folder with `MIND.md`). If there is none, suggest
 `/mindtix:init` and stop.

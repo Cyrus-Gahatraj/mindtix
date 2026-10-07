@@ -1,10 +1,12 @@
 ---
 name: init
 description: Create a new mindtix brain (a second brain in plain markdown) in the current folder or a folder the user names, then run a short first interview so it starts knowing them. Use when the user says "init", "set up mindtix", "create my brain", "take the red pill", or runs any mindtix skill in a folder that has no MIND.md.
-user-invocable: false
+argument-hint: "[folder]"
 ---
 
 # Init
+
+Target folder: $ARGUMENTS (empty = current directory).
 
 Sets up an empty brain from the `template/` folder that sits next to this SKILL.md.
 

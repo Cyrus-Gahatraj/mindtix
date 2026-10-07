@@ -1,10 +1,12 @@
 ---
 name: learn
 description: Teach the user a topic and make it stick, by making them produce (recall, predict, explain, build) instead of only reading. Modes; start (interview and map a new topic), teach (build first, explain only the stuck part, then redo without help), quiz (Socratic, examiner, explain-back, check their work), diagnose (root of repeated mistakes) and spar (timed role-play for real-world skills). Use when the user says "learn", "teach me", "explain X", "quiz me on X", "check my work", "why do I keep getting this wrong", "spar", "mock interview", or wants to understand a concept, language, tool or paper.
-user-invocable: false
+argument-hint: "[start|teach|quiz|diagnose|spar] <topic or scenario>"
 ---
 
 # Learn
+
+Arguments: $ARGUMENTS. If the first word is a mode name, use that mode on the rest. For quiz, an optional style (socratic, exam, explain, check) may follow the topic.
 
 Memory forms when you **produce**: recall, predict, explain, build. Explanations only feel
 like learning. So ask before telling, make the user try first, and explain only the part
@@ -16,7 +18,7 @@ in `insight/knowledge.md`, `learning/<topic>/` if it exists, `knowledge/<topic>.
 `raw/notes/` on the topic. Pitch everything just above their level: hard enough to
 struggle, not so hard they guess.
 
-Pick the mode from what they say. If unclear: no `learning/<topic>/` yet → **start**;
+Pick the mode from the arguments or what they say. If unclear: no `learning/<topic>/` yet → **start**;
 otherwise **teach** the next unchecked module.
 
 ## start: interview + map

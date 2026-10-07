@@ -1,10 +1,12 @@
 ---
 name: recall
 description: Spaced-repetition review for a mindtix brain. Asks the recall cards that are due across knowledge/ pages, one at a time, moves each card between Leitner boxes and logs the score. Use when the user says "recall", "quiz me" (with no topic), "review my cards", "test me", "what's due", or when /mindtix:review offers a round.
-user-invocable: false
+argument-hint: "[topic]"
 ---
 
 # Recall
+
+Limit to this topic if given: $ARGUMENTS
 
 Cards live in the `## Recall` section of each `knowledge/*.md` page, one per line:
 

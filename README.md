@@ -51,16 +51,16 @@ interview → map → try → explain only the stuck part → redo without help
 Then, in an empty folder (e.g. `~/mind`), run `/mindtix:init`. It copies the empty brain
 from [`skills/init/template/`](skills/init/template/) and asks you a few questions.
 
-## Commands
+## Skills
 
-| Command | What it does |
+| Skill | What it does |
 |---|---|
 | `/mindtix:init [folder]` | Creates a new brain and runs a first short interview |
 | `/mindtix:capture [text \| notes]` | Files anything you say or paste; `notes` processes new files in `raw/` |
 | `/mindtix:learn <topic>` | Interview + map a new topic, then build-first teaching with redo-without-help |
-| `/mindtix:quiz <topic> [socratic\|exam\|explain\|check]` | Makes you produce: questions, explain-back, or a check of your work |
-| `/mindtix:diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
-| `/mindtix:spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
+| `/mindtix:learn quiz <topic> [socratic\|exam\|explain\|check]` | Makes you produce: questions, explain-back, or a check of your work |
+| `/mindtix:learn diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
+| `/mindtix:learn spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
 | `/mindtix:recall [topic]` | Spaced-repetition review of the cards that are due |
 | `/mindtix:know-me` | A short interview round that fills in `self/` |
 | `/mindtix:reflect [test]` | Rewrites `insight/`, or runs a personality test |
@@ -68,13 +68,12 @@ from [`skills/init/template/`](skills/init/template/) and asks you a few questio
 | `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
 | `/mindtix:review` | Weekly review: focus, learning progress, what to grow |
 
-Commands live in [`commands/`](commands/) and are thin entry points; the full instructions
-are the skills in [`skills/`](skills/). You can also just talk ("teach me SQL", "save
-this", "quiz me") and Claude picks the right skill.
+Each skill is one folder in [`skills/`](skills/). You can also just talk ("teach me SQL",
+"save this", "quiz me") and Claude picks the right skill.
 
 ## Status
 
-Early (v0.2). A local web view and CLI may come later.
+Early (v0.3). A local web view and CLI may come later.
 
 ## License
 

@@ -1,7 +1,6 @@
 ---
 name: know-me
 description: Short adaptive interview that keeps learning who the user is (background, personality, goals, habits, taste, people) and updates self/ in their mindtix brain. Use when the user says "know me", "interview me", "learn about me", or when the profile has gaps.
-user-invocable: false
 ---
 
 # Know me

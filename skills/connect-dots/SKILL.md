@@ -1,7 +1,6 @@
 ---
 name: connect-dots
 description: Part of /mindtix:reflect. Finds how everything the user knows fits together (bridges between areas, clusters, leverage, missing prerequisites, project ideas that combine their strengths) and rewrites insight/connections.md, the only file it touches. Use when the user says "connect the dots", "how does my knowledge connect", "what links my skills", or as a step of /mindtix:reflect.
-user-invocable: false
 ---
 
 # Connect dots

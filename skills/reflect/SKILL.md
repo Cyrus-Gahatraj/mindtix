@@ -1,10 +1,12 @@
 ---
 name: reflect
 description: Reread everything in a mindtix brain and rewrite insight/, the AI's evidence-based read of the user; knowledge levels per topic (which pitch the difficulty of /mindtix:learn), mind, habits, writing style, and connections (via /mindtix:connect-dots). Also runs personality tests on request. Use when the user says "reflect", "insight", "analyze me", "what do you think of me", "rate my knowledge", "run a personality test", or after a lot of new content.
-user-invocable: false
+argument-hint: "[test name]"
 ---
 
 # Reflect
+
+If an argument names a personality test, run that test: $ARGUMENTS
 
 `insight/` is written **only** by this skill and `connect-dots`. Each run rereads everything
 and rewrites `insight/` from that evidence, so it reflects all of it, not just the latest bit.
