@@ -1,4 +1,6 @@
 logs/*
 !logs/README.md
+raw/imports/*
+!raw/imports/README.md
 private/
 .DS_Store

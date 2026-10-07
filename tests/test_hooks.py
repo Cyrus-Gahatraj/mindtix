@@ -1,10 +1,10 @@
-"""Self-check for the mindtix hooks: python3 hooks/test_hooks.py"""
+"""Self-check for the mindtix hooks: python3 tests/test_hooks.py"""
 import os
 import sys
 import tempfile
 from datetime import date
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
 from brain import due_cards, find_root  # noqa: E402
 from guard import check  # noqa: E402
 

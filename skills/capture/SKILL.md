@@ -38,7 +38,8 @@ Rules for both:
    | A fact about them (background, taste, goal, people, feelings) | `self/` (`profile.md`, `personality.md`, `people.md`, `timeline.md`) |
    | News about something they make | `projects/<project>.md` |
    | A hobby | `hobbies/<hobby>/` |
-   | A long source (article, transcript, export) | `raw/imports/`, then run job B on it |
+   | A long source (article, transcript) | `raw/imports/`, then run job B on it |
+   | A data export or a whole folder of notes | Use `/mindtix:import <path>` instead |
 
 2. **Write the note** at `kebab-case-title.md`: a `# Title`, a one-line summary, the content
    in their words with the mess removed (code in fenced blocks), `Related: [[...]]` (only

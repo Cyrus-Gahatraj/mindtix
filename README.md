@@ -56,6 +56,7 @@ from [`skills/init/template/`](skills/init/template/) and asks you a few questio
 | Skill | What it does |
 |---|---|
 | `/mindtix:init [folder]` | Creates a new brain and runs a first short interview |
+| `/mindtix:import <path>` | Imports an export (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian, any folder or .zip) and files what it says about you |
 | `/mindtix:capture [text \| notes]` | Files anything you say or paste; `notes` processes new files in `raw/` |
 | `/mindtix:learn <topic>` | Interview + map a new topic, then build-first teaching with redo-without-help |
 | `/mindtix:learn quiz <topic> [socratic\|exam\|explain\|check]` | Makes you produce: questions, explain-back, or a check of your work |
@@ -78,12 +79,12 @@ that has `MIND.md`:
 - **raw/ guard:** blocks editing your own material in `raw/` (adding new files is fine)
 - **Due cards:** at session start, tells Claude how many recall cards are due
 
-They need `python3`. Run `python3 hooks/test_hooks.py` to check them. You can also just talk ("teach me SQL",
+They need `python3`. Run `python3 tests/test_hooks.py` to check them. You can also just talk ("teach me SQL",
 "save this", "quiz me") and Claude picks the right skill.
 
 ## Status
 
-Early (v0.6). A local web view and CLI may come later.
+Early (v0.7). A local web view and CLI may come later.
 
 ## License
 
