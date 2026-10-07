@@ -66,6 +66,7 @@ from [`skills/init/template/`](skills/init/template/) and asks you a few questio
 | `/mindtix:know-me` | A short interview round that fills in `self/` |
 | `/mindtix:reflect [test]` | Rewrites `insight/`, or runs a personality test |
 | `/mindtix:connect-dots` | Finds how everything you know connects |
+| `/mindtix:export [profile\|anki\|json\|bundle]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, or a zip backup |
 | `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
 | `/mindtix:review` | Weekly review: focus, learning progress, what to grow |
 
@@ -84,7 +85,7 @@ They need `python3`. Run `python3 tests/test_hooks.py` to check them. You can al
 
 ## Status
 
-Early (v0.7). A local web view and CLI may come later.
+Early (v0.8). A local web view and CLI may come later.
 
 ## License
 
