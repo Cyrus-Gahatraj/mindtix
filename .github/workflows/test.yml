@@ -1,0 +1,30 @@
+name: test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Unit tests (hooks, import, export)
+        shell: bash
+        run: for t in tests/test_*.py; do python "$t" || exit 1; done
+      - name: Manifests are valid JSON
+        shell: bash
+        run: |
+          python -m json.tool .claude-plugin/plugin.json > /dev/null
+          python -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python -m json.tool hooks/hooks.json > /dev/null
+          python -m json.tool skills/init/template/insight/scores.json > /dev/null
+      - name: Every skill has a name and description
+        shell: bash
+        run: |
+          for f in skills/*/SKILL.md; do
+            head -5 "$f" | grep -q '^name: ' || { echo "$f: no name"; exit 1; }
+            head -5 "$f" | grep -q '^description: ' || { echo "$f: no description"; exit 1; }
+          done

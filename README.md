@@ -74,18 +74,55 @@ Each skill is one folder in [`skills/`](skills/). One helper agent,
 [`agents/reader.md`](agents/reader.md), reads big imports and large brains in parallel and
 reports back facts only, so your chat stays light. It can't edit anything.
 
+You can also just talk ("teach me SQL", "save this", "quiz me") and Claude picks the right skill.
+
 **Hooks** ([`hooks/`](hooks/)) enforce the rules that matter most, only inside a folder
 that has `MIND.md`:
 - **Secret guard:** blocks writing API keys, tokens, passwords or private keys into notes
 - **raw/ guard:** blocks editing your own material in `raw/` (adding new files is fine)
 - **Due cards:** at session start, tells Claude how many recall cards are due
 
-They need `python3`. Run `python3 tests/test_hooks.py` to check them. You can also just talk ("teach me SQL",
-"save this", "quiz me") and Claude picks the right skill.
+## A first week
 
-## Status
+```
+/mindtix:init ~/mind                      # 5 questions, your brain exists
+/mindtix:import ~/Downloads/instagram.zip # who you are, people, timeline, interests
+/mindtix:capture notes                    # your notes in raw/notes/ become topic pages + cards
+/mindtix:learn sql                        # interview → map → build first → redo without help
+/mindtix:recall                           # 5 minutes a day on the cards that are due
+/mindtix:reflect                          # the AI's read of you, with evidence
+/mindtix:review                           # once a week
+```
 
-Early (v0.9). A local web view and CLI may come later.
+Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked graph.
+
+## Privacy
+
+- Everything stays in a local folder you own. Mindtix has no server.
+- Imports are converted locally. Keys, passwords, phone and card numbers are masked first,
+  and `raw/imports/`, `logs/`, `exports/` and `private/` are gitignored.
+- What Claude reads is sent to Anthropic like any Claude Code session. Keep anything you
+  never want sent in `private/` and don't ask the AI to open it.
+- If you push your brain to GitHub, make the repo **private**.
+
+## Requirements
+
+- [Claude Code](https://claude.com/claude-code)
+- Python 3 (standard library only), for the hooks, importer and exporter
+- Git (recommended: every change is a commit you can undo)
+
+## Update or remove
+
+```
+/plugin marketplace update mindtix
+/plugin uninstall mindtix@mindtix
+```
+
+Uninstalling never touches your brain folder; it's just markdown.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
