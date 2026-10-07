@@ -14,14 +14,16 @@ description: Weekly review of a mindtix brain. Finds patterns in what the user c
 3. **Learning check:** modules ticked this week in each `learning/<topic>/map.md`, scores in
    `sessions.md`, new rows in `learning/mistakes.md`, and how many recall cards are due.
 4. **Run `/mindtix:tidy` in report-only mode** and keep the count of problems.
-5. **Report in under 20 lines:**
+5. **Check before you claim.** Anything about git or ignore rules must be confirmed with a
+   command (`git check-ignore -v`, `git status`, `git log`) first; leave out what you can't confirm.
+6. **Report in under 20 lines:**
    - what they focused on, and what that says about them (`[inferred]`)
    - patterns: repeated topics, unfinished threads, contradictions
    - learning: progress per topic, the most repeated mistake (suggest
      `/mindtix:learn diagnose` if one repeats), due cards (offer a `/mindtix:recall` round)
    - housekeeping: unprocessed `raw/` files, tidy problems
-6. **Propose growth:** at most 3 changes, each justified by real content (e.g. "8 notes
+7. **Propose growth:** at most 3 changes, each justified by real content (e.g. "8 notes
    about chess sit in `knowledge/`, so give chess its own `hobbies/chess/` folder"). If
    nothing is justified, say so.
-7. **Apply only what they approve**, keep `INDEX.md` in sync, and offer to commit as
+8. **Apply only what they approve**, keep `INDEX.md` in sync, and offer to commit as
    "Review YYYY-MM-DD".

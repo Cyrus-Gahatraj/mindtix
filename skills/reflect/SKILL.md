@@ -34,7 +34,7 @@ and rewrites `insight/` from that evidence, so it reflects all of it, not just t
      parses (`python3 -m json.tool insight/scores.json`). Change test results only when a
      test is (re)taken.
 3. **Connect the dots:** run `/mindtix:connect-dots` on the same evidence.
-4. **Be honest, not flattering.** Name bad habits plainly, without moralizing. Everything is
+4. **Write about the user in the second person** ("you"), never as "I". **Be honest, not flattering.** Name bad habits plainly, without moralizing. Everything is
    `[inferred]` unless they stated it. Remove claims the evidence no longer supports.
 5. **Report** in under 15 lines: what changed, the most surprising pattern, and the one
    question that would raise confidence most. Ask it. Offer to commit as

@@ -10,9 +10,8 @@ Never touches `raw/` (the user's), `logs/`, `private/` or `insight/` (only `/min
 1. **Run the checks** from the brain root:
 
    ```sh
-   X='--exclude-dir=raw --exclude-dir=private --exclude-dir=logs --exclude-dir=.git'
    # Dangling [[links]]: resolve like Obsidian, by path or by bare filename anywhere
-   grep -rhoE '\[\[[^]|#]+' --include='*.md' $X . | sed 's/^\[\[//' | sort -u |
+   grep -rhoE '\[\[[^]|#]+' --include='*.md' --exclude-dir=raw --exclude-dir=private --exclude-dir=logs --exclude-dir=.git . | sed 's/^\[\[//' | sort -u |
      while read -r l; do [ -e "$l.md" ] || [ -e "$l" ] ||
        [ -n "$(find . -name "$(basename "$l").md" -print -quit)" ] || echo "dangling: $l"; done
    # Notes missing from INDEX.md (READMEs and examples excluded)
@@ -21,12 +20,13 @@ Never touches `raw/` (the user's), `logs/`, `private/` or `insight/` (only `/min
    # Empty folders
    find . -type d -empty -not -path './.git/*'
    # Secrets and ID-like numbers
-   grep -rnIE '(api[_-]?key|token|secret|password)\s*[:=]|sk-[A-Za-z0-9]{20,}|[0-9]{9,}' $X --include='*.md' .
+   grep -rnIE '(api[_-]?key|token|secret|password)\s*[:=]|sk-[A-Za-z0-9]{20,}|[0-9]{9,}' --exclude-dir=raw --exclude-dir=private --exclude-dir=logs --exclude-dir=.git --include='*.md' .
    # Overdue recall cards (due before today)
    grep -rnoE '\[b[0-5] · due [0-9-]+\]' knowledge --exclude='_example*' | awk -v t="$(date +%F)" '{d=$NF; sub(/\]$/,"",d); if (d<t) print}'
    ```
 
-2. **Weed out false positives by reading each hit:** a `[[link]]` inside backticks is an
+2. **Weed out false positives by reading each hit**, and confirm anything about git with a
+   command (`git check-ignore -v <file>`, `git status`) before reporting it: a `[[link]]` inside backticks is an
    example; long numbers can be dates, ratings or ISBNs (flag only what looks like an ID or key).
 3. **Also check by reading:** `INDEX.md` lines that point at missing files; `MIND.md` over
    ~80 lines (move a section into its own note); `[inferred]` facts in `self/` older than a

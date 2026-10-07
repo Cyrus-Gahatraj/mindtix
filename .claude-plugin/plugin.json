@@ -1,6 +1,6 @@
 {
   "name": "mindtix",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A second brain that gets to know you and helps you actually learn. Plain markdown, kept by Claude.",
   "author": { "name": "Cyrus Gahatraj", "url": "https://github.com/Cyrus-Gahatraj" },
   "homepage": "https://github.com/Cyrus-Gahatraj/mindtix",

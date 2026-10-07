@@ -30,7 +30,8 @@ with tempfile.TemporaryDirectory() as tmp:
                    "messages": [{"sender_name": "Sam", "timestamp_ms": 1700000000000, "content": "cafÃ©"}]}, f)
     open(os.path.join(src, "photo.jpg"), "wb").close()
     with open(os.path.join(src, "notes.md"), "w") as f:
-        f.write("# my note")
+        f.write("# my note\nmy wifi password is hunter2hunter2, call +91 98450 12345 or 9845012345,\n"
+                "card 4111 1111 1111 1111, key sk-abcdefghijklmnopqrstuvwxyz1234\nmet on 2026-10-07 09:00, pin is 4421\nlink https://x.com/p/?id=3740404041617868413_1234567890 ok")
 
     manifest = convert(src, out)
     thread = open(os.path.join(out, "inbox/sam_1/message_1.txt")).read()
@@ -41,7 +42,12 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "what is a join?" in chat and "It combines rows." in chat
     assert "read my poem" in open(os.path.join(out, "claude/conversations/poem.md")).read()
     assert "café" in open(os.path.join(out, "inbox/sam_1/message_2.txt")).read(), "Meta mojibake fixed"
-    assert os.path.exists(os.path.join(out, "notes.md"))
+    note = open(os.path.join(out, "notes.md")).read()
+    for leak in ("hunter2", "98450", "9845012345", "4111", "sk-abc", "4421"):
+        assert leak not in note, f"{leak} should be masked"
+    assert "2026-10-07 09:00" in note, "dates are not phone numbers"
+    assert "_1234567890" in note, "IDs inside links are not phone numbers"
+    assert "masked" not in manifest.lower() or "Masked: 6" in manifest, manifest
     assert not os.path.exists(os.path.join(out, "photo.jpg")) and "1 media" in manifest
 
     z = os.path.join(tmp, "e.zip")

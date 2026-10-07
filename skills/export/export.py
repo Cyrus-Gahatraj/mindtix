@@ -53,11 +53,24 @@ def cards(brain):
     return out
 
 
+def summary(brain, topic):
+    """The one-line summary under a knowledge page's title, if there is one."""
+    try:
+        lines = open(os.path.join(brain, "knowledge", topic + ".md"), encoding="utf-8").read().splitlines()
+    except OSError:
+        return ""
+    for l in lines[1:6]:
+        if l.strip() and not l.startswith(("#", "-", "`", ">")):
+            return l.strip()
+    return ""
+
+
 def export_anki(brain, out):
     """Tab-separated file Anki imports directly (File > Import): Front, Back, Tags."""
     rows = ["#separator:tab", "#html:false", "#tags column:3"]
     for c in cards(brain):
-        back = f"See knowledge/{c['topic']}.md in your mindtix brain"
+        s = summary(brain, c["topic"])
+        back = (s + " " if s else "") + f"(Full answer: knowledge/{c['topic']}.md in your mindtix brain)"
         tag = "mindtix " + re.sub(r"[^A-Za-z0-9_/-]", "_", c["topic"])
         rows.append("\t".join(x.replace("\t", " ") for x in (c["question"], back, tag)))
     with open(out, "w", encoding="utf-8") as f:

@@ -19,7 +19,8 @@ Rewrites `insight/connections.md` from scratch each run. Touches no other file.
      `learning/mistakes.md` for evidence).
    - **Combinations:** concrete project ideas that use 2+ of their strengths and fit how they
      like to learn.
-3. **Every connection needs evidence.** Link both ends with `[[wikilinks]]` to notes that
+3. **Write to the user in the second person** ("you already explain recursion well"), never
+   "I". **Every connection needs evidence.** Link both ends with `[[wikilinks]]` to notes that
    prove them, give one line on why they connect, and label anything speculative
    `[inferred]`. Prefer 5 strong connections to 20 weak ones; drop the trivial.
 4. **Write `insight/connections.md`:**

@@ -13,6 +13,9 @@ Handles, with only the standard library:
 - any other JSON                                    -> flattened "key: value" text
 - media (images, video, audio)                      -> skipped, only counted
 
+Keys, passwords ("my wifi password is …"), phone and card numbers are masked in the
+output, so they never land in the brain.
+
 Writes `_manifest.md` in the output folder: what was converted, sizes, and what was skipped.
 Never edits the input.
 """
@@ -28,6 +31,25 @@ from html.parser import HTMLParser
 MEDIA = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".mp4", ".mov", ".m4a",
          ".mp3", ".aac", ".opus", ".ogg", ".wav", ".webm", ".pdf", ".zip"}
 BLOCK = {"div", "p", "br", "li", "tr", "td", "h1", "h2", "h3", "h4", "section", "article"}
+REDACT = [
+    (re.compile(r"sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|AKIA[0-9A-Z]{16}"
+                r"|-----BEGIN [A-Z ]*PRIVATE KEY-----"), "[redacted key]"),
+    (re.compile(r"(?i)\b((?:wi-?fi |email |gmail |account )?(?:password|passwd|pwd|passcode|otp|pin|cvv)"
+                r"(?: is|:|=| -)\s*)[^\s,.;!?]{3,}"), r"\1[redacted secret]"),
+    (re.compile(r"(?<![\w/=?&.])(?:\+\d{1,3}[\s-]?\d[\d\s-]{6,12}\d|\d{10})(?![\w/&])"), "[redacted phone]"),
+    (re.compile(r"(?<!\d)\d{4}[ -]\d{4}[ -]\d{4}[ -]\d{4}(?!\d)"), "[redacted card]"),
+]
+
+
+def redact(text):
+    """Mask keys, passwords, phone and card numbers. Returns (text, how many were masked)."""
+    n = 0
+    for pattern, repl in REDACT:
+        text, k = pattern.subn(repl, text)
+        n += k
+    return text, n
+
+
 DATE_LINE = re.compile(r"^[A-Z][a-z]{2} \d{1,2}, \d{4},? \d{1,2}:\d{2}(?::\d{2})? ?[APap][Mm]$")
 
 
@@ -142,10 +164,13 @@ def slug(s):
 def convert(src, dst):
     """Convert everything under src into text files under dst. Returns the manifest text."""
     os.makedirs(dst, exist_ok=True)
-    stats = {"converted": 0, "copied": 0, "skipped_media": 0, "skipped_other": 0, "bytes": 0}
+    stats = {"converted": 0, "copied": 0, "skipped_media": 0, "skipped_other": 0, "bytes": 0, "redacted": 0}
     written = []
 
-    def write(rel, text):
+    def write(rel, text, clean=True):
+        if clean:
+            text, n = redact(text)
+            stats["redacted"] += n
         path = os.path.join(dst, rel)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
@@ -205,10 +230,11 @@ def convert(src, dst):
         f"Text files: {len(written)} ({stats['converted']} converted, {stats['copied']} copied), "
         f"{stats['bytes'] / 1024:.0f} KB of text",
         f"Skipped: {stats['skipped_media']} media files, {stats['skipped_other']} other files",
+        f"Masked: {stats['redacted']} secrets, phone or card numbers (shown as [redacted ...])",
         "",
         "## Largest files (read these with the most care)",
     ] + [f"- {r} ({b / 1024:.0f} KB)" for r, b in written[:40]]
-    write("_manifest.md", "\n".join(manifest))
+    write("_manifest.md", "\n".join(manifest), clean=False)
     return "\n".join(manifest)
 
 

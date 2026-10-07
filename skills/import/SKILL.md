@@ -18,7 +18,8 @@ Work from the brain root (the folder with `MIND.md`); if there is none, suggest
 2. Run the converter that sits next to this SKILL.md:
    `python3 "<this skill's dir>/to_text.py" "<path>" "raw/imports/<source>-YYYY-MM-DD"`
    It writes text only (HTML and JSON become text, message threads become one
-   chronological file each, media is skipped) and a `_manifest.md` with sizes.
+   chronological file each, media is skipped), masks keys, passwords, phone and card
+   numbers as `[redacted …]`, and writes a `_manifest.md` with sizes and the masked count.
    For an **Obsidian vault or notes folder**, copy the `.md` files into `raw/notes/` instead
    (keep the folder structure) and finish with `/mindtix:capture notes`.
 3. Tell the user what was found: number of files, KB of text, the biggest parts, media
