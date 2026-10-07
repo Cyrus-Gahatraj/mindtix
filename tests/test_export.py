@@ -21,21 +21,21 @@ def run(*args):
 with tempfile.TemporaryDirectory() as tmp:
     brain = os.path.join(tmp, "mind")
     shutil.copytree(TEMPLATE, brain)
-    with open(os.path.join(brain, "knowledge", "sql-joins.md"), "w") as f:
+    with open(os.path.join(brain, "knowledge", "sql-joins.md"), "w", encoding="utf-8") as f:
         f.write("# SQL joins\n\n## Recall\n- [b1 · due 2026-10-10] What does a left join keep?\n"
                 "- Why use not exists?\n\n## Log\n- 2026-10-07 recall: 1/1\n\nSee [[self/profile]].\n")
     os.makedirs(os.path.join(brain, "private"))
-    open(os.path.join(brain, "private", "id.md"), "w").write("secret id")
-    open(os.path.join(brain, "raw", "imports", "chat.txt"), "w").write("someone else's message")
+    open(os.path.join(brain, "private", "id.md"), "w", encoding="utf-8").write("secret id")
+    open(os.path.join(brain, "raw", "imports", "chat.txt"), "w", encoding="utf-8").write("someone else's message")
 
     out = os.path.join(brain, "exports")
     assert "2 cards" in run("anki", brain, os.path.join(out, "c.txt"))
-    deck = open(os.path.join(out, "c.txt")).read()
+    deck = open(os.path.join(out, "c.txt"), encoding="utf-8").read()
     assert "What does a left join keep?\t" in deck and "Why use not exists?" in deck
     assert "_example" not in deck and "n-1" not in deck, "template example cards are not exported"
 
     run("json", brain, os.path.join(out, "b.json"))
-    data = json.load(open(os.path.join(out, "b.json")))
+    data = json.load(open(os.path.join(out, "b.json"), encoding="utf-8"))
     paths = {n["path"] for n in data["notes"]}
     assert "knowledge/sql-joins.md" in paths and "MIND.md" in paths
     assert not any(p.startswith(("private/", "raw/imports/", "logs/")) for p in paths)

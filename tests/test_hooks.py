@@ -9,11 +9,11 @@ from brain import due_cards, find_root  # noqa: E402
 from guard import check  # noqa: E402
 
 with tempfile.TemporaryDirectory() as root:
-    open(os.path.join(root, "MIND.md"), "w").close()
+    open(os.path.join(root, "MIND.md"), "w", encoding="utf-8").close()
     os.makedirs(os.path.join(root, "raw/notes"))
     os.makedirs(os.path.join(root, "knowledge"))
     note = os.path.join(root, "raw/notes/a.md")
-    open(note, "w").close()
+    open(note, "w", encoding="utf-8").close()
 
     def ev(tool, path, **inp):
         return {"tool_name": tool, "tool_input": {"file_path": path, **inp}}
@@ -29,7 +29,7 @@ with tempfile.TemporaryDirectory() as root:
     assert check(ev("Write", os.path.join(root, "knowledge/jwt.md"), content='password = "Tr0ub4dor&3xyz"')), "a real-looking password is blocked"
     assert not check(ev("Edit", "/tmp/not-a-brain.md", new_string="password: hunter2hunter2")), "outside a brain: no-op"
 
-    with open(os.path.join(root, "knowledge/t.md"), "w") as f:
+    with open(os.path.join(root, "knowledge/t.md"), "w", encoding="utf-8") as f:
         f.write("## Recall\n- [b0 · due 2000-01-01] old\n- [b2 · due 2999-01-01] future\n")
     assert due_cards(root, date(2026, 1, 1)) == 1
 

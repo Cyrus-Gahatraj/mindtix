@@ -56,7 +56,7 @@ def cards(brain):
 def summary(brain, topic):
     """The one-line summary under a knowledge page's title, if there is one."""
     try:
-        lines = open(os.path.join(brain, "knowledge", topic + ".md"), encoding="utf-8").read().splitlines()
+        lines = open(os.path.join(brain, "knowledge", topic + ".md"), encoding="utf-8", errors="replace").read().splitlines()
     except OSError:
         return ""
     for l in lines[1:6]:
