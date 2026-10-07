@@ -68,12 +68,14 @@ from [`skills/init/template/`](skills/init/template/) and asks you a few questio
 | `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
 | `/mindtix:review` | Weekly review: focus, learning progress, what to grow |
 
-Each skill is one folder in [`skills/`](skills/). You can also just talk ("teach me SQL",
+Each skill is one folder in [`skills/`](skills/). One helper agent,
+[`agents/reader.md`](agents/reader.md), reads big imports and large brains in parallel and
+reports back facts only, so your chat stays light. It can't edit anything. You can also just talk ("teach me SQL",
 "save this", "quiz me") and Claude picks the right skill.
 
 ## Status
 
-Early (v0.3). A local web view and CLI may come later.
+Early (v0.4). A local web view and CLI may come later.
 
 ## License
 

@@ -17,6 +17,8 @@ and rewrites `insight/` from that evidence, so it reflects all of it, not just t
    think), `logs/` (the questions they ask: what they wonder and worry about), and the current
    `insight/`. Read `git log --stat` for rhythm and hours. Read anything outside the brain
    only with permission.
+   On a large brain (more than ~100 notes or a lot of `raw/`), hand big folders to the
+   `reader` agent (in parallel when there are several) and work from its reports.
 2. **Rewrite each file:**
    - `insight/knowledge.md`: a table `| Topic | Level | Evidence | Updated |` with levels
      0 never touched · 1 heard of it · 2 can follow along · 3 can build with it · 4 can teach
