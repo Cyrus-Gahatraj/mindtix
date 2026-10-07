@@ -1,5 +1,7 @@
 # mindtix
 
+[![test](https://github.com/Cyrus-Gahatraj/mindtix/actions/workflows/test.yml/badge.svg)](https://github.com/Cyrus-Gahatraj/mindtix/actions/workflows/test.yml)
+
 A second brain that gets to know you, and helps you actually learn. Mind + *The Matrix*.
 
 Mindtix is a folder of plain markdown that an AI agent (Claude Code, for now) keeps for you.

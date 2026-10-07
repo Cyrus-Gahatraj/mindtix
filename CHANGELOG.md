@@ -18,6 +18,7 @@ First stable release.
   nothing outside a folder with `MIND.md`.
 - Every skill smoke-tested end to end against a sample brain; unit tests for the hooks,
   importer and exporter run in CI on Linux, macOS and Windows.
+- Works on Windows: hooks fall back to `python`, scripts read non-UTF-8 files and print UTF-8.
 
 ## 0.1.0 – 0.9.0 (2026-10-07)
 
