@@ -41,10 +41,35 @@ interview → map → try → explain only the stuck part → redo without help
         → quiz at your level → log mistakes → cards → review when due → diagnose patterns
 ```
 
+## Install (Claude Code)
+
+```
+/plugin marketplace add Cyrus-Gahatraj/mindtix
+/plugin install mindtix@mindtix
+```
+
+Then, in an empty folder (e.g. `~/mind`), run `/mindtix:init`. It copies the empty brain
+from [`skills/init/template/`](skills/init/template/) and asks you a few questions.
+
+## Skills
+
+| Skill | What it does |
+|---|---|
+| `/mindtix:init` | Creates a new brain and runs a first short interview |
+| `/mindtix:capture` | Files anything you say or paste; turns `raw/` notes and imports into pages |
+| `/mindtix:learn` | Teaches by making you produce. Modes: start, teach, quiz, diagnose, spar |
+| `/mindtix:recall` | Spaced-repetition review of the cards that are due |
+| `/mindtix:know-me` | Short interview rounds that fill in `self/` |
+| `/mindtix:reflect` | Rewrites `insight/`: knowledge levels, mind, habits, writing style |
+| `/mindtix:connect-dots` | Finds how everything you know connects (part of reflect) |
+| `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
+| `/mindtix:review` | Weekly review: what you focused on, learning progress, what to grow |
+
+You can also just talk ("teach me SQL", "save this", "quiz me") and Claude picks the skill.
+
 ## Status
 
-Early. This repo holds the design and an empty brain in [`template/`](template/). The
-Claude Code plugin (skills + `/mindtix init`) comes next.
+Early (v0.1). A local web view and CLI may come later.
 
 ## License
 

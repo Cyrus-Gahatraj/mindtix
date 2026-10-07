@@ -1,0 +1,15 @@
+{
+  "name": "mindtix",
+  "description": "Mindtix: a second brain that gets to know you and helps you actually learn.",
+  "owner": {
+    "name": "Cyrus Gahatraj",
+    "url": "https://github.com/Cyrus-Gahatraj"
+  },
+  "plugins": [
+    {
+      "name": "mindtix",
+      "source": "./",
+      "description": "A second brain that gets to know you and helps you actually learn."
+    }
+  ]
+}

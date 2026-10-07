@@ -15,7 +15,7 @@ with only a README; the AI fills it once there is real content.
 | `learning/` | One folder per thing you're learning now, plus a mistakes ledger | AI, during sessions |
 | `projects/` | One note per thing you build or make | AI + you |
 | `hobbies/` | One subfolder per hobby (chess, music, ...) | AI + you |
-| `insight/` | The AI's guesses about you: knowledge levels, mind, habits, style | Only the insight skill |
+| `insight/` | The AI's guesses about you: knowledge levels, mind, habits, style | Only `/mindtix:reflect` |
 | `logs/` | Conversations with your brain's AI | The app; not committed |
 | `private/` | Files with ID numbers or anything you want hidden | You; not committed |
 
@@ -29,7 +29,7 @@ with only a README; the AI fills it once there is real content.
    an import, it stays out of the wiki.
 4. **Update, don't duplicate.** Search `INDEX.md` first and merge into the existing note.
 5. **Grow only when there's content.** No empty folders or placeholder notes.
-6. **Only the insight skill writes `insight/`.** Other skills suggest running it.
+6. **Only `/mindtix:reflect` writes `insight/`.** Other skills suggest running it.
 7. **Link notes** with `[[wikilinks]]` so the brain works as a graph in Obsidian.
 
 ## Pages
