@@ -70,12 +70,20 @@ from [`skills/init/template/`](skills/init/template/) and asks you a few questio
 
 Each skill is one folder in [`skills/`](skills/). One helper agent,
 [`agents/reader.md`](agents/reader.md), reads big imports and large brains in parallel and
-reports back facts only, so your chat stays light. It can't edit anything. You can also just talk ("teach me SQL",
+reports back facts only, so your chat stays light. It can't edit anything.
+
+**Hooks** ([`hooks/`](hooks/)) enforce the rules that matter most, only inside a folder
+that has `MIND.md`:
+- **Secret guard:** blocks writing API keys, tokens, passwords or private keys into notes
+- **raw/ guard:** blocks editing your own material in `raw/` (adding new files is fine)
+- **Due cards:** at session start, tells Claude how many recall cards are due
+
+They need `python3`. Run `python3 hooks/test_hooks.py` to check them. You can also just talk ("teach me SQL",
 "save this", "quiz me") and Claude picks the right skill.
 
 ## Status
 
-Early (v0.4). A local web view and CLI may come later.
+Early (v0.5). A local web view and CLI may come later.
 
 ## License
 
