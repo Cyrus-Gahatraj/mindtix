@@ -1,0 +1,4 @@
+logs/*
+!logs/README.md
+private/
+.DS_Store

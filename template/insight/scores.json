@@ -1,0 +1,8 @@
+{
+  "updated": "",
+  "ocean": { "source": "", "answers": [], "scores": {} },
+  "mbti": { "type": "", "source": "", "axes": [] },
+  "iq": { "low": 0, "high": 0, "confidence": "", "source": "An estimate from your work, not a test result" },
+  "grit": { "source": "", "answers": [], "overall": 0, "scores": {} },
+  "riasec": { "source": "", "code": "", "scores": {} }
+}
