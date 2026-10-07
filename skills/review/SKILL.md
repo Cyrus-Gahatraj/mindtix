@@ -1,6 +1,7 @@
 ---
 name: review
 description: Weekly review of a mindtix brain. Finds patterns in what the user captured, learned and worked on, checks learning progress and due cards, and proposes what the brain should grow next. Use when the user says "review", "weekly review", "review my week", or "what should the brain grow".
+user-invocable: false
 ---
 
 # Review

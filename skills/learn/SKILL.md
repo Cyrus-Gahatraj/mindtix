@@ -1,6 +1,7 @@
 ---
 name: learn
 description: Teach the user a topic and make it stick, by making them produce (recall, predict, explain, build) instead of only reading. Modes; start (interview and map a new topic), teach (build first, explain only the stuck part, then redo without help), quiz (Socratic, examiner, explain-back, check their work), diagnose (root of repeated mistakes) and spar (timed role-play for real-world skills). Use when the user says "learn", "teach me", "explain X", "quiz me on X", "check my work", "why do I keep getting this wrong", "spar", "mock interview", or wants to understand a concept, language, tool or paper.
+user-invocable: false
 ---
 
 # Learn

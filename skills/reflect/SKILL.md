@@ -1,6 +1,7 @@
 ---
 name: reflect
 description: Reread everything in a mindtix brain and rewrite insight/, the AI's evidence-based read of the user; knowledge levels per topic (which pitch the difficulty of /mindtix:learn), mind, habits, writing style, and connections (via /mindtix:connect-dots). Also runs personality tests on request. Use when the user says "reflect", "insight", "analyze me", "what do you think of me", "rate my knowledge", "run a personality test", or after a lot of new content.
+user-invocable: false
 ---
 
 # Reflect

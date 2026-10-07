@@ -1,6 +1,7 @@
 ---
 name: tidy
 description: Health check for a mindtix brain. Finds dangling [[wikilinks]], notes missing from INDEX.md, empty folders, secrets or ID numbers that slipped in, overdue recall cards, and old [inferred] guesses to confirm; fixes only what the user approves. Use when the user says "tidy", "clean up the brain", "check links", "lint the brain", or as part of /mindtix:review.
+user-invocable: false
 ---
 
 # Tidy
