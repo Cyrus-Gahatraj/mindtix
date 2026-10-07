@@ -24,6 +24,9 @@ with tempfile.TemporaryDirectory() as root:
     assert check(ev("Write", os.path.join(root, "self/p.md"), content="api_key = abcd1234efgh")), "secret must be blocked"
     assert check(ev("Write", os.path.join(root, "self/p.md"), content="sk-" + "a" * 30))
     assert not check(ev("Write", os.path.join(root, "self/p.md"), content="I like tokens of appreciation")), "plain words pass"
+    code = 'api_key = os.environ["KEY"]\ntoken = getenv("TOKEN")\npassword: <your-password>\nsecret = "your-secret-here"\nconst token = process.env.TOKEN\napi_key: ${API_KEY}'
+    assert not check(ev("Write", os.path.join(root, "knowledge/jwt.md"), content=code)), "code and placeholders pass"
+    assert check(ev("Write", os.path.join(root, "knowledge/jwt.md"), content='password = "Tr0ub4dor&3xyz"')), "a real-looking password is blocked"
     assert not check(ev("Edit", "/tmp/not-a-brain.md", new_string="password: hunter2hunter2")), "outside a brain: no-op"
 
     with open(os.path.join(root, "knowledge/t.md"), "w") as f:

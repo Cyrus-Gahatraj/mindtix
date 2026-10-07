@@ -23,7 +23,7 @@ Never touches `raw/` (the user's), `logs/`, `private/` or `insight/` (only `/min
    # Secrets and ID-like numbers
    grep -rnIE '(api[_-]?key|token|secret|password)\s*[:=]|sk-[A-Za-z0-9]{20,}|[0-9]{9,}' $X --include='*.md' .
    # Overdue recall cards (due before today)
-   grep -rnoE '\[b[0-5] · due [0-9-]+\]' knowledge | awk -v t="$(date +%F)" '{d=$NF; sub(/\]$/,"",d); if (d<t) print}'
+   grep -rnoE '\[b[0-5] · due [0-9-]+\]' knowledge --exclude='_example*' | awk -v t="$(date +%F)" '{d=$NF; sub(/\]$/,"",d); if (d<t) print}'
    ```
 
 2. **Weed out false positives by reading each hit:** a `[[link]]` inside backticks is an

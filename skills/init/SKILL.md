@@ -14,7 +14,9 @@ Sets up an empty brain from the `template/` folder that sits next to this SKILL.
    already has a `MIND.md`, stop: it's already a brain. If it has other files, list them
    and ask before mixing the brain into it; suggest a fresh folder such as `~/mind`.
 2. **Copy the template** with its hidden files:
-   `cp -R "<this skill's dir>/template/." "<target>/"`.
+   `cp -R "<this skill's dir>/template/." "<target>/"`. If copying from the plugin folder
+   is blocked, read each template file (including `.gitignore`) and write it to the same
+   path in the target.
    Then delete the two example items, `knowledge/_example.md` and `learning/_example/`, only
    if the user says they don't want them. They show the formats and are safe to keep until
    real content arrives.

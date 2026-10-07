@@ -83,7 +83,7 @@ They need `python3`. Run `python3 hooks/test_hooks.py` to check them. You can al
 
 ## Status
 
-Early (v0.5). A local web view and CLI may come later.
+Early (v0.6). A local web view and CLI may come later.
 
 ## License
 

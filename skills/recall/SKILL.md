@@ -17,7 +17,8 @@ Cards live in the `## Recall` section of each `knowledge/*.md` page, one per lin
 Boxes and the days until the next review: **b0** 1 · **b1** 3 · **b2** 7 · **b3** 14 ·
 **b4** 30 · **b5** 90.
 
-1. **Collect due cards:** every card whose due date is today or earlier. If `knowledge/` has
+1. **Collect due cards:** every card whose due date is today or earlier. Skip the template
+   examples (`knowledge/_example*.md`). If `knowledge/` has
    no cards, suggest `/mindtix:capture` (from their notes) or `/mindtix:learn`, then stop.
    Cards written without a box (plain `- question`) count as b0 and due now.
 2. **Pick up to 10**, lowest box first, then oldest due date, at most 3 per topic, and weaker
