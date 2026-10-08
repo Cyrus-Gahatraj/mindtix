@@ -95,6 +95,9 @@ that has `MIND.md`:
 - **Secret guard:** blocks writing API keys, tokens, passwords or private keys into notes
 - **raw/ guard:** blocks editing your own material in `raw/` (adding new files is fine)
 - **Due cards:** at session start, tells Claude how many recall cards are due
+- **Auto-commit:** after each reply, commits what changed if the brain is its own git repo,
+  so every change can be undone. Skips (and warns) if a file looks like it holds a secret.
+  Turn it off with `MINDTIX_AUTOCOMMIT=0`
 
 ## A first week
 

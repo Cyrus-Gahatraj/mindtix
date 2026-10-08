@@ -7,6 +7,9 @@
 - **`forget` skill:** removes a person or topic from every note, card, insight line, log
   and export after one confirmation; `raw/` files are only deleted whole, on request.
   Commits without the name and explains how to clear git history.
+- **Auto-commit hook:** after each reply, commits the brain's changes (when the brain is the
+  top of its own git repo). Deleted files are counted, never named, in the message. Skips
+  and warns if a changed file looks like it holds a secret. `MINDTIX_AUTOCOMMIT=0` turns it off.
 
 ## 1.1.0
 

@@ -7,6 +7,7 @@ from datetime import date
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
 from brain import due_cards, find_root  # noqa: E402
 from guard import check  # noqa: E402
+from commit import autocommit, git  # noqa: E402
 
 with tempfile.TemporaryDirectory() as root:
     open(os.path.join(root, "MIND.md"), "w", encoding="utf-8").close()
@@ -32,5 +33,22 @@ with tempfile.TemporaryDirectory() as root:
     with open(os.path.join(root, "knowledge/t.md"), "w", encoding="utf-8") as f:
         f.write("## Recall\n- [b0 · due 2000-01-01] old\n- [b2 · due 2999-01-01] future\n")
     assert due_cards(root, date(2026, 1, 1)) == 1
+
+    # Auto-commit: only when the brain is the top of its own git repo
+    assert autocommit(root) is None and git(root, "log").returncode, "not a repo: no-op"
+    git(root, "init", "-q")
+    git(root, "config", "user.email", "t@t")
+    git(root, "config", "user.name", "t")
+    assert autocommit(root) is None
+    assert git(root, "rev-list", "--count", "HEAD").stdout.strip() == "1", "first commit made"
+    assert autocommit(root) is None
+    assert git(root, "rev-list", "--count", "HEAD").stdout.strip() == "1", "nothing changed: no commit"
+    os.remove(os.path.join(root, "knowledge/t.md"))
+    autocommit(root)
+    assert git(root, "log", "-1", "--format=%s").stdout.strip() == "mindtix: deleted 1 file", "deleted files are never named"
+    with open(os.path.join(root, "raw/notes/b.md"), "w", encoding="utf-8") as f:
+        f.write("my password = Tr0ub4dor&3xyz\n")
+    assert "b.md" in (autocommit(root) or ""), "secret: warn, don't commit"
+    assert git(root, "rev-list", "--count", "HEAD").stdout.strip() == "2"
 
 print("hooks ok")
