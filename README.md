@@ -53,6 +53,15 @@ interview → map → try → explain only the stuck part → redo without help
 Then, in an empty folder (e.g. `~/mind`), run `/mindtix:init`. It copies the empty brain
 from [`skills/init/template/`](skills/init/template/) and asks you a few questions.
 
+**Codex, opencode, Gemini CLI, Cursor and other agents:**
+
+```sh
+git clone https://github.com/Cyrus-Gahatraj/mindtix && python3 mindtix/install.py
+```
+
+Then open your agent in an empty folder and say "set up mindtix". See
+[docs/other-agents.md](docs/other-agents.md).
+
 ## Skills
 
 | Skill | What it does |
@@ -109,7 +118,7 @@ Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked grap
 
 ## Requirements
 
-- [Claude Code](https://claude.com/claude-code)
+- [Claude Code](https://claude.com/claude-code), or any agent with Agent Skills (Codex, opencode, Gemini CLI, Cursor)
 - Python 3 (standard library only), for the hooks, importer and exporter
 - Git (recommended: every change is a commit you can undo)
 

@@ -32,3 +32,6 @@ update it whenever you add, move or delete a note.
 7. `logs/` and `private/` are never committed.
 
 See the folder READMEs for what goes where.
+
+`CLAUDE.md`, `AGENTS.md` and `GEMINI.md` only point here, so Claude Code, Codex, opencode,
+Cursor and Gemini CLI all read the same rules.

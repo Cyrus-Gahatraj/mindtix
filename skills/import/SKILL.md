@@ -32,7 +32,9 @@ Work from the brain root (the folder with `MIND.md`); if there is none, suggest
   keeping each thread whole), and launch the `reader` agent on every batch **in parallel**
   in one message. Tell each reader who the user is (name and handles from `self/profile.md`
   and the export) and what to focus on. Put profile and personal-information files in their
-  own batch first.
+  own batch first. **If your tool has no sub-agents**, go batch by batch yourself: read one
+  batch, write its facts into a scratch file `raw/imports/<source>-YYYY-MM-DD/_facts.md`,
+  and only then move on, so nothing is lost when the conversation gets long.
 - Files that are mostly noise (ads, "posts viewed", likes): don't read line by line; count
   them (top accounts, hashtags, topics) with a short script and treat the counts as
   evidence of interests.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- **Other agents:** `install.py` installs the skills as `mindtix-<name>` for Codex, opencode,
+  Gemini CLI, Cursor or any Agent Skills folder (global or per brain), rewriting Claude-only
+  parts. Brains get `AGENTS.md` and `GEMINI.md` pointing to `MIND.md`.
+- Skills fall back to batch-by-batch reading when the agent has no sub-agents.
+
 ## 1.0.0 (2026-10-07)
 
 First stable release.

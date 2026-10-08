@@ -8,7 +8,7 @@ description: Weekly review of a mindtix brain. Finds patterns in what the user c
 1. **See what changed this week.** Git misses gitignored and uncommitted files, so check both:
    - `git log --since="7 days ago" --stat` and `git status`
    - `find raw logs -name '*.md' -mtime -7`
-2. **Read what changed** (if more than ~30 files changed, give them to the `reader` agent). Themes they kept returning to (the questions in `logs/` show what
+2. **Read what changed** (if more than ~30 files changed, give them to the `reader` agent, or read them in batches). Themes they kept returning to (the questions in `logs/` show what
    they wonder about), topics in `learning/` that moved and ones that stalled, projects that
    went quiet, open questions, and files in `raw/` that `/mindtix:capture` hasn't processed.
 3. **Learning check:** modules ticked this week in each `learning/<topic>/map.md`, scores in

@@ -65,7 +65,8 @@ Rules for both:
    **Big imports** (more than ~50 files or ~200 KB of text): don't read them into this
    conversation. Split them into batches of similar size and launch the `reader` agent on
    each batch **in parallel** (one message, several agents), telling it who the user is.
-   Then write the notes from their reports. Read the most important threads yourself only
+   Then write the notes from their reports. Without sub-agents, read batch by batch and
+   write notes after each batch. Read the most important threads yourself only
    if the user asks.
 3. **Knowledge page shape**, grouped by topic not by file (`knowledge/binary-search.md`):
 
