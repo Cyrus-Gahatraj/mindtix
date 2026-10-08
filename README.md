@@ -75,6 +75,7 @@ Then open your agent in an empty folder and say "set up mindtix". See
 | `/mindtix:learn diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
 | `/mindtix:learn spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
 | `/mindtix:recall [topic]` | Spaced-repetition review of the cards that are due |
+| `/mindtix:today` | The daily 5-10 minutes: a few due cards, one learning step, one old question |
 | `/mindtix:know-me` | A short interview round that fills in `self/` |
 | `/mindtix:reflect [test]` | Rewrites `insight/`, or runs a personality test |
 | `/mindtix:connect-dots` | Finds how everything you know connects |
@@ -101,7 +102,7 @@ that has `MIND.md`:
 /mindtix:import ~/Downloads/instagram.zip # who you are, people, timeline, interests
 /mindtix:capture notes                    # your notes in raw/notes/ become topic pages + cards
 /mindtix:learn sql                        # interview → map → build first → redo without help
-/mindtix:recall                           # 5 minutes a day on the cards that are due
+/mindtix:today                            # 5-10 minutes a day: due cards + one learning step
 /mindtix:reflect                          # the AI's read of you, with evidence
 /mindtix:review                           # once a week
 ```

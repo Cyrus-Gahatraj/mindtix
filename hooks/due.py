@@ -14,4 +14,4 @@ root = find_root(cwd)
 if root:
     n = due_cards(root)
     if n:
-        print(f"mindtix: {n} recall card{'s' if n != 1 else ''} due. Mention it once and offer /mindtix:recall.")
+        print(f"mindtix: {n} recall card{'s' if n != 1 else ''} due. Mention it once and offer /mindtix:today (or /mindtix:recall for cards only).")

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **`today` skill:** one daily 5-10 minute session: up to 5 due cards, one step on the
+  topic being learned now, and one question from an older topic.
+
 ## 1.1.0
 
 - **Other agents:** `install.py` installs the skills as `mindtix-<name>` for Codex, opencode,
