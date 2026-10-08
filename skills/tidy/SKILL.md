@@ -15,7 +15,7 @@ Never touches `raw/` (the user's), `logs/`, `private/` or `insight/` (only `/min
      while read -r l; do [ -e "$l.md" ] || [ -e "$l" ] ||
        [ -n "$(find . -name "$(basename "$l").md" -print -quit)" ] || echo "dangling: $l"; done
    # Notes missing from INDEX.md (READMEs and examples excluded)
-   find self knowledge learning projects hobbies -name '*.md' ! -name README.md ! -name '_example*' 2>/dev/null |
+   find self knowledge learning projects hobbies extra -name '*.md' ! -name README.md ! -name '_example*' 2>/dev/null |
      sed 's|\.md$||' | while read -r n; do grep -qF "$n" INDEX.md || echo "not in INDEX: $n"; done
    # Empty folders
    find . -type d -empty -not -path './.git/*'

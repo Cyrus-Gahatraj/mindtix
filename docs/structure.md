@@ -15,6 +15,7 @@ with only a README; the AI fills it once there is real content.
 | `learning/` | One folder per thing you're learning now, plus a mistakes ledger | AI, during sessions |
 | `projects/` | One note per thing you build or make | AI + you |
 | `hobbies/` | One subfolder per hobby (chess, music, ...) | AI + you |
+| `extra/` | One subfolder per area that fits nowhere else (education, work, health, ...) | AI + you |
 | `insight/` | The AI's guesses about you: knowledge levels, mind, habits, style | Only `/mindtix:reflect` |
 | `logs/` | Conversations with your brain's AI | The app; not committed |
 | `private/` | Files with ID numbers or anything you want hidden | You; not committed |

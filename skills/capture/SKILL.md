@@ -38,6 +38,7 @@ Rules for both:
    | A fact about them (background, taste, goal, people, feelings) | `self/` (`profile.md`, `personality.md`, `people.md`, `timeline.md`) |
    | News about something they make | `projects/<project>.md` |
    | A hobby | `hobbies/<hobby>/` |
+   | Anything else (school, work, health, travel) | `extra/<area>/` |
    | A long source (article, transcript) | `raw/imports/`, then run job B on it |
    | A data export or a whole folder of notes | Use `/mindtix:import <path>` instead |
 

@@ -24,6 +24,7 @@ my-mind/
 ├── learning/      what you're learning now: maps, sessions, mistakes
 ├── projects/      one note per thing you make
 ├── hobbies/       one subfolder per hobby
+├── extra/         anything else: school, work, health, ...
 ├── insight/       the AI's evidence-based read of you
 ├── logs/          chats with your brain (not committed)
 └── private/       anything sensitive (not committed)
