@@ -1,12 +1,12 @@
 ---
 name: export
-description: Export a mindtix brain. "profile" writes a short about-me for other AIs (ChatGPT custom instructions, Claude projects, Gemini), "anki" turns recall cards into an Anki deck file, "json" dumps every note and card, "bundle" zips the whole brain as a backup. Use when the user says "export", "back up my brain", "make my profile for ChatGPT", "send my cards to Anki", or "give me my data".
-argument-hint: "[profile|anki|json|bundle|all]"
+description: Export a mindtix brain. "profile" writes a short about-me for other AIs (ChatGPT custom instructions, Claude projects, Gemini), "anki" turns recall cards into an Anki deck file, "json" dumps every note and card, "bundle" zips the whole brain as a backup, "site" builds a one-file website of the notes (home, notes with backlinks, graph, search, insight charts). Use when the user says "export", "back up my brain", "make my profile for ChatGPT", "send my cards to Anki", "make a website of my brain", "publish my notes", or "give me my data".
+argument-hint: "[profile|anki|json|bundle|site|all]"
 ---
 
 # Export
 
-Format: $ARGUMENTS (if empty, ask which, listing the four in one line each).
+Format: $ARGUMENTS (if empty, ask which, listing the five in one line each).
 
 Work from the brain root (the folder with `MIND.md`). Exports go to `exports/` in the brain
 (gitignored; add `exports/` to `.gitignore` if it's missing) unless the user names another
@@ -30,6 +30,7 @@ Next to this SKILL.md is `export.py`:
 python3 "<this skill's dir>/export.py" anki   . exports/mindtix-cards-YYYY-MM-DD.txt
 python3 "<this skill's dir>/export.py" json   . exports/mindtix-YYYY-MM-DD.json
 python3 "<this skill's dir>/export.py" bundle . exports/mindtix-YYYY-MM-DD.zip
+python3 "<this skill's dir>/export.py" site   . exports/site/index.html [folder ...|all]
 ```
 
 - **anki:** one note per recall card (front = question, back = which page holds the
@@ -39,6 +40,17 @@ python3 "<this skill's dir>/export.py" bundle . exports/mindtix-YYYY-MM-DD.zip
   due date. Useful for other apps or scripts.
 - **bundle:** a zip of the brain for backup or moving machines. It leaves out `.git`; tell
   them the git history is the fuller backup (`git push` to a private repo).
-- **all:** profile plus the three files.
+- **site:** one `index.html` that opens in any browser, no server: a home page, every note
+  with its backlinks, folder pages, an index, the link graph, ⌘K search, and the insight
+  charts from `insight/scores.json` and `insight/knowledge.md`. Light and dark mode.
+  **Ask which folders before running it.** The default (no folders named) is `knowledge` and
+  `projects`, which is safe to publish. `self`, `insight`, `hobbies`, `extra`, `learning`
+  and `raw` hold personal material: add them only when they name them, and `all` (every
+  folder) only for a copy they keep to themselves. `private/`, `logs/` and `raw/imports/` are
+  never included. Links to notes that aren't exported become plain text. It needs the
+  internet once for fonts and the markdown renderer. Putting it online (GitHub Pages,
+  Netlify, any static host) is their step; never upload it yourself. There is no Ask or
+  Write page: those need a running server and an API key.
+- **all:** profile plus the anki, json and bundle files.
 
 Report in a few lines: what was written where, and the counts the script printed.

@@ -10,6 +10,10 @@
 - **Auto-commit hook:** after each reply, commits the brain's changes (when the brain is the
   top of its own git repo). Deleted files are counted, never named, in the message. Skips
   and warns if a changed file looks like it holds a secret. `MINDTIX_AUTOCOMMIT=0` turns it off.
+- **`export site`:** one self-contained `index.html` of the brain: home, notes with backlinks,
+  folders, index, link graph, ⌘K search and insight charts, light and dark. Only `knowledge/`
+  and `projects/` by default; name more folders or pass `all`. Never `private/`, `logs/` or
+  `raw/imports/`.
 
 ## 1.1.0
 

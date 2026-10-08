@@ -47,6 +47,22 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "MIND.md" in names and "knowledge/sql-joins.md" in names
     assert not any(n.startswith(("private/", "raw/imports/", "exports/", ".git/")) for n in names), names
 
+    # site: one HTML file; default is knowledge + projects only, "all" adds the rest but never private/
+    os.makedirs(os.path.join(brain, "self"), exist_ok=True)
+    open(os.path.join(brain, "self", "people.md"), "w", encoding="utf-8").write("# People\n\nA friend </script><script>alert(1)</script>\n")
+    assert "1 notes" in run("site", brain, os.path.join(out, "s.html"))
+    page = open(os.path.join(out, "s.html"), encoding="utf-8").read()
+    data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
+    assert [n["id"] for n in data["notes"]] == ["knowledge/sql-joins"] and "scores" not in data
+    assert "[[" not in data["notes"][0]["md"], "a link to a note that isn't exported becomes plain text"
+    run("site", brain, os.path.join(out, "a.html"), "all")
+    page = open(os.path.join(out, "a.html"), encoding="utf-8").read()
+    data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
+    ids = {n["id"] for n in data["notes"]}
+    assert {"knowledge/sql-joins", "self/people"} <= ids and not any(i.startswith(("private/", "raw/imports/")) for i in ids)
+    assert ["knowledge/sql-joins", "self/profile"] not in data["links"] and "(<#/n/self/people>)" not in page
+    assert "alert(1)" in json.dumps(data) and "<script>alert" not in page, "note text can't break out of the data block"
+
     r = subprocess.run([sys.executable, SCRIPT, "anki", tmp, os.path.join(tmp, "x.txt")], capture_output=True, text=True)
     assert r.returncode == 1 and "not a mindtix brain" in r.stdout
 

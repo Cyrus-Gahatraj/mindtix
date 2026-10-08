@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/index.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t } catch {}</script>
+<style>
+:root {
+  --bg: #f7f6f2; --rail: #f0eee8; --surface: #fbfaf7; --hover: #e9e6de; --line: #e3e0d8;
+  --faint: #b0aca2; --muted: #75716a; --fg: #1d1c1a; --accent: #56685a;
+  --serif: "Newsreader", Georgia, serif; --mono: Iosevka, ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --rail: #191917; --surface: #1d1d1b; --hover: #262522; --line: #2a2926;
+    --faint: #57544e; --muted: #9a968d; --fg: #ebe8e1; --accent: #a5b7a8; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --rail: #191917; --surface: #1d1d1b; --hover: #262522; --line: #2a2926;
+  --faint: #57544e; --muted: #9a968d; --fg: #ebe8e1; --accent: #a5b7a8; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); }
+body { font: 17px/1.7 var(--serif); display: grid; grid-template-columns: 236px 1fr; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration-color: var(--faint); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { text-decoration-color: currentColor; }
+button, input { font: inherit; color: inherit; }
+.label { font: 500 11px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+kbd { font: 11px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 .35em; background: var(--surface); }
+
+.rail { background: var(--rail); border-right: 1px solid var(--line); position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; padding: 18px 12px 12px; font: 13px/1.5 var(--mono); }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; text-decoration: none; }
+.brand img, .brand i { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; filter: grayscale(.4); }
+.brand i { display: grid; place-items: center; background: var(--hover); font: 500 13px var(--serif); font-style: normal; }
+.brand span { font: 500 15px var(--serif); }
+.search { display: flex; align-items: center; justify-content: space-between; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; color: var(--muted); cursor: pointer; text-align: left; font-size: 13px; }
+.search:hover { border-color: var(--faint); }
+.rail nav { margin-top: 18px; display: grid; gap: 1px; }
+.rail nav .label { padding: 14px 8px 6px; }
+.rail nav a { display: flex; justify-content: space-between; padding: 5px 8px; border-radius: 6px; text-decoration: none; color: var(--muted); }
+.rail nav a:hover, .rail nav a[aria-current] { background: var(--hover); color: var(--fg); }
+.rail nav a small { color: var(--faint); }
+.rail nav a.lib { margin-left: 10px; padding-left: 10px; border-left: 1px solid var(--line); border-radius: 0 6px 6px 0; }
+.rail .grow { flex: 1; }
+#mini { width: 100%; height: 150px; display: block; cursor: grab; touch-action: none; }
+.rail-foot { display: flex; justify-content: space-between; align-items: center; padding: 8px 8px 0; color: var(--faint); font-size: 12px; }
+#theme { background: none; border: 0; color: var(--muted); cursor: pointer; padding: 0; }
+
+main { padding: 56px 48px 96px; width: 100%; max-width: 760px; }
+main.wide { max-width: 1040px; }
+main.full { max-width: none; padding: 0; height: 100vh; }
+h1 { font: 400 34px/1.2 var(--serif); letter-spacing: -.01em; margin: 0 0 8px; }
+h2.label { margin: 0 0 14px; }
+.reader { font-size: 18px; }
+.reader h1 { font-size: 36px; }
+.reader h2 { font: 500 21px/1.3 var(--serif); margin: 2.2em 0 .5em; }
+.reader h3 { font: 500 18px/1.3 var(--serif); margin: 1.8em 0 .4em; }
+.reader blockquote { margin: 1.5em 0; padding: 0 0 0 1.1em; border-left: 2px solid var(--line); color: var(--muted); font-style: italic; }
+.reader code { font: 14px var(--mono); background: var(--hover); padding: .1em .35em; border-radius: 4px; }
+.reader pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; white-space: pre-wrap; }
+.reader pre code { background: none; padding: 0; }
+.reader table { border-collapse: collapse; display: block; overflow-x: auto; font: 13px/1.5 var(--mono); margin: 1.5em 0; }
+.reader th, .reader td { border-bottom: 1px solid var(--line); padding: 7px 14px 7px 0; text-align: left; vertical-align: top; }
+.reader th { color: var(--muted); font-weight: 500; }
+.reader img { max-width: 100%; border-radius: 6px; }
+.meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
+.crumbs a { text-decoration: none; color: var(--muted); }
+.crumbs a:hover { color: var(--fg); }
+
+.rows { display: grid; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; padding: 13px 0; border-top: 1px solid var(--line); text-decoration: none; }
+.row:last-child { border-bottom: 1px solid var(--line); }
+.row:hover .t { text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; }
+.row .t { font-size: 18px; line-height: 1.35; }
+.row .x { grid-column: 1; color: var(--muted); font-size: 15px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.row .d { grid-row: 1; grid-column: 2; font: 12px var(--mono); color: var(--faint); white-space: nowrap; padding-top: 4px; }
+
+.bars { display: grid; gap: 9px; font: 13px var(--mono); }
+.bar { display: grid; grid-template-columns: minmax(7rem, 40%) 1fr 2.6rem; align-items: center; gap: 12px; }
+.bar .l2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 4px; background: var(--line); border-radius: 2px; position: relative; }
+.fill { position: absolute; inset: 0 auto 0 0; background: var(--fg); border-radius: 2px; }
+.bar:hover .fill { background: var(--accent); }
+.val { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+.hero { max-width: 720px; margin-bottom: 44px; }
+.statement { font: 300 30px/1.42 var(--serif); letter-spacing: -.005em; margin: 14px 0 0; }
+.stats { display: grid; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 48px; }
+.stats div { display: grid; gap: 4px; padding: 18px 0 16px 18px; border-left: 1px solid var(--line); }
+.stats div:first-child { border-left: 0; padding-left: 0; }
+.stats .v { font: 400 28px/1.1 var(--serif); font-variant-numeric: tabular-nums; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 48px 56px; margin-bottom: 56px; }
+.wide-row { grid-column: 1 / -1; }
+.src { font: 11px var(--mono); color: var(--faint); margin-top: 10px; }
+.axis { display: grid; grid-template-columns: 4.5rem 1fr 4.5rem; align-items: center; gap: 12px; }
+.axis .r { text-align: right; color: var(--muted); }
+.split { position: relative; height: 4px; background: var(--line); border-radius: 2px; }
+.split::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--faint); }
+svg text { font: 11px var(--mono); fill: var(--muted); }
+
+#palette { position: fixed; inset: 0; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(6px); display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; z-index: 50; }
+#palette.open { display: flex; }
+.pbox { width: min(640px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 64px -24px rgba(0,0,0,.25); overflow: hidden; }
+.pbox input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 18px 20px; font: 400 20px var(--serif); outline: none; }
+#presults { max-height: 56vh; overflow-y: auto; padding: 6px; }
+.pr { display: block; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
+.pr[aria-selected="true"] { background: var(--hover); }
+.pr .pt { font-size: 16px; }
+.pr .pp { font: 12px var(--mono); color: var(--faint); margin-left: 8px; }
+.pr .ps { font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+.pr mark { background: none; color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
+.pfoot { display: flex; gap: 16px; padding: 8px 18px; border-top: 1px solid var(--line); font: 11px var(--mono); color: var(--faint); }
+
+@media (max-width: 820px) {
+  body { display: block; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .rail nav { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .rail nav .label { grid-column: 1 / -1; }
+  #mini, .rail .grow { display: none; }
+  main { padding: 32px 16px 64px; }
+  main.full { height: 80vh; }
+  .stats { grid-template-columns: repeat(3, 1fr) !important; }
+  .stats div:nth-child(3n+1) { border-left: 0; padding-left: 0; }
+  .cols { grid-template-columns: 1fr; gap: 40px; }
+  .statement { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<aside class="rail">
+  <a class="brand" href="#/" id="brand"></a>
+  <button class="search" type="button" id="open-search">Search <kbd>⌘K</kbd></button>
+  <nav aria-label="Site" id="nav"></nav>
+  <div class="grow"></div>
+  <canvas id="mini" aria-label="Graph of your notes"></canvas>
+  <div class="rail-foot"><a href="#/graph" id="count" style="text-decoration:none"></a><button id="theme" type="button" aria-label="Toggle light or dark mode">◐</button></div>
+</aside>
+<main id="main"></main>
+<div id="palette" role="dialog" aria-label="Search">
+  <div class="pbox">
+    <input id="pinput" placeholder="Search everything you know…" autocomplete="off" spellcheck="false">
+    <div id="presults" role="listbox"></div>
+    <div class="pfoot"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div>
+  </div>
+</div>
+<script type="application/json" id="data">__MINDTIX_DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById("data").textContent);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const url = id => "#/n/" + id.split("/").map(encodeURIComponent).join("/");
+const notes = D.notes, byId = Object.fromEntries(notes.map(n => [n.id, n]));
+const folders = [...new Set(notes.map(n => n.folder))];
+const back = {};
+for (const [a, b] of D.links) (back[b] ||= []).includes(a) || back[b].push(a);
+const S = D.scores || {}, hasInsight = "scores" in D;
+const owner = D.name || "My notes";
+
+// Notes are the user's own markdown; raw HTML in them is shown as text, never run
+if (window.marked) marked.use({ renderer: { html: h => esc(typeof h === "string" ? h : h.text) } });
+const md = s => window.marked ? marked.parse(s) : `<pre>${esc(s)}</pre>`;
+
+function ago(ts) {
+  const s = Date.now() / 1000 - ts;
+  if (s < 3600) return "just now";
+  if (s < 86400) return Math.floor(s / 3600) + "h ago";
+  if (s < 172800) return "yesterday";
+  if (s < 604800) return Math.floor(s / 86400) + "d ago";
+  return new Date(ts * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+const rows = (list, showFolder) => `<div class="rows">${list.map(n => `<a class="row" href="${url(n.id)}"><span class="t">${esc(n.title)}</span>${n.excerpt ? `<span class="x">${esc(n.excerpt)}</span>` : ""}<span class="d">${showFolder ? esc(n.folder) + " · " : ""}${ago(n.mod)}</span></a>`).join("")}</div>`;
+const bars = list => `<div class="bars">${list.map(b => `<div class="bar" title="${esc(b.label)}: ${esc(b.text)}"><span class="l2">${esc(b.label)}</span><span class="track"><span class="fill" style="width:${b.value / b.max * 100}%"></span></span><span class="val">${esc(b.text)}</span></div>`).join("")}</div>`;
+const testBars = (t, order) => order.filter(k => t?.scores?.[k] != null).map(k => ({ label: k, value: t.scores[k], max: 100, text: String(t.scores[k]) }));
+const stats = list => `<div class="stats" style="grid-template-columns:repeat(${list.length},1fr)">${list.map(([v, l, x]) => `<div><span class="v">${esc(v)}</span><span class="label">${esc(l)}</span>${x ? `<span class="muted" style="font-size:14px">${esc(x)}</span>` : ""}</div>`).join("")}</div>`;
+const OCEAN = ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"];
+const title = s => s[0].toUpperCase() + s.slice(1);
+const inFolder = f => notes.filter(n => n.folder === f);
+
+// Rail
+$("brand").innerHTML = (D.photo ? `<img src="${D.photo}" alt="">` : `<i>${esc(owner[0])}</i>`) + `<span>${esc(owner)}</span>`;
+$("count").textContent = `${notes.length} notes · ${D.links.length} links`;
+$("nav").innerHTML = `<a href="#/" data-p="home">Home</a>` + (hasInsight ? `<a href="#/insight" data-p="insight">Insight</a>` : "") +
+  `<a href="#/graph" data-p="graph">Graph</a><div class="label">Library</div>` +
+  folders.filter(f => f !== "insight").map(f => `<a class="lib" href="#/f/${encodeURIComponent(f)}" data-p="${esc(f)}">${esc(f)}<small>${inFolder(f).length}</small></a>`).join("") +
+  `<a class="lib" href="#/all" data-p="all">index</a>`;
+
+// Pages: each returns [page name for the rail, title, html, layout]
+const pages = {
+  home() {
+    const recent = notes.filter(n => n.folder !== "insight").sort((a, b) => b.mod - a.mod).slice(0, 6);
+    const now = inFolder("projects");
+    const a = D.about || {};
+    const head = [a["What I do"], a["Where I'm from / where I live"]].filter(Boolean).join(" · ");
+    const intro = a.Intro || (a["What I'm learning"] ? "Learning now: " + a["What I'm learning"] : `${notes.length} notes, linked the way they connect.`);
+    const st = [];
+    if (S.mbti?.type) st.push([S.mbti.type, "type"]);
+    if (S.iq?.high) st.push([`${S.iq.low}–${S.iq.high}`, "iq, est."]);
+    if (S.grit?.overall) st.push([S.grit.overall.toFixed(1), "grit / 5"]);
+    st.push([notes.length, "notes"], [inFolder("knowledge").length, "topics"], [D.links.length, "links"]);
+    const ocean = testBars(S.ocean, OCEAN), know = (D.knowledge || []).slice(0, 6);
+    return ["home", "Home", `
+      <section class="hero"><div class="label">${esc(head || "Second brain · exported " + D.exported)}</div><p class="statement">${esc(intro)}</p></section>
+      ${stats(st)}
+      <div class="cols">
+        ${now.length ? `<section><h2 class="label">Now</h2>${rows(now)}</section>` : ""}
+        <section class="${now.length ? "" : "wide-row"}"><h2 class="label">Recently touched</h2>${rows(recent, true)}</section>
+      </div>
+      ${ocean.length || know.length ? `<div class="cols">
+        ${ocean.length ? `<section><h2 class="label">Temperament · <a href="#/insight">insight →</a></h2>${bars(ocean)}</section>` : ""}
+        ${know.length ? `<section><h2 class="label">Strongest topics</h2>${bars(know)}</section>` : ""}
+      </div>` : ""}`, "wide"];
+  },
+  n(id) {
+    const n = byId[id];
+    if (!n) return null;
+    const parts = id.split("/");
+    const linked = (back[id] || []).map(x => byId[x]).filter(Boolean);
+    return [n.folder, n.title, `
+      <div class="meta label crumbs"><span><a href="#/f/${encodeURIComponent(parts[0])}">${esc(parts[0])}</a>${parts.slice(1, -1).map(p => ` / ${esc(p)}`).join("")}</span>
+      <span>${ago(n.mod)}</span><span>${Math.max(1, Math.ceil(n.words / 200))} min read</span></div>
+      <article class="reader">${md(n.md)}</article>
+      ${linked.length ? `<section style="margin-top:64px"><h2 class="label">Linked from</h2>${rows(linked, true)}</section>` : ""}`, "", id];
+  },
+  f(name) {
+    const list = inFolder(name);
+    if (!list.length) return null;
+    const groups = {};
+    for (const n of list) (groups[n.id.split("/").slice(1, -1).join("/")] ||= []).push(n);
+    return [name, title(name), `<h1>${esc(title(name))}</h1><div class="label" style="margin-bottom:36px">${list.length} notes</div>` +
+      Object.entries(groups).map(([g, ns]) => `<section style="margin-bottom:36px">${g ? `<h2 class="label">${esc(g)}</h2>` : ""}${rows(ns)}</section>`).join("")];
+  },
+  all() {
+    return ["all", "Index", `<h1>Index</h1><div class="label" style="margin-bottom:36px">Everything here · press <kbd>⌘K</kbd> to search</div>` +
+      folders.map(f => `<section style="margin-bottom:40px"><h2 class="label"><a href="#/f/${encodeURIComponent(f)}" style="text-decoration:none">${esc(f)}</a></h2>${rows(inFolder(f))}</section>`).join("")];
+  },
+  graph() {
+    return ["graph", "Graph", `<div style="position:relative;height:100%"><div class="label" style="position:absolute;top:24px;left:32px">Graph · ${notes.length} notes · ${D.links.length} links · hover to trace, click to open</div><canvas id="big" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div>`, "full"];
+  },
+  insight() {
+    if (!hasInsight) return null;
+    const st = [];
+    if (S.iq?.high) st.push(["IQ, estimated", `${S.iq.low}–${S.iq.high}`, (S.iq.confidence || "?") + " confidence"]);
+    if (S.mbti?.type) st.push(["Type", S.mbti.type, "self-reported"]);
+    if (S.grit?.overall) st.push(["Grit", S.grit.overall.toFixed(1), "out of 5"]);
+    if (S.riasec?.code) st.push(["Holland", S.riasec.code, "career interests"]);
+    const chart = (name, body, src, wide) => body ? `<section class="${wide ? "wide-row" : ""}"><h2 class="label">${name}</h2>${body}${src ? `<div class="src">${esc(src)}</div>` : ""}</section>` : "";
+    const ocean = testBars(S.ocean, OCEAN), grit = testBars(S.grit, ["Consistency of interest", "Perseverance of effort"]);
+    const riasec = testBars(S.riasec, ["Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"]);
+    const axes = (S.mbti?.axes || []).map(a => `<div class="axis" title="${esc(a.left)} ${a.left_pct}% · ${esc(a.right)} ${100 - a.left_pct}%"><span>${esc(a.left)} ${a.left_pct}%</span><span class="split"><span class="fill" style="width:${a.left_pct}%"></span></span><span class="r">${100 - a.left_pct}% ${esc(a.right)}</span></div>`).join("");
+    const analysis = inFolder("insight");
+    return ["insight", "Insight", `<h1>Insight</h1><div class="label">Written by the AI from everything in the brain${S.updated ? " · updated " + esc(S.updated) : ""}</div>
+      <div style="margin-top:28px">${st.length ? stats(st.map(([l, v, x]) => [v, l, x])) : ""}</div>
+      <div class="cols">
+        ${chart("IQ estimate", S.iq?.high ? bell(S.iq.low, S.iq.high) : "", S.iq?.source, true)}
+        ${chart("Big Five", ocean.length && bars(ocean), S.ocean?.source)}
+        ${chart("MBTI · " + esc(S.mbti?.type || ""), axes && `<div class="bars">${axes}</div>`, S.mbti?.source)}
+        ${chart("Grit", grit.length && bars(grit), S.grit?.source)}
+        ${chart("Career interests", riasec.length && bars(riasec), S.riasec?.source)}
+        ${chart("Knowledge · 0 never touched … 5 expert", D.knowledge?.length && bars(D.knowledge), "", true)}
+      </div>
+      ${analysis.length ? `<section><h2 class="label">Read the analysis</h2>${rows(analysis)}</section>` : ""}`, "wide"];
+  },
+};
+
+// IQ normal curve (mean 100, sd 15) over 55..145 with the estimated band shaded
+function bell(low, high) {
+  const px = iq => (iq - 55) / 90 * 600, py = iq => 110 - Math.exp(-(((iq - 100) / 15) ** 2) / 2) * 100;
+  let c = "", b = `M${px(low)} 110 `;
+  for (let iq = 55; iq <= 145; iq++) c += `${iq === 55 ? "M" : "L"}${px(iq).toFixed(1)} ${py(iq).toFixed(1)} `;
+  for (let iq = low; iq <= high; iq++) b += `L${px(iq).toFixed(1)} ${py(iq).toFixed(1)} `;
+  return `<svg viewBox="0 0 600 130" width="100%" role="img" aria-label="Estimated IQ range ${low} to ${high} on a normal curve">
+    <path d="${b}L${px(high)} 110 Z" fill="var(--fg)" opacity=".14"></path><path d="${c}" fill="none" stroke="var(--muted)" stroke-width="1.5"></path>
+    <line x1="0" x2="600" y1="110" y2="110" stroke="var(--line)"></line><text x="300" y="125" text-anchor="middle">100</text>
+    <text x="${px(low)}" y="125" text-anchor="middle">${low}</text><text x="${px(high)}" y="125" text-anchor="middle">${high}</text></svg>`;
+}
+
+// Router: #/, #/n/<id>, #/f/<folder>, #/all, #/graph, #/insight
+let ACTIVE = "home", FOCUS = null, mini = null;
+function route() {
+  const [, kind = "", ...rest] = location.hash.slice(1).split("/");
+  const arg = rest.map(decodeURIComponent).join("/");
+  const page = (Object.hasOwn(pages, kind) ? pages[kind] : pages.home)(arg) || pages.home();
+  const [active, name, html, layout = "", focus = null] = page;
+  ACTIVE = active; FOCUS = focus;
+  $("main").className = layout;
+  $("main").innerHTML = html;
+  document.title = `${name} · ${owner}`;
+  for (const a of $("nav").querySelectorAll("a")) a.toggleAttribute("aria-current", a.dataset.p === active);
+  scrollTo(0, 0);
+  if (active === "graph") graph($("big"), { labels: true });
+  mini?.draw();
+}
+addEventListener("hashchange", route);
+
+// Theme
+$("theme").onclick = () => {
+  const now = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const next = now === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("theme", next) } catch {}
+  dispatchEvent(new Event("themechange"));
+};
+
+// ⌘K search
+const pal = $("palette"), pin = $("pinput"), pres = $("presults");
+let hits = [], sel = 0;
+function openSearch() { pal.classList.add("open"); pin.value = ""; pin.focus(); search() }
+function closeSearch() { pal.classList.remove("open") }
+function search() {
+  const q = pin.value.trim().toLowerCase(), terms = q.split(/\s+/).filter(Boolean);
+  hits = [];
+  if (terms.length) {
+    for (const it of notes) {
+      const t = it.title.toLowerCase(), x = it.text.toLowerCase();
+      if (!terms.every(w => t.includes(w) || x.includes(w))) continue;
+      let score = t.startsWith(q) ? 20 : 0;
+      for (const w of terms) score += (t.includes(w) ? 10 : 0) + Math.min(x.split(w).length - 1, 5);
+      const at = Math.max(0, x.indexOf(terms[0]) - 50);
+      let snip = (at ? "…" : "") + esc(it.text.slice(at, at + 150));
+      for (const w of terms) snip = snip.replace(new RegExp("(" + esc(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig"), "<mark>$1</mark>");
+      hits.push({ url: url(it.id), html: `<div><span class="pt">${esc(it.title)}</span><span class="pp">${esc(it.folder)}</span></div><div class="ps">${snip}</div>`, score });
+    }
+    hits = hits.sort((a, b) => b.score - a.score).slice(0, 8);
+  } else {
+    hits = [...notes].sort((a, b) => b.mod - a.mod).slice(0, 6).map(n => ({ url: url(n.id), html: `<div><span class="pt">${esc(n.title)}</span><span class="pp">${esc(n.folder)}</span></div>` }));
+  }
+  sel = 0; paint();
+}
+function paint() {
+  pres.innerHTML = hits.map((h, i) => `<a class="pr" role="option" href="${h.url}" aria-selected="${i === sel}">${h.html}</a>`).join("") || `<div class="pr ps">Nothing found</div>`;
+}
+pin.oninput = search;
+pin.onkeydown = e => {
+  if (e.key === "ArrowDown") { sel = Math.min(sel + 1, hits.length - 1); paint(); e.preventDefault() }
+  else if (e.key === "ArrowUp") { sel = Math.max(sel - 1, 0); paint(); e.preventDefault() }
+  else if (e.key === "Enter" && hits[sel]) { location.hash = hits[sel].url; closeSearch() }
+  else if (e.key === "Escape") closeSearch();
+};
+pal.onclick = e => { if (e.target === pal) closeSearch(); else if (e.target.closest("a")) closeSearch() };
+$("open-search").onclick = openSearch;
+addEventListener("keydown", e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); pal.classList.contains("open") ? closeSearch() : openSearch() }
+  else if (e.key === "/" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); openSearch() }
+});
+
+// Graph: a small force layout, monochrome. Used in the rail and on #/graph.
+// ponytail: O(n²) repulsion, fine for a few hundred notes; switch to d3-force if it lags.
+function graph(cv, opt) {
+  const ctx = cv.getContext("2d");
+  let W = 0, H = 0, heat = 1, hover = null, drag = null, frame = 0, moved = false;
+  const nodes = notes.map((n, i) => { const a = i / notes.length * Math.PI * 2; return { id: n.id, folder: n.folder, x: Math.cos(a) * 60, y: Math.sin(a) * 60, vx: 0, vy: 0, deg: 0 } });
+  const by = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const links = D.links.map(([a, b]) => [by[a], by[b]]).filter(([a, b]) => a && b);
+  for (const [a, b] of links) { a.deg++; b.deg++ }
+  const r = n => (opt.small ? 1.6 : 3) + Math.sqrt(n.deg) * (opt.small ? .8 : 1.8);
+  const here = n => n.folder === ACTIVE || n.id === FOCUS;
+  const size = () => { const b = cv.getBoundingClientRect(); W = b.width; H = b.height; cv.width = W * devicePixelRatio; cv.height = H * devicePixelRatio; ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); wake() };
+  function step() {
+    const rep = opt.small ? 350 : 2600, len = opt.small ? 24 : 80;
+    for (const a of nodes) for (const b of nodes) { if (a === b) continue; const dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy + 1, f = rep / d2 / Math.sqrt(d2); a.vx += dx * f; a.vy += dy * f }
+    for (const [a, b] of links) { const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, f = (d - len) * .02; a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f }
+    for (const n of nodes) { n.vx -= n.x * .012; n.vy -= n.y * .016; if (n !== drag) { n.x += n.vx * heat; n.y += n.vy * heat } n.vx *= .6; n.vy *= .6 }
+    heat = Math.max(heat * .985, .02);
+  }
+  function draw() {
+    if (!cv.isConnected) return;
+    const near = n => n === hover || links.some(([a, b]) => (a === hover && b === n) || (b === hover && a === n));
+    ctx.clearRect(0, 0, W, H); ctx.save(); ctx.translate(W / 2, H / 2);
+    for (const [a, b] of links) {
+      const hot = hover && (a === hover || b === hover);
+      ctx.globalAlpha = hover ? (hot ? .9 : .08) : .5; ctx.strokeStyle = css(hot ? "--fg" : "--faint"); ctx.lineWidth = hot ? 1.2 : .8;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.font = `${opt.small ? 10 : 12}px Iosevka, ui-monospace, monospace`; ctx.textAlign = "center";
+    for (const n of nodes) {
+      ctx.globalAlpha = hover && !near(n) ? .2 : 1;
+      ctx.fillStyle = css(n === hover || here(n) ? "--fg" : opt.small ? "--faint" : "--muted");
+      ctx.beginPath(); ctx.arc(n.x, n.y, r(n), 0, Math.PI * 2); ctx.fill();
+      if (hover ? near(n) : (opt.labels || n.id === FOCUS)) { ctx.fillStyle = css("--fg"); ctx.fillText(n.id.split("/").pop(), n.x, n.y + r(n) + 11) }
+    }
+    ctx.restore();
+  }
+  function loop() { step(); draw(); frame = (heat > .02 || drag) && cv.isConnected ? requestAnimationFrame(loop) : 0 }
+  function wake(h = 0) { heat = Math.max(heat, h); if (!frame) frame = requestAnimationFrame(loop) }
+  const at = e => { const b = cv.getBoundingClientRect(), x = e.clientX - b.left - W / 2, y = e.clientY - b.top - H / 2; return nodes.find(n => Math.hypot(n.x - x, n.y - y) < r(n) + 5) || null };
+  cv.onpointerdown = e => { drag = at(e); moved = false; if (drag) cv.setPointerCapture(e.pointerId) };
+  cv.onpointermove = e => { const b = cv.getBoundingClientRect(); if (drag) { moved = true; drag.x = e.clientX - b.left - W / 2; drag.y = e.clientY - b.top - H / 2; wake(.3); return } const h = at(e); if (h !== hover) { hover = h; cv.style.cursor = h ? "pointer" : "grab"; draw() } };
+  cv.onpointerup = () => { if (drag && !moved) location.hash = url(drag.id); drag = null };
+  cv.onpointerleave = () => { hover = null; draw() };
+  addEventListener("resize", size); addEventListener("themechange", draw);
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+  document.fonts.ready.then(draw);
+  size(); wake(1);
+  return { draw };
+}
+
+if (getComputedStyle($("mini")).display !== "none") mini = graph($("mini"), { small: true });
+route();
+</script>
+</body>
+</html>
