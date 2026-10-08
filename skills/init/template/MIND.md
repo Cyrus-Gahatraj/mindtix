@@ -28,7 +28,7 @@ update it whenever you add, move or delete a note.
 3. No secrets: no passwords, keys, tokens or ID numbers anywhere. Drop them and tell me.
 4. Update, don't duplicate. Search `INDEX.md` first and merge into the existing note.
 5. Grow only when there's content. No empty folders or placeholder notes.
-6. Only `/mindtix:reflect` writes `insight/`.
+6. Only `/mindtix:reflect` writes `insight/` (`/mindtix:forget` may delete from it).
 7. `logs/` and `private/` are never committed.
 
 See the folder READMEs for what goes where.

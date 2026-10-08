@@ -4,6 +4,9 @@
 
 - **`today` skill:** one daily 5-10 minute session: up to 5 due cards, one step on the
   topic being learned now, and one question from an older topic.
+- **`forget` skill:** removes a person or topic from every note, card, insight line, log
+  and export after one confirmation; `raw/` files are only deleted whole, on request.
+  Commits without the name and explains how to clear git history.
 
 ## 1.1.0
 

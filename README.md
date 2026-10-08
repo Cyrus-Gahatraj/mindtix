@@ -80,6 +80,7 @@ Then open your agent in an empty folder and say "set up mindtix". See
 | `/mindtix:reflect [test]` | Rewrites `insight/`, or runs a personality test |
 | `/mindtix:connect-dots` | Finds how everything you know connects |
 | `/mindtix:export [profile\|anki\|json\|bundle]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, or a zip backup |
+| `/mindtix:forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
 | `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
 | `/mindtix:review` | Weekly review: focus, learning progress, what to grow |
 
@@ -116,6 +117,8 @@ Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked grap
   and `raw/imports/`, `logs/`, `exports/` and `private/` are gitignored.
 - What Claude reads is sent to Anthropic like any Claude Code session. Keep anything you
   never want sent in `private/` and don't ask the AI to open it.
+- Changed your mind about someone you imported? `/mindtix:forget <name>` removes them from
+  every note, card and export, and tells you how to clear git history too.
 - If you push your brain to GitHub, make the repo **private**.
 
 ## Requirements
