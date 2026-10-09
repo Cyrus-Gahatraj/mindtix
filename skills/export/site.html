@@ -119,6 +119,18 @@ svg text { font: 11px var(--mono); fill: var(--muted); }
 .pr mark { background: none; color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
 .pfoot { display: flex; gap: 16px; padding: 8px 18px; border-top: 1px solid var(--line); font: 11px var(--mono); color: var(--faint); }
 
+.chat { display: grid; gap: 30px; margin: 32px 0; }
+.msg .who { margin-bottom: 6px; }
+.msg.you .body { white-space: pre-wrap; }
+.msg.brain .reader { font-size: 17px; }
+.msg.brain .reader > :first-child { margin-top: 0; }
+.composer { position: sticky; bottom: 0; background: var(--bg); padding: 14px 0 22px; display: grid; gap: 10px; }
+.composer textarea { width: 100%; min-height: 80px; resize: vertical; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font: 17px/1.5 var(--serif); color: var(--fg); outline: none; }
+.composer textarea:focus { border-color: var(--faint); }
+.composer .row2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.btn { background: var(--fg); color: var(--bg); border: 1px solid var(--fg); border-radius: 8px; padding: 5px 14px; font: 13px var(--mono); cursor: pointer; text-decoration: none; }
+.btn.ghost { background: none; color: var(--muted); border-color: var(--line); }
+
 @media (max-width: 820px) {
   body { display: block; }
   .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -188,7 +200,7 @@ const inFolder = f => notes.filter(n => n.folder === f);
 // Rail
 $("brand").innerHTML = (D.photo ? `<img src="${D.photo}" alt="">` : `<i>${esc(owner[0])}</i>`) + `<span>${esc(owner)}</span>`;
 $("count").textContent = `${notes.length} notes · ${D.links.length} links`;
-$("nav").innerHTML = `<a href="#/" data-p="home">Home</a>` + (hasInsight ? `<a href="#/insight" data-p="insight">Insight</a>` : "") +
+$("nav").innerHTML = `<a href="#/" data-p="home">Home</a>` + (D.live ? `<a href="#/ask" data-p="ask">Ask</a>` : "") + (hasInsight ? `<a href="#/insight" data-p="insight">Insight</a>` : "") +
   `<a href="#/graph" data-p="graph">Graph</a><div class="label">Library</div>` +
   folders.filter(f => f !== "insight").map(f => `<a class="lib" href="#/f/${encodeURIComponent(f)}" data-p="${esc(f)}">${esc(f)}<small>${inFolder(f).length}</small></a>`).join("") +
   `<a class="lib" href="#/all" data-p="all">index</a>`;
@@ -242,6 +254,14 @@ const pages = {
     return ["all", "Index", `<h1>Index</h1><div class="label" style="margin-bottom:36px">Everything here · press <kbd>⌘K</kbd> to search</div>` +
       folders.map(f => `<section style="margin-bottom:40px"><h2 class="label"><a href="#/f/${encodeURIComponent(f)}" style="text-decoration:none">${esc(f)}</a></h2>${rows(inFolder(f))}</section>`).join("")];
   },
+  ask() {
+    if (!D.live) return null;
+    return ["ask", "Ask", `<h1>Ask</h1><div class="label">Answers from your notes · each chat is kept in logs/ and remembered</div>
+      <div class="chat" id="chat"></div>
+      <form class="composer" id="composer"><textarea id="q" placeholder="Ask anything about what you know…" aria-label="Your question"></textarea>
+        <div class="row2"><span class="label" id="status">↵ send · shift ↵ new line</span><span><a class="btn ghost" href="#/ask">New chat</a> <button class="btn" type="submit">Ask</button></span></div></form>
+      <section style="margin-top:48px"><h2 class="label">Earlier chats</h2><div id="chats"></div></section>`];
+  },
   graph() {
     return ["graph", "Graph", `<div style="position:relative;height:100%"><div class="label" style="position:absolute;top:24px;left:32px">Graph · ${notes.length} notes · ${D.links.length} links · hover to trace, click to open</div><canvas id="big" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div>`, "full"];
   },
@@ -283,7 +303,50 @@ function bell(low, high) {
     <text x="${px(low)}" y="125" text-anchor="middle">${low}</text><text x="${px(high)}" y="125" text-anchor="middle">${high}</text></svg>`;
 }
 
-// Router: #/, #/n/<id>, #/f/<folder>, #/all, #/graph, #/insight
+// Ask (live site only): answers come back as markdown with [[wikilinks]] to notes
+const byBase = {};
+for (const n of notes) byBase[n.id.split("/").pop().toLowerCase()] ??= n.id;
+const linkify = s => s.replace(/\[\[([^\]|#]+)[^\]|]*(?:\|([^\]]+))?\]\]/g, (_, t, alias) => {
+  t = t.trim().replace(/\.md$/, "");
+  const id = byId[t] ? t : byBase[t.split("/").pop().toLowerCase()];
+  return id ? `[${alias || byId[id].title}](<${url(id)}>)` : alias || t;
+});
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : undefined);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+const bubble = (role, text) => role === "user"
+  ? `<div class="msg you"><div class="label who">You</div><div class="body">${esc(text)}</div></div>`
+  : `<div class="msg brain"><div class="label who">Brain</div><article class="reader">${md(linkify(text))}</article></div>`;
+async function askInit(id) {
+  let session = id || null;
+  const chat = $("chat"), q = $("q"), status = $("status"), hint = status.textContent;
+  api("/api/sessions").then(list => { $("chats").innerHTML = list.length ? `<div class="rows">${list.slice(0, 12).map(s => `<a class="row" href="#/ask/${s.id}"><span class="t">${esc(s.title)}</span><span class="d">${esc(s.id.slice(0, 10))}</span></a>`).join("")}</div>` : `<p class="muted">None yet.</p>` }).catch(() => {});
+  if (session) chat.innerHTML = (await api("/api/sessions/" + session).catch(() => [])).map(t => bubble(t.role, t.content)).join("");
+  q.focus();
+  q.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("composer").requestSubmit() } };
+  $("composer").onsubmit = async e => {
+    e.preventDefault();
+    const text = q.value.trim();
+    if (!text || q.disabled) return;
+    q.value = ""; q.disabled = true; status.textContent = "Thinking…";
+    chat.insertAdjacentHTML("beforeend", bubble("user", text));
+    try {
+      const r = await api("/api/ask", { session, question: text });
+      if (!session) { session = r.session; history.replaceState(null, "", "#/ask/" + session) }
+      chat.insertAdjacentHTML("beforeend", bubble("assistant", r.answer));
+    } catch (err) {
+      chat.insertAdjacentHTML("beforeend", `<p class="muted">${esc(err.message)}</p>`);
+      q.value = text;
+    }
+    status.textContent = hint; q.disabled = false; q.focus();
+    chat.lastElementChild.scrollIntoView({ block: "nearest" });
+  };
+}
+
+// Router: #/, #/n/<id>, #/f/<folder>, #/all, #/graph, #/insight, #/ask/<chat>
 let ACTIVE = "home", FOCUS = null, mini = null;
 function route() {
   const [, kind = "", ...rest] = location.hash.slice(1).split("/");
@@ -297,6 +360,7 @@ function route() {
   for (const a of $("nav").querySelectorAll("a")) a.toggleAttribute("aria-current", a.dataset.p === active);
   scrollTo(0, 0);
   if (active === "graph") graph($("big"), { labels: true });
+  if (active === "ask") askInit(arg);
   mini?.draw();
 }
 addEventListener("hashchange", route);

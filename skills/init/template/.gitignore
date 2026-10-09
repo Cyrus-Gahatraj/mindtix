@@ -4,4 +4,5 @@ raw/imports/*
 !raw/imports/README.md
 exports/
 private/
+.env
 .DS_Store

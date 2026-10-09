@@ -7,6 +7,7 @@
     python3 export.py site   <brain> <out.html> [folder ...|all]
                                                  a one-file website of the notes; default
                                                  knowledge and projects, "all" for every folder
+                                                 (serve.py runs the same site live, with Ask)
 
 All leave out private/, logs/, raw/imports/, .git/ and the template examples, and the
 input brain is never changed. Standard library only.
@@ -190,8 +191,8 @@ def about(brain):
     return out
 
 
-def export_site(brain, out, folders=SITE_DEFAULT):
-    """One self-contained HTML file: home, notes with backlinks, folders, index, graph, search, insight."""
+def build_site(brain, folders=SITE_DEFAULT, live=False):
+    """The site as one HTML string, and its note count. live=True turns on the Ask page (serve.py)."""
     every = folders == "all"
     shown = lambda rel: "/" in rel and (every or rel.split("/")[0] in folders)
     files = [(rel, path) for rel, path in walk(brain) if shown(rel)]
@@ -236,7 +237,7 @@ def export_site(brain, out, folders=SITE_DEFAULT):
         edges += [[note_id, t] for t in sorted(links) if t != note_id]
 
     me = about(brain)
-    data = {"name": me.get("Name", ""), "notes": notes, "links": edges, "exported": date.today().isoformat()}
+    data = {"name": me.get("Name", ""), "notes": notes, "links": edges, "exported": date.today().isoformat(), "live": live}
     if every or "self" in folders:
         data["about"] = {k: v for k, v in me.items() if k != "Name"}
         photo = next((os.path.join(brain, "self", f) for f in ("photo.png", "photo.jpg")
@@ -250,10 +251,15 @@ def export_site(brain, out, folders=SITE_DEFAULT):
         data["knowledge"] = knowledge_levels(brain)
     # Inside <script>, "</script" or "<!--" in a note would break the page; \u003c is still "<" to JSON
     payload = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
-    html = open(SITE_HTML, encoding="utf-8").read().replace("__MINDTIX_DATA__", payload)
+    return open(SITE_HTML, encoding="utf-8").read().replace("__MINDTIX_DATA__", payload), len(notes)
+
+
+def export_site(brain, out, folders=SITE_DEFAULT):
+    """One self-contained HTML file: home, notes with backlinks, folders, index, graph, search, insight."""
+    html, n = build_site(brain, folders)
     with open(out, "w", encoding="utf-8") as f:
         f.write(html)
-    return len(notes)
+    return n
 
 
 def main(argv):
