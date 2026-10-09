@@ -238,6 +238,8 @@ def build_site(brain, folders=SITE_DEFAULT, live=False):
 
     me = about(brain)
     data = {"name": me.get("Name", ""), "notes": notes, "links": edges, "exported": date.today().isoformat(), "live": live}
+    if every or "knowledge" in folders:
+        data["cards"] = [{"box": c["box"], "due": c["due"]} for c in cards(brain)]
     if every or "self" in folders:
         data["about"] = {k: v for k, v in me.items() if k != "Name"}
         photo = next((os.path.join(brain, "self", f) for f in ("photo.png", "photo.jpg")

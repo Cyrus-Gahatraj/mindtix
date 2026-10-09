@@ -58,6 +58,7 @@ with tempfile.TemporaryDirectory() as tmp:
     page = open(os.path.join(out, "s.html"), encoding="utf-8").read()
     data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
     assert [n["id"] for n in data["notes"]] == ["knowledge/sql-joins"] and "scores" not in data
+    assert {"box": 1, "due": "2026-10-10"} in data["cards"], "recall boxes feed the Stats charts"
     assert "[[" not in data["notes"][0]["md"], "a link to a note that isn't exported becomes plain text"
     assert data["name"] == "Ada Lovelace", "labels and markdown are stripped from About me"
     run("site", brain, os.path.join(out, "a.html"), "all")

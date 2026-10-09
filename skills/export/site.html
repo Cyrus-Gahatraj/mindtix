@@ -105,6 +105,21 @@ h2.label { margin: 0 0 14px; }
 .split { position: relative; height: 4px; background: var(--line); border-radius: 2px; }
 .split::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--faint); }
 svg text { font: 11px var(--mono); fill: var(--muted); }
+.donut circle:hover { stroke: var(--accent); opacity: 1; }
+.colchart { display: flex; gap: 4px; height: 160px; font: 11px var(--mono); color: var(--muted); }
+.col { flex: 1; min-width: 0; display: grid; grid-template-rows: 1fr auto; text-align: center; }
+.col .top { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; border-bottom: 1px solid var(--line); }
+.col .b { width: min(60%, 48px); background: var(--fg); opacity: .85; border-radius: 2px 2px 0 0; }
+.col:hover .b { background: var(--accent); opacity: 1; }
+.col .l { padding-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.colchart.dense .l { overflow: visible; text-overflow: clip; }
+.colchart.dense .col:nth-child(odd) .l { visibility: hidden; }
+.donut { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+.donut svg { width: 150px; flex: none; }
+.legend { display: grid; gap: 7px; font: 13px var(--mono); flex: 1; min-width: 10rem; }
+.legend a { display: grid; grid-template-columns: 12px 1fr auto; gap: 10px; align-items: center; text-decoration: none; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; background: var(--fg); }
+.legend span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
 
 #palette { position: fixed; inset: 0; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(6px); display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; z-index: 50; }
 #palette.open { display: flex; }
@@ -196,13 +211,47 @@ const stats = list => `<div class="stats" style="grid-template-columns:repeat(${
 const OCEAN = ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"];
 const title = s => s[0].toUpperCase() + s.slice(1);
 const inFolder = f => notes.filter(n => n.folder === f);
+const sum = (list, k) => list.reduce((s, n) => s + n[k], 0);
+const shade = i => Math.max(.18, 1 - i * .16);
+const deg = {};
+for (const [a, b] of D.links) { deg[a] = (deg[a] || 0) + 1; deg[b] = (deg[b] || 0) + 1 }
+const noteBars = (list, val, text) => list.map(n => ({ label: n.title, value: val(n), text: text(n) }))
+  .sort((a, b) => b.value - a.value).slice(0, 8).map((b, _, all) => ({ ...b, max: all[0].value || 1 }));
+
+// Column chart: [{label, value}] as HTML bars (text stays readable at any width), for counts over time or per box
+function columns(list, what) {
+  const max = Math.max(1, ...list.map(c => c.value));
+  return `<div class="colchart${list.length > 8 ? " dense" : ""}" role="img" aria-label="${esc(what)}">` + list.map(c =>
+    `<div class="col" title="${esc(c.label)}: ${c.value} ${esc(what)}"><span class="top">${c.value ? `<span>${c.value}</span>` : ""}<span class="b" style="height:${c.value / max * 80}%"></span></span><span class="l">${esc(c.label)}</span></div>`
+  ).join("") + `</div>`;
+}
+// Notes touched per week over the last `weeks` weeks, oldest first (by file modified time)
+function activity(list, weeks = 12) {
+  const now = Date.now() / 1000, cols = Array.from({ length: weeks }, (_, i) => ({
+    label: new Date((now - (weeks - 1 - i) * 604800) * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short" }), value: 0 }));
+  for (const n of list) { const w = Math.floor((now - n.mod) / 604800); if (w >= 0 && w < weeks) cols[weeks - 1 - w].value++ }
+  return columns(cols, "notes touched");
+}
+// Donut: [{label, value, href}] as share of the total, with a legend
+function donut(list, unit) {
+  const total = list.reduce((s, c) => s + c.value, 0) || 1, C = 2 * Math.PI * 46;
+  let at = 0;
+  const rings = list.map((c, i) => {
+    const len = c.value / total * C, ring = `<circle cx="60" cy="60" r="46" fill="none" stroke="var(--fg)" stroke-width="16" opacity="${shade(i)}" stroke-dasharray="${len} ${C}" stroke-dashoffset="${-at}" transform="rotate(-90 60 60)"><title>${esc(c.label)}: ${c.value} ${unit}</title></circle>`;
+    at += len;
+    return ring;
+  }).join("");
+  return `<div class="donut"><svg viewBox="0 0 120 120" role="img" aria-label="${esc(unit)} by folder">${rings}<text x="60" y="58" text-anchor="middle" style="font-size:18px;fill:var(--fg)">${total}</text><text x="60" y="74" text-anchor="middle">${esc(unit)}</text></svg>` +
+    `<div class="legend">${list.map((c, i) => `<a href="${c.href || "#"}"><i style="opacity:${shade(i)}"></i><span>${esc(c.label)}</span><span>${c.value} · ${Math.round(c.value / total * 100)}%</span></a>`).join("")}</div></div>`;
+}
+const byFolder = k => folders.map(f => ({ label: f, value: k === "notes" ? inFolder(f).length : sum(inFolder(f), k), href: "#/f/" + encodeURIComponent(f) })).sort((a, b) => b.value - a.value);
 
 // Rail
 $("brand").innerHTML = (D.photo ? `<img src="${D.photo}" alt="">` : `<i>${esc(owner[0])}</i>`) + `<span>${esc(owner)}</span>`;
 $("count").textContent = `${notes.length} notes · ${D.links.length} links`;
 $("nav").innerHTML = `<a href="#/" data-p="home">Home</a>` + (D.live ? `<a href="#/ask" data-p="ask">Ask</a>` : "") + (hasInsight ? `<a href="#/insight" data-p="insight">Insight</a>` : "") +
-  `<a href="#/graph" data-p="graph">Graph</a><div class="label">Library</div>` +
-  folders.filter(f => f !== "insight").map(f => `<a class="lib" href="#/f/${encodeURIComponent(f)}" data-p="${esc(f)}">${esc(f)}<small>${inFolder(f).length}</small></a>`).join("") +
+  `<a href="#/stats" data-p="stats">Stats</a><a href="#/graph" data-p="graph">Graph</a><div class="label">Library</div>` +
+  folders.map(f => `<a class="lib" href="#/f/${encodeURIComponent(f)}" data-p="${esc(f)}">${esc(f)}<small>${inFolder(f).length}</small></a>`).join("") +
   `<a class="lib" href="#/all" data-p="all">index</a>`;
 
 // Pages: each returns [page name for the rail, title, html, layout]
@@ -229,7 +278,11 @@ const pages = {
       ${ocean.length || know.length ? `<div class="cols">
         ${ocean.length ? `<section><h2 class="label">Temperament · <a href="#/insight">insight →</a></h2>${bars(ocean)}</section>` : ""}
         ${know.length ? `<section><h2 class="label">Strongest topics</h2>${bars(know)}</section>` : ""}
-      </div>` : ""}`, "wide"];
+      </div>` : ""}
+      <div class="cols">
+        <section><h2 class="label">Notes by folder · <a href="#/stats">stats →</a></h2>${donut(byFolder("notes"), "notes")}</section>
+        <section><h2 class="label">Activity · last 12 weeks</h2>${activity(notes)}</section>
+      </div>`, "wide"];
   },
   n(id) {
     const n = byId[id];
@@ -247,7 +300,9 @@ const pages = {
     if (!list.length) return null;
     const groups = {};
     for (const n of list) (groups[n.id.split("/").slice(1, -1).join("/")] ||= []).push(n);
-    return [name, title(name), `<h1>${esc(title(name))}</h1><div class="label" style="margin-bottom:36px">${list.length} notes</div>` +
+    return [name, title(name), `<h1>${esc(title(name))}</h1><div class="label" style="margin-bottom:36px">${list.length} notes · ${sum(list, "words").toLocaleString()} words</div>` +
+      `<div class="cols"><section><h2 class="label">Activity · last 12 weeks</h2>${activity(list)}</section>` +
+      `<section><h2 class="label">Longest notes</h2>${bars(noteBars(list, n => n.words, n => n.words.toLocaleString()))}</section></div>` +
       Object.entries(groups).map(([g, ns]) => `<section style="margin-bottom:36px">${g ? `<h2 class="label">${esc(g)}</h2>` : ""}${rows(ns)}</section>`).join("")];
   },
   all() {
@@ -261,6 +316,24 @@ const pages = {
       <form class="composer" id="composer"><textarea id="q" placeholder="Ask anything about what you know…" aria-label="Your question"></textarea>
         <div class="row2"><span class="label" id="status">↵ send · shift ↵ new line</span><span><a class="btn ghost" href="#/ask">New chat</a> <button class="btn" type="submit">Ask</button></span></div></form>
       <section style="margin-top:48px"><h2 class="label">Earlier chats</h2><div id="chats"></div></section>`];
+  },
+  stats() {
+    const words = sum(notes, "words"), cards = D.cards || [], today = new Date().toISOString().slice(0, 10);
+    const st = [[notes.length, "notes"], [words.toLocaleString(), "words"], [D.links.length, "links"], [folders.length, "folders"]];
+    if (cards.length) st.push([cards.length, "recall cards"], [cards.filter(c => c.due <= today).length, "due today"]);
+    const linked = noteBars(notes.filter(n => deg[n.id]), n => deg[n.id], n => String(deg[n.id]));
+    const boxes = [0, 1, 2, 3, 4, 5].map(b => ({ label: "box " + b, value: cards.filter(c => c.box === b).length }));
+    return ["stats", "Stats", `<h1>Stats</h1><div class="label">Counted from the notes in this export · exported ${esc(D.exported)}</div>
+      <div style="margin-top:28px">${stats(st)}</div>
+      <div class="cols">
+        <section><h2 class="label">Notes by folder</h2>${donut(byFolder("notes"), "notes")}</section>
+        <section><h2 class="label">Words by folder</h2>${bars(byFolder("words").map((b, _, all) => ({ ...b, max: all[0].value || 1, text: b.value.toLocaleString() })))}</section>
+        <section class="wide-row"><h2 class="label">Activity · notes touched per week</h2>${activity(notes, 16)}</section>
+        ${linked.length ? `<section><h2 class="label">Most connected</h2>${bars(linked)}</section>` : ""}
+        <section><h2 class="label">Longest notes</h2>${bars(noteBars(notes, n => n.words, n => n.words.toLocaleString()))}</section>
+        ${cards.length ? `<section><h2 class="label">Recall cards by box · 0 new … 5 known</h2>${columns(boxes, "cards")}</section>` : ""}
+        ${D.knowledge?.length ? `<section class="wide-row"><h2 class="label">Knowledge · 0 never touched … 5 expert</h2>${bars(D.knowledge)}</section>` : ""}
+      </div>`, "wide"];
   },
   graph() {
     return ["graph", "Graph", `<div style="position:relative;height:100%"><div class="label" style="position:absolute;top:24px;left:32px">Graph · ${notes.length} notes · ${D.links.length} links · hover to trace, click to open</div><canvas id="big" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div>`, "full"];
@@ -346,7 +419,7 @@ async function askInit(id) {
   };
 }
 
-// Router: #/, #/n/<id>, #/f/<folder>, #/all, #/graph, #/insight, #/ask/<chat>
+// Router: #/, #/n/<id>, #/f/<folder>, #/all, #/stats, #/graph, #/insight, #/ask/<chat>
 let ACTIVE = "home", FOCUS = null, mini = null;
 function route() {
   const [, kind = "", ...rest] = location.hash.slice(1).split("/");

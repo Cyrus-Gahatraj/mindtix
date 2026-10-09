@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **`export site` charts:** a Stats page (donut of notes by folder, words by folder, weekly
+  activity, most connected and longest notes, recall cards by box, knowledge levels); home gets
+  the folder donut and activity; each folder page gets its activity and longest notes. Every
+  exported folder, `insight` included, is listed under Library.
+
 ## 1.2.0
 
 - **`export site` asks which kind:** static (the one-file site), **live** (`serve.py`: the same

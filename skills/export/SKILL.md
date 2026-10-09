@@ -44,8 +44,10 @@ PY "<this skill's dir>/serve.py"  . [port] [folder ...|all]
   them the git history is the fuller backup (`git push` to a private repo).
 - **site:** first ask, in one message, which kind (unless they already said):
   1. **static**: one `index.html` that opens in any browser, no server: home, every note with
-     its backlinks, folder pages, an index, the link graph, ⌘K search, and the insight charts
-     from `insight/scores.json` and `insight/knowledge.md`. Light and dark. Good to host.
+     its backlinks, folder pages with their own charts, an index, the link graph, ⌘K search, a
+     Stats page (notes and words by folder, weekly activity, most connected and longest notes,
+     recall boxes) and the insight charts from `insight/scores.json` and `insight/knowledge.md`.
+     Every exported folder is listed under Library. Light and dark. Good to host.
   2. **live**: the same site served on `http://127.0.0.1:4321`, rebuilt from the notes on
      every page load, plus an **Ask** page: a chatbot that answers from the brain (the notes
      most related to the question, `MIND.md` and `INDEX.md`), cites notes as links, and
