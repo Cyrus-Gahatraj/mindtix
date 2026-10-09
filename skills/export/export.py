@@ -178,7 +178,7 @@ def about(brain):
     m = re.search(r"(?m)^## About[^\n]*\n(.*?)(?=^## |\Z)", text, re.S)
     section = m.group(1) if m else ""
     pairs = (l[2:].split(":", 1) for l in section.splitlines() if l.startswith("- ") and ":" in l and "`" not in l[:4])
-    out = {k.strip(): v.strip() for k, v in pairs if v.strip() and not v.strip().startswith("<!--")}
+    out = {k.strip(): plain(v) for k, v in pairs if v.strip() and not v.strip().startswith("<!--")}
     if not out:
         paras = [p.strip() for p in section.split("\n\n") if p.strip() and not p.lstrip().startswith(("-", "<!--", "Labels:"))]
         if paras:

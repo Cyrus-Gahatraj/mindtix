@@ -28,6 +28,10 @@ with tempfile.TemporaryDirectory() as tmp:
     open(os.path.join(brain, "private", "id.md"), "w", encoding="utf-8").write("secret id")
     open(os.path.join(brain, "raw", "imports", "chat.txt"), "w", encoding="utf-8").write("someone else's message")
 
+    mind = os.path.join(brain, "MIND.md")
+    text = open(mind, encoding="utf-8").read().replace("- Name:", "- Name: Ada *Lovelace* [stated]", 1)
+    open(mind, "w", encoding="utf-8").write(text)
+
     out = os.path.join(brain, "exports")
     assert "2 cards" in run("anki", brain, os.path.join(out, "c.txt"))
     deck = open(os.path.join(out, "c.txt"), encoding="utf-8").read()
@@ -55,6 +59,7 @@ with tempfile.TemporaryDirectory() as tmp:
     data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
     assert [n["id"] for n in data["notes"]] == ["knowledge/sql-joins"] and "scores" not in data
     assert "[[" not in data["notes"][0]["md"], "a link to a note that isn't exported becomes plain text"
+    assert data["name"] == "Ada Lovelace", "labels and markdown are stripped from About me"
     run("site", brain, os.path.join(out, "a.html"), "all")
     page = open(os.path.join(out, "a.html"), encoding="utf-8").read()
     data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
