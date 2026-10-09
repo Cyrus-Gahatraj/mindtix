@@ -6,6 +6,10 @@
   activity, most connected and longest notes, recall cards by box, knowledge levels); home gets
   the folder donut and activity; each folder page gets its activity and longest notes. Every
   exported folder, `insight` included, is listed under Library.
+- **Score methods:** every result in `insight/scores.json` says how it was got: `asked` (the
+  test was taken here), `self` (the user wrote or stated it) or `inferred` (the AI's estimate).
+  `reflect` sets it and labels old results; `tidy` reports any without one; the site shows it
+  as a tag on each Insight chart.
 
 ## 1.2.0
 

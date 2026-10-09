@@ -31,7 +31,8 @@ Never touches `raw/` (the user's), `logs/`, `private/` or `insight/` (only `/min
 3. **Also check by reading:** `INDEX.md` lines that point at missing files; `MIND.md` over
    ~80 lines (move a section into its own note); `[inferred]` facts in `self/` older than a
    month, listed as questions for `/mindtix:know-me`; `learning/<topic>/map.md` untouched for a
-   month (stalled topic).
+   month (stalled topic); a result in `insight/scores.json` with no `method` (`asked`, `self`
+   or `inferred`), fixed by `/mindtix:reflect`, not here.
 4. **Report** one line per problem, grouped by check, with the fix you'd make. If all clean,
    say so in one line. When run from `/mindtix:review`, stop here.
 5. **Fix only what they approve.** A secret is removed at once, with a note that it's still in

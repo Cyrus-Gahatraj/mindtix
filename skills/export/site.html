@@ -105,6 +105,7 @@ h2.label { margin: 0 0 14px; }
 .split { position: relative; height: 4px; background: var(--line); border-radius: 2px; }
 .split::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--faint); }
 svg text { font: 11px var(--mono); fill: var(--muted); }
+.tag { border: 1px solid var(--line); border-radius: 4px; padding: 0 .4em; margin-left: 4px; color: var(--faint); cursor: help; }
 .donut circle:hover { stroke: var(--accent); opacity: 1; }
 .colchart { display: flex; gap: 4px; height: 160px; font: 11px var(--mono); color: var(--muted); }
 .col { flex: 1; min-width: 0; display: grid; grid-template-rows: 1fr auto; text-align: center; }
@@ -208,6 +209,7 @@ const rows = (list, showFolder) => `<div class="rows">${list.map(n => `<a class=
 const bars = list => `<div class="bars">${list.map(b => `<div class="bar" title="${esc(b.label)}: ${esc(b.text)}"><span class="l2">${esc(b.label)}</span><span class="track"><span class="fill" style="width:${b.value / b.max * 100}%"></span></span><span class="val">${esc(b.text)}</span></div>`).join("")}</div>`;
 const testBars = (t, order) => order.filter(k => t?.scores?.[k] != null).map(k => ({ label: k, value: t.scores[k], max: 100, text: String(t.scores[k]) }));
 const stats = list => `<div class="stats" style="grid-template-columns:repeat(${list.length},1fr)">${list.map(([v, l, x]) => `<div><span class="v">${esc(v)}</span><span class="label">${esc(l)}</span>${x ? `<span class="muted" style="font-size:14px">${esc(x)}</span>` : ""}</div>`).join("")}</div>`;
+const HOW = { asked: "Asked here: you answered the test items", self: "Self: you wrote or stated it", inferred: "Inferred: estimated by the AI from your notes" };
 const OCEAN = ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"];
 const title = s => s[0].toUpperCase() + s.slice(1);
 const inFolder = f => notes.filter(n => n.folder === f);
@@ -342,10 +344,12 @@ const pages = {
     if (!hasInsight) return null;
     const st = [];
     if (S.iq?.high) st.push(["IQ, estimated", `${S.iq.low}–${S.iq.high}`, (S.iq.confidence || "?") + " confidence"]);
-    if (S.mbti?.type) st.push(["Type", S.mbti.type, "self-reported"]);
+    if (S.mbti?.type) st.push(["Type", S.mbti.type, S.mbti.method || "self-reported"]);
     if (S.grit?.overall) st.push(["Grit", S.grit.overall.toFixed(1), "out of 5"]);
     if (S.riasec?.code) st.push(["Holland", S.riasec.code, "career interests"]);
-    const chart = (name, body, src, wide) => body ? `<section class="${wide ? "wide-row" : ""}"><h2 class="label">${name}</h2>${body}${src ? `<div class="src">${esc(src)}</div>` : ""}</section>` : "";
+    // method: how a result was got; asked (the AI asked the test items), self (the user wrote or stated it), inferred (estimated from notes)
+    const tag = b => b?.method ? `<span class="tag" title="${esc(HOW[b.method] || b.method)}">${esc(b.method)}</span>` : "";
+    const chart = (name, body, b, wide) => body ? `<section class="${wide ? "wide-row" : ""}"><h2 class="label">${name} ${tag(b)}</h2>${body}${b?.source ? `<div class="src">${esc(b.source)}</div>` : ""}</section>` : "";
     const ocean = testBars(S.ocean, OCEAN), grit = testBars(S.grit, ["Consistency of interest", "Perseverance of effort"]);
     const riasec = testBars(S.riasec, ["Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"]);
     const axes = (S.mbti?.axes || []).map(a => `<div class="axis" title="${esc(a.left)} ${a.left_pct}% · ${esc(a.right)} ${100 - a.left_pct}%"><span>${esc(a.left)} ${a.left_pct}%</span><span class="split"><span class="fill" style="width:${a.left_pct}%"></span></span><span class="r">${100 - a.left_pct}% ${esc(a.right)}</span></div>`).join("");
@@ -353,12 +357,12 @@ const pages = {
     return ["insight", "Insight", `<h1>Insight</h1><div class="label">Written by the AI from everything in the brain${S.updated ? " · updated " + esc(S.updated) : ""}</div>
       <div style="margin-top:28px">${st.length ? stats(st.map(([l, v, x]) => [v, l, x])) : ""}</div>
       <div class="cols">
-        ${chart("IQ estimate", S.iq?.high ? bell(S.iq.low, S.iq.high) : "", S.iq?.source, true)}
-        ${chart("Big Five", ocean.length && bars(ocean), S.ocean?.source)}
-        ${chart("MBTI · " + esc(S.mbti?.type || ""), axes && `<div class="bars">${axes}</div>`, S.mbti?.source)}
-        ${chart("Grit", grit.length && bars(grit), S.grit?.source)}
-        ${chart("Career interests", riasec.length && bars(riasec), S.riasec?.source)}
-        ${chart("Knowledge · 0 never touched … 5 expert", D.knowledge?.length && bars(D.knowledge), "", true)}
+        ${chart("IQ estimate", S.iq?.high ? bell(S.iq.low, S.iq.high) : "", { method: "inferred", ...S.iq }, true)}
+        ${chart("Big Five", ocean.length && bars(ocean), S.ocean)}
+        ${chart("MBTI · " + esc(S.mbti?.type || ""), axes && `<div class="bars">${axes}</div>`, S.mbti)}
+        ${chart("Grit", grit.length && bars(grit), S.grit)}
+        ${chart("Career interests", riasec.length && bars(riasec), S.riasec)}
+        ${chart("Knowledge · 0 never touched … 5 expert", D.knowledge?.length && bars(D.knowledge), { method: "inferred" }, true)}
       </div>
       ${analysis.length ? `<section><h2 class="label">Read the analysis</h2>${rows(analysis)}</section>` : ""}`, "wide"];
   },
