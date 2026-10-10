@@ -276,7 +276,7 @@ async function callLLM(system, messages, emit, signal) {
 function context(question, history) {
   const F = folders();
   const notes = walk().filter(([rel]) => rel.endsWith(".md") && shown(rel, F) && !rel.endsWith("README.md"))
-    .map(([rel, abs]) => [rel, stripFrontmatter(fs.readFileSync(abs, "utf8"))]);
+    .map(([rel, abs]) => [rel, stripFrontmatter(fs.readFileSync(abs, "utf8").replace(/\r\n/g, "\n"))]);
   const asked = question + " " + history.slice(-4).filter(t => t.role === "user").map(t => t.content).join(" ");
   const words = [...new Set(asked.toLowerCase().match(/[\p{L}\p{N}_]{3,}/gu) || [])];
   const count = (s, w) => s.split(w).length - 1;

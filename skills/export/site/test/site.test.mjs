@@ -210,3 +210,20 @@ test("profile picture: saved in self/, replaces the old one, checked and removab
   B.removePhoto();
   assert.equal(B.photo(), "");
 });
+
+test("windows line ends (CRLF): parsed like LF, and kept when the site writes", () => {
+  const crlf = s => s.replace(/\r?\n/g, "\r\n");
+  w("INDEX.md", crlf(r("INDEX.md")));
+  w("knowledge/crlf.md", crlf("---\ntags: x\n---\n# CRLF note\nA summary line.\n\n## Recall\n- [b0 · due 2020-01-01] Does it parse?\n\n## Log\n- 2020-01-01 recall: 1/1\n"));
+  const n = B.load().byId["knowledge/crlf"];
+  assert.equal(n.title, "CRLF note");
+  assert.equal(n.excerpt, "A summary line.", "frontmatter and the heading are skipped");
+  B.grade("crlf", "Does it parse?", true);
+  B.saveNote("knowledge/crlf-two", "# Two\n\nNew.", null);
+  for (const f of ["knowledge/crlf.md", "INDEX.md"]) assert.ok(!/(^|[^\r])\n/.test(r(f)), f + " keeps CRLF everywhere");
+  assert.match(r("knowledge/crlf.md"), new RegExp(`\\[b1 · due ${B.today(3)}\\] Does it parse\\?\\r\\n`));
+  assert.match(r("knowledge/crlf.md"), new RegExp(`- ${B.today()} recall: 1/1\\r\\n`));
+  const saved = B.readNote("knowledge/crlf");
+  B.saveNote("knowledge/crlf", saved.src + "\nMore.", saved.mod);
+  assert.ok(!/(^|[^\r])\n/.test(r("knowledge/crlf.md")), "an edit keeps the note's CRLF");
+});

@@ -36,7 +36,9 @@ const INDEX_SECTIONS = { self: "Who I am", knowledge: "Knowledge", learning: "Le
 export const isBrain = () => fs.existsSync(path.join(BRAIN, "MIND.md"));
 export const today = (plus = 0) => new Date(Date.now() + plus * 864e5).toLocaleDateString("en-CA"); // local YYYY-MM-DD
 export const noteUrl = id => "/n/" + id.split("/").map(encodeURIComponent).join("/");
-const read = p => { try { return fs.readFileSync(p, "utf8") } catch { return null } };
+// Notes are parsed with \n line ends; a file written back keeps its own (\r\n on Windows checkouts)
+const read = p => { try { return fs.readFileSync(p, "utf8").replace(/\r\n/g, "\n") } catch { return null } };
+const eolOf = p => { try { return fs.readFileSync(p, "utf8").includes("\r\n") ? "\r\n" : "\n" } catch { return "\n" } };
 const top = rel => rel.split("/")[0];
 export const shown = (rel, F = folders()) => rel.includes("/") && (F === "all" || F.includes(top(rel)));
 const pad = n => String(n).padStart(2, "0");
@@ -228,7 +230,8 @@ export function saveNote(id, md, mod) {
   if (mod != null && (!exists || Math.abs(fs.statSync(note.abs).mtimeMs - mod) > 1))
     throw new WriteError("This note changed on disk since you opened it (maybe Claude edited it). Copy your text, reload, and merge.", 409);
   fs.mkdirSync(path.dirname(note.abs), { recursive: true });
-  fs.writeFileSync(note.abs, md.endsWith("\n") ? md : md + "\n");
+  const eol = exists ? eolOf(note.abs) : "\n";
+  fs.writeFileSync(note.abs, (md.endsWith("\n") ? md : md + "\n").replace(/\r?\n/g, eol));
   if (!exists) addToIndex(note.id, md);
   return { id: note.id, mod: fs.statSync(note.abs).mtimeMs };
 }
@@ -245,7 +248,7 @@ function addToIndex(id, md) {
   const { title, excerpt } = describe(id, stripFrontmatter(md));
   const hook = (excerpt || title).replace(/…$/, "");
   lines.splice(end, 0, `- [[${id}]]: ${hook.length > 80 ? hook.slice(0, 80).trim() + "…" : hook}`);
-  fs.writeFileSync(file, lines.join("\n"));
+  fs.writeFileSync(file, lines.join(eolOf(file)));
 }
 
 // ---------- Profile picture: self/photo.<png|jpg|webp> ----------
@@ -317,12 +320,13 @@ export function grade(topic, question, right) {
   box = right ? Math.min(box + 1, 5) : 0;
   lines[at] = `- [b${box} · due ${today(INTERVALS[right ? box : 0])}] ${question}`;
   log(lines, right, question);
-  fs.writeFileSync(abs, lines.join("\n"));
+  fs.writeFileSync(abs, lines.join(eolOf(abs)));
   if (!right) {
     const file = path.join(BRAIN, "learning", "mistakes.md");
     let m = read(file) ?? "# Mistakes\n\n| Date | Topic | Mistake | Guessed root cause |\n|---|---|---|---|\n";
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, m.replace(/\n*$/, "\n") + `| ${today()} | ${topic} | missed: ${question.replaceAll("|", "/")} | |\n`);
+    const eol = eolOf(file);
+    fs.writeFileSync(file, (m.replace(/\n*$/, "\n") + `| ${today()} | ${topic} | missed: ${question.replaceAll("|", "/")} | |\n`).replaceAll("\n", eol));
   }
   return { box, due: today(INTERVALS[right ? box : 0]) };
 }
