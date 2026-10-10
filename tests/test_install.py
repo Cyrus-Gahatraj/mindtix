@@ -14,9 +14,10 @@ with tempfile.TemporaryDirectory() as tmp:
     skill = os.path.join(dest, "mindtix")
     text = open(os.path.join(skill, "SKILL.md"), encoding="utf-8").read()
     assert "\nname: mindtix\n" in text and "argument-hint" not in text
-    assert sorted(os.listdir(os.path.join(skill, "workflows"))) == sorted(n + ".md" for n in install.OLD)
-    for n in install.OLD:
-        assert n in text, f"SKILL.md lists the {n} workflow"
+    workflows = sorted(os.listdir(os.path.join(install.SKILL, "workflows")))
+    assert sorted(os.listdir(os.path.join(skill, "workflows"))) == workflows
+    for n in workflows:
+        assert n[:-3] in text, f"SKILL.md lists the {n[:-3]} workflow"
     assert os.path.isfile(os.path.join(skill, "to_text.py")) and os.path.isfile(os.path.join(skill, "export.py"))
     assert os.path.isfile(os.path.join(skill, "template", "AGENTS.md"))
     imp = open(os.path.join(skill, "workflows", "import.md"), encoding="utf-8").read()
