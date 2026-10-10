@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0
+
+- **One skill.** Mindtix is now a single `mindtix` skill instead of thirteen: `/mindtix today`,
+  `/mindtix learn sql`, or just talk. The workflows are files in `skills/mindtix/workflows/`,
+  next to the scripts, the template and the site, so neither Claude Code nor skills.sh lists
+  them as separate commands (and `init` and `review` no longer clash with built-ins).
+- `install.py` installs that one skill and removes the old `mindtix-<name>` ones.
+- The site sends `/mindtix <workflow>` to Claude Code.
+
 ## 1.3.0
 
 - **The site, redesigned in "source mode":** it looks like a markdown file being written.

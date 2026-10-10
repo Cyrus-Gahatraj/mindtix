@@ -26,7 +26,7 @@ yourself holds up. So the AI's main job is to make you produce, not to explain m
 | Sparring partner | It's a real-world skill | Timed role-play (interviews, sales calls, live coding) with adjustable difficulty. |
 | Clerk | Notes are messy | Turns your notes into clean pages and cards. Adds nothing you didn't write. |
 
-## Rules the skills follow
+## Rules the workflows follow
 
 1. **Redo without help.** After any explanation, go back to the start of the task and do it
    alone. It takes about 10-15% more time and is where the learning happens.
@@ -44,4 +44,4 @@ yourself holds up. So the AI's main job is to make you produce, not to explain m
 
 Learning happens in the struggle. If the AI explains every hard part straight away, you get
 the feeling of understanding without the memory. Like turn-by-turn GPS, it can weaken the
-skill it replaces. So the skills ask before they tell, and make you try first.
+skill it replaces. So the workflows ask before they tell, and make you try first.

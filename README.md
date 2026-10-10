@@ -51,8 +51,8 @@ interview → map → try → explain only the stuck part → redo without help
 /plugin install mindtix@mindtix
 ```
 
-Then, in an empty folder (e.g. `~/mind`), run `/mindtix:init`. It copies the empty brain
-from [`skills/init/template/`](skills/init/template/) and asks you a few questions.
+Then, in an empty folder (e.g. `~/mind`), run `/mindtix init`. It copies the empty brain
+from [`skills/mindtix/template/`](skills/mindtix/template/) and asks you a few questions.
 
 **Codex, opencode, Gemini CLI, Cursor and other agents:**
 
@@ -70,32 +70,33 @@ that holds all the workflows (no hooks; the agent keeps those rules itself):
 npx skills add Cyrus-Gahatraj/mindtix
 ```
 
-## Skills
+## Workflows
 
-| Skill | What it does |
+| Command | What it does |
 |---|---|
-| `/mindtix:init [folder]` | Creates a new brain and runs a first short interview |
-| `/mindtix:import <path>` | Imports an export (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian, any folder or .zip) and files what it says about you |
-| `/mindtix:capture [text \| notes]` | Files anything you say or paste; `notes` processes new files in `raw/` |
-| `/mindtix:learn <topic>` | Interview + map a new topic, then build-first teaching with redo-without-help |
-| `/mindtix:learn quiz <topic> [socratic\|exam\|explain\|check]` | Makes you produce: questions, explain-back, or a check of your work |
-| `/mindtix:learn diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
-| `/mindtix:learn spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
-| `/mindtix:recall [topic]` | Spaced-repetition review of the cards that are due |
-| `/mindtix:today` | The daily 5-10 minutes: a few due cards, one learning step, one old question |
-| `/mindtix:know-me` | A short interview round that fills in `self/` |
-| `/mindtix:reflect [test]` | Rewrites `insight/`, or runs a personality test |
-| `/mindtix:connect-dots` | Finds how everything you know connects |
-| `/mindtix:export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or your brain as a local web app (Today, Notes, Ask that runs `/mindtix` commands, Write, Recall, Insight, Graph) |
-| `/mindtix:forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
-| `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
-| `/mindtix:review` | Weekly review: focus, learning progress, what to grow |
+| `/mindtix init [folder]` | Creates a new brain and runs a first short interview |
+| `/mindtix import <path>` | Imports an export (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian, any folder or .zip) and files what it says about you |
+| `/mindtix capture [text \| notes]` | Files anything you say or paste; `notes` processes new files in `raw/` |
+| `/mindtix learn <topic>` | Interview + map a new topic, then build-first teaching with redo-without-help |
+| `/mindtix learn quiz <topic> [socratic\|exam\|explain\|check]` | Makes you produce: questions, explain-back, or a check of your work |
+| `/mindtix learn diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
+| `/mindtix learn spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
+| `/mindtix recall [topic]` | Spaced-repetition review of the cards that are due |
+| `/mindtix today` | The daily 5-10 minutes: a few due cards, one learning step, one old question |
+| `/mindtix know-me` | A short interview round that fills in `self/` |
+| `/mindtix reflect [test]` | Rewrites `insight/`, or runs a personality test |
+| `/mindtix connect-dots` | Finds how everything you know connects |
+| `/mindtix export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or your brain as a local web app (Today, Notes, Ask that runs `/mindtix` commands, Write, Recall, Insight, Graph) |
+| `/mindtix forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
+| `/mindtix tidy` | Health check: broken links, index drift, secrets, overdue cards |
+| `/mindtix review` | Weekly review: focus, learning progress, what to grow |
 
-Each skill is one folder in [`skills/`](skills/). One helper agent,
+Mindtix is one skill, [`skills/mindtix/`](skills/mindtix/): `SKILL.md` picks the workflow, and
+each workflow is a file in [`workflows/`](skills/mindtix/workflows/). One helper agent,
 [`agents/reader.md`](agents/reader.md), reads big imports and large brains in parallel and
 reports back facts only, so your chat stays light. It can't edit anything.
 
-You can also just talk ("teach me SQL", "save this", "quiz me") and Claude picks the right skill.
+You can also just talk ("teach me SQL", "save this", "quiz me") and Claude picks the right workflow.
 
 **Hooks** ([`hooks/`](hooks/)) enforce the rules that matter most, only inside a folder
 that has `MIND.md`:
@@ -109,13 +110,13 @@ that has `MIND.md`:
 ## A first week
 
 ```
-/mindtix:init ~/mind                      # 5 questions, your brain exists
-/mindtix:import ~/Downloads/instagram.zip # who you are, people, timeline, interests
-/mindtix:capture notes                    # your notes in raw/notes/ become topic pages + cards
-/mindtix:learn sql                        # interview → map → build first → redo without help
-/mindtix:today                            # 5-10 minutes a day: due cards + one learning step
-/mindtix:reflect                          # the AI's read of you, with evidence
-/mindtix:review                           # once a week
+/mindtix init ~/mind                      # 5 questions, your brain exists
+/mindtix import ~/Downloads/instagram.zip # who you are, people, timeline, interests
+/mindtix capture notes                    # your notes in raw/notes/ become topic pages + cards
+/mindtix learn sql                        # interview → map → build first → redo without help
+/mindtix today                            # 5-10 minutes a day: due cards + one learning step
+/mindtix reflect                          # the AI's read of you, with evidence
+/mindtix review                           # once a week
 ```
 
 Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked graph.
@@ -127,7 +128,7 @@ Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked grap
   and `raw/imports/`, `logs/`, `exports/` and `private/` are gitignored.
 - What Claude reads is sent to Anthropic like any Claude Code session. Keep anything you
   never want sent in `private/` and don't ask the AI to open it.
-- Changed your mind about someone you imported? `/mindtix:forget <name>` removes them from
+- Changed your mind about someone you imported? `/mindtix forget <name>` removes them from
   every note, card and export, and tells you how to clear git history too.
 - If you push your brain to GitHub, make the repo **private**.
 

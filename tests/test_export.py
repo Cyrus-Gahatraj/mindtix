@@ -8,8 +8,8 @@ import tempfile
 import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SCRIPT = os.path.join(HERE, "..", "skills", "export", "export.py")
-TEMPLATE = os.path.join(HERE, "..", "skills", "init", "template")
+SCRIPT = os.path.join(HERE, "..", "skills", "mindtix", "export.py")
+TEMPLATE = os.path.join(HERE, "..", "skills", "mindtix", "template")
 
 
 def run(*args):

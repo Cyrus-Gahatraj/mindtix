@@ -5,7 +5,7 @@ import sys
 import tempfile
 import zipfile
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "skills", "import"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "skills", "mindtix"))
 from to_text import convert  # noqa: E402
 
 with tempfile.TemporaryDirectory() as tmp:
@@ -54,7 +54,7 @@ with tempfile.TemporaryDirectory() as tmp:
     with zipfile.ZipFile(z, "w") as zf:
         zf.write(os.path.join(src, "notes.md"), "notes.md")
     import subprocess
-    r = subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "..", "skills", "import", "to_text.py"), z, os.path.join(tmp, "zout")], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "..", "skills", "mindtix", "to_text.py"), z, os.path.join(tmp, "zout")], capture_output=True, text=True)
     assert r.returncode == 0 and os.path.exists(os.path.join(tmp, "zout/notes.md")), r.stderr
 
 print("import ok")

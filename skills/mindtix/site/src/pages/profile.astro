@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+import { about, load } from "../lib/brain.js";
+import { rows } from "../lib/ui.js";
+
+// You: your picture (self/photo.jpg), the "About me" in MIND.md, and your notes in self/
+const D = load(), me = about(), name = D.name || "You";
+const facts = Object.entries(me).filter(([k]) => k !== "Name" && k !== "Intro");
+const self = D.notes.filter(n => n.folder === "self").sort((a, b) => a.title.localeCompare(b.title));
+---
+<Base D={D} title="Profile" active="profile">
+  <p class="eyebrow">from MIND.md and self/</p>
+  <div class="profile" style="margin-bottom:28px">
+    <button type="button" class={"avatar-lg" + (D.photo ? "" : " empty")} id="avatar" aria-label={D.photo ? "Change your picture" : "Add your picture"}>
+      {D.photo ? <img src={`/photo?v=${D.photoV}`} alt=""> : <span aria-hidden="true">{name[0]}</span>}
+    </button>
+    <div style="display:grid;gap:10px">
+      <h1>{name}</h1>
+      <div class="row">
+        <button class="btn ghost sm" type="button" id="pick">{D.photo ? "change picture" : "add picture"}</button>
+        {D.photo && <button class="btn quiet sm" type="button" id="unpick">remove</button>}
+      </div>
+    </div>
+    <input type="file" id="photo-file" accept="image/png,image/jpeg,image/webp" hidden>
+  </div>
+  <p class="muted" style="font-size:13.5px;margin:0">Your picture is saved in your brain as self/photo.jpg, cropped to a square here on your machine. PNG, JPEG or WebP; you can also drop one onto the circle.</p>
+
+  {me.Intro && <p class="lede">{me.Intro}</p>}
+
+  <section class="section">
+    <div class="head"><h2>About me</h2><a href={"/ask?run=" + encodeURIComponent("/mindtix know-me")}>let the brain interview you</a></div>
+    {facts.length
+      ? <dl class="facts">{facts.map(([k, v]) => <><dt>{k.toLowerCase()}</dt><dd>{v}</dd></>)}</dl>
+      : <p class="empty-note">nothing yet: run /mindtix know-me</p>}
+  </section>
+
+  {self.length > 0 && <section class="section">
+    <div class="head"><h2>Notes about you</h2><a href="/notes?f=self">#self</a></div>
+    <Fragment set:html={rows(self)} />
+  </section>}
+</Base>
+
+<script>
+import { $, api, toast } from "../scripts/util.js";
+
+// The picture is square-cropped and shrunk to 512px in the browser, then saved to self/photo.jpg
+const file = $("photo-file"), avatar = $("avatar");
+async function upload(f) {
+  if (!f) return;
+  if (!/^image\/(png|jpeg|webp)$/.test(f.type)) return toast("Pick a PNG, JPEG or WebP picture.", true);
+  try {
+    const img = await createImageBitmap(f), side = Math.min(img.width, img.height), size = Math.min(512, side);
+    const c = Object.assign(document.createElement("canvas"), { width: size, height: size });
+    c.getContext("2d").drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+    await api("/api/photo", { data: c.toDataURL("image/jpeg", .9) });
+    location.reload();
+  } catch (err) { toast(err.message || "Couldn't read that picture.", true) }
+}
+avatar.onclick = $("pick").onclick = () => file.click();
+file.onchange = () => upload(file.files[0]);
+avatar.ondragover = e => { e.preventDefault(); avatar.classList.add("drop") };
+avatar.ondragleave = () => avatar.classList.remove("drop");
+avatar.ondrop = e => { e.preventDefault(); avatar.classList.remove("drop"); upload(e.dataTransfer.files[0]) };
+$("unpick")?.addEventListener("click", async () => {
+  if (!confirm("Remove your picture? self/photo.jpg is deleted from the brain.")) return;
+  try { await api("/api/photo", {}, "DELETE"); location.reload() } catch (err) { toast(err.message, true) }
+});
+</script>

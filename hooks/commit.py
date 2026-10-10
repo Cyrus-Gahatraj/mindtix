@@ -51,7 +51,7 @@ def autocommit(root):
     gone = list(filter(None, git(root, "diff", "--cached", "--name-only", "--diff-filter=D", "-z").stdout.split("\0")))
     if not kept and not gone:
         return None
-    # Deleted files are only counted, never named: /mindtix:forget may have removed a page named after someone
+    # Deleted files are only counted, never named: /mindtix forget may have removed a page named after someone
     msg = "mindtix: " + ", ".join(kept[:3]) + (f" (+{len(kept) - 3} more)" if len(kept) > 3 else "")
     if gone:
         msg += f"{', ' if kept else ''}deleted {len(gone)} file{'s' if len(gone) != 1 else ''}"

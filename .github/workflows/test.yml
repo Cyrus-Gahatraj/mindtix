@@ -19,12 +19,12 @@ jobs:
           node-version: "22"
       - name: Site self-check (no install needed)
         shell: bash
-        working-directory: skills/export/site
+        working-directory: skills/mindtix/site
         run: node --test test/site.test.mjs
       - name: Site builds
         if: runner.os == 'Linux'
         shell: bash
-        working-directory: skills/export/site
+        working-directory: skills/mindtix/site
         run: npm ci && npm run build
       - name: Manifests are valid JSON
         shell: bash
@@ -32,7 +32,7 @@ jobs:
           python -m json.tool .claude-plugin/plugin.json > /dev/null
           python -m json.tool .claude-plugin/marketplace.json > /dev/null
           python -m json.tool hooks/hooks.json > /dev/null
-          python -m json.tool skills/init/template/insight/scores.json > /dev/null
+          python -m json.tool skills/mindtix/template/insight/scores.json > /dev/null
       - name: Every skill has a name and description
         shell: bash
         run: |

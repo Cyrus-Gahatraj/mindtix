@@ -8,37 +8,38 @@ import install  # noqa: E402
 
 with tempfile.TemporaryDirectory() as tmp:
     dest = os.path.join(tmp, "skills")
-    names = install.install(dest)
-    assert {"init", "import", "capture", "learn", "recall", "export"} <= set(names)
-    for n in names:
-        text = open(os.path.join(dest, "mindtix-" + n, "SKILL.md"), encoding="utf-8").read()
-        assert f"\nname: mindtix-{n}\n" in text, n
-        assert "$ARGUMENTS" not in text and "argument-hint" not in text and "/mindtix:" not in text, n
-    for root, _, files in os.walk(dest):
-        for f in files:
-            if f.endswith(".md"):
-                assert "/mindtix:" not in open(os.path.join(root, f), encoding="utf-8").read(), os.path.join(root, f)
-    assert os.path.isfile(os.path.join(dest, "mindtix-import", "to_text.py")), "scripts are copied"
-    imp = open(os.path.join(dest, "mindtix-import", "SKILL.md"), encoding="utf-8").read()
-    assert "<this skill's dir>" not in imp and os.path.abspath(dest).replace(os.sep, "/") + "/mindtix-import/to_text.py" in imp
-    assert os.path.isfile(os.path.join(dest, "mindtix-init", "template", "AGENTS.md"))
-    assert "the `mindtix-learn` skill (diagnose)" in install.portable("run `/mindtix:learn diagnose` now")
+    os.makedirs(os.path.join(dest, "mindtix-learn"))  # left by a version before 1.4
+    install.install(dest)
+    assert sorted(os.listdir(dest)) == ["mindtix"], "one skill; the old per-workflow ones are gone"
+    skill = os.path.join(dest, "mindtix")
+    text = open(os.path.join(skill, "SKILL.md"), encoding="utf-8").read()
+    assert "\nname: mindtix\n" in text and "argument-hint" not in text
+    assert sorted(os.listdir(os.path.join(skill, "workflows"))) == sorted(n + ".md" for n in install.OLD)
+    for n in install.OLD:
+        assert n in text, f"SKILL.md lists the {n} workflow"
+    assert os.path.isfile(os.path.join(skill, "to_text.py")) and os.path.isfile(os.path.join(skill, "export.py"))
+    assert os.path.isfile(os.path.join(skill, "template", "AGENTS.md"))
+    imp = open(os.path.join(skill, "workflows", "import.md"), encoding="utf-8").read()
+    assert "<this skill's dir>" not in imp and os.path.abspath(skill).replace(os.sep, "/") + "/to_text.py" in imp
 
     open(os.path.join(dest, "other-skill.md"), "w").close()
     install.install(dest, uninstall=True)
-    assert os.listdir(dest) == ["other-skill.md"], "uninstall removes only mindtix skills"
+    assert os.listdir(dest) == ["other-skill.md"], "uninstall removes only mindtix"
 
     install.main(["--project", os.path.join(tmp, "mind")])
-    assert os.path.isdir(os.path.join(tmp, "mind", ".agents", "skills", "mindtix-learn"))
+    assert os.path.isdir(os.path.join(tmp, "mind", ".agents", "skills", "mindtix", "workflows"))
+
+# Only one SKILL.md, so neither Claude Code nor skills.sh sees a skill per workflow.
+repo = os.path.dirname(os.path.abspath(install.__file__))
+found = [os.path.relpath(os.path.join(r, f), repo) for r, ds, fs in os.walk(repo)
+         if "node_modules" not in r and ".git" not in r.split(os.sep) for f in fs if f == "SKILL.md"]
+assert found == [os.path.join("skills", "mindtix", "SKILL.md")], found
 
 # Frontmatter must be strict YAML: `npx skills` (skills.sh) silently skips a skill whose
 # unquoted value has ": " or " #", while Claude Code accepts it.
-# The root SKILL.md is the one skill skills.sh installs (it hides the per-workflow ones).
-root = os.path.dirname(install.SKILLS)
-for n, path in [(n, os.path.join(install.SKILLS, n, "SKILL.md")) for n in names] + [("root", os.path.join(root, "SKILL.md"))]:
-    head = open(path, encoding="utf-8").read().split("---")[1]
-    for line in head.strip().splitlines():
-        key, _, value = line.partition(": ")
-        assert value.startswith('"') or (": " not in value and " #" not in value), f"{n}: quote or reword {key}"
+head = open(os.path.join(install.SKILL, "SKILL.md"), encoding="utf-8").read().split("---")[1]
+for line in head.strip().splitlines():
+    key, _, value = line.partition(": ")
+    assert value.startswith('"') or (": " not in value and " #" not in value), f"quote or reword {key}"
 
 print("install ok")
