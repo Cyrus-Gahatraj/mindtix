@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **`sort` workflow:** moves loose files (dropped in the brain root or the wrong folder) to
+  where they belong, asking when it can't tell what a file is.
+
 ## 1.4.0
 
 - **One skill.** Mindtix is now a single `mindtix` skill instead of thirteen: `/mindtix today`,
