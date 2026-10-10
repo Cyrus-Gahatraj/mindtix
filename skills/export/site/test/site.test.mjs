@@ -13,6 +13,7 @@ const brain = path.join(tmp, "brain");
 fs.cpSync(path.join(HERE, "../../../init/template"), brain, { recursive: true });
 const w = (rel, s) => { fs.mkdirSync(path.dirname(path.join(brain, rel)), { recursive: true }); fs.writeFileSync(path.join(brain, rel), s) };
 const r = rel => fs.readFileSync(path.join(brain, rel), "utf8");
+const lf = rel => r(rel).replace(/\r\n/g, "\n"); // template files are CRLF on a Windows checkout
 w("knowledge/sql-joins.md", "# SQL joins\n\nA left join keeps every row.\n\n## Recall\n- [b1 · due 2020-01-01] What does a left join keep?\n- Which join drops rows?\n\nSources: lecture\n");
 w("private/id.md", "# ID\n\nsecret number 12345\n");
 w("MIND.md", r("MIND.md").replace("- Name:", "- Name: Ada *Lovelace* [stated]"));
@@ -155,7 +156,7 @@ test("claude engine: runs /mindtix commands in the brain, streams steps, keeps o
 
 test("write: new notes go in INDEX.md; guards hold", () => {
   const saved = B.saveNote("knowledge/rust", "# Rust\n\nOwnership moves values.", null);
-  assert.match(r("INDEX.md"), /## Knowledge\n- \[\[knowledge\/rust\]\]: Ownership moves values\./);
+  assert.match(lf("INDEX.md"), /## Knowledge\n- \[\[knowledge\/rust\]\]: Ownership moves values\./);
   B.saveNote("knowledge/rust", "# Rust\n\nEdited.", saved.mod);
   assert.equal(r("knowledge/rust.md"), "# Rust\n\nEdited.\n");
   const fails = [["knowledge/rust", null, 409], ["knowledge/rust", 1, 409], ["insight/mind", null, 403], ["private/x", null, 403],
@@ -180,7 +181,7 @@ test("recall: boxes move, misses go to mistakes.md, the round is logged", () => 
   const note = r("knowledge/sql-joins.md");
   assert.ok(note.includes(`- [b2 · due ${B.today(7)}] What does a left join keep?`));
   assert.ok(note.includes(`## Log\n- ${B.today()} recall: 1/2, missed: Which join drops rows?\n\nSources: lecture`), note);
-  assert.ok(r("learning/mistakes.md").endsWith(`| ${B.today()} | sql-joins | missed: Which join drops rows? | |\n`));
+  assert.ok(lf("learning/mistakes.md").endsWith(`| ${B.today()} | sql-joins | missed: Which join drops rows? | |\n`));
   assert.throws(() => B.grade("sql-joins", "not a card", true), e => e.status === 409);
 });
 
