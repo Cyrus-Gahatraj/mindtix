@@ -31,4 +31,14 @@ with tempfile.TemporaryDirectory() as tmp:
     install.main(["--project", os.path.join(tmp, "mind")])
     assert os.path.isdir(os.path.join(tmp, "mind", ".agents", "skills", "mindtix-learn"))
 
+# Frontmatter must be strict YAML: `npx skills` (skills.sh) silently skips a skill whose
+# unquoted value has ": " or " #", while Claude Code accepts it.
+# The root SKILL.md is the one skill skills.sh installs (it hides the per-workflow ones).
+root = os.path.dirname(install.SKILLS)
+for n, path in [(n, os.path.join(install.SKILLS, n, "SKILL.md")) for n in names] + [("root", os.path.join(root, "SKILL.md"))]:
+    head = open(path, encoding="utf-8").read().split("---")[1]
+    for line in head.strip().splitlines():
+        key, _, value = line.partition(": ")
+        assert value.startswith('"') or (": " not in value and " #" not in value), f"{n}: quote or reword {key}"
+
 print("install ok")

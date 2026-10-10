@@ -63,6 +63,13 @@ git clone https://github.com/Cyrus-Gahatraj/mindtix && python3 mindtix/install.p
 Then open your agent in an empty folder and say "set up mindtix". See
 [docs/other-agents.md](docs/other-agents.md).
 
+**Or from [skills.sh](https://skills.sh/cyrus-gahatraj/mindtix/mindtix)**, as one `mindtix` skill
+that holds all the workflows (no hooks; the agent keeps those rules itself):
+
+```sh
+npx skills add Cyrus-Gahatraj/mindtix
+```
+
 ## Skills
 
 | Skill | What it does |
