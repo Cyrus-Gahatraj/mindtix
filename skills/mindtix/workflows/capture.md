@@ -79,7 +79,7 @@ Rules for both:
    [[links]] to related topics, projects and learning maps.
 
    ## Recall
-   - [b0 · due YYYY-MM-DD] A question to answer from memory (due tomorrow)
+   - [b0 · due YYYY-MM-DD] A question to answer from memory (due tomorrow) :: short answer
 
    ## Log
    - YYYY-MM-DD capture: from raw/notes/...
@@ -89,6 +89,7 @@ Rules for both:
 
    Keep their ideas and examples, fill gaps, and **correct mistakes** marked
    "(corrected: you wrote X)". Anything well beyond their notes goes under `## Going further`.
+   Cards follow "Writing cards" in `recall.md` (one idea each, no yes/no, at most 10 per pass).
    `## Log` and `## Recall` are shared with `/mindtix learn` and `/mindtix recall`; append,
    never rewrite.
 4. **Report** in a few lines: what was created or updated, corrections made, anything

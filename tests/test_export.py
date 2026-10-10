@@ -23,7 +23,7 @@ with tempfile.TemporaryDirectory() as tmp:
     shutil.copytree(TEMPLATE, brain)
     with open(os.path.join(brain, "knowledge", "sql-joins.md"), "w", encoding="utf-8") as f:
         f.write("# SQL joins\n\n## Recall\n- [b1 · due 2026-10-10] What does a left join keep?\n"
-                "- Why use not exists?\n\n## Log\n- 2026-10-07 recall: 1/1\n\nSee [[self/profile]].\n")
+                "- Why use not exists?\n- [b2 · due 2026-10-20] Which join keeps unmatched right rows? :: right join · s9.1 d4.2\n\n## Log\n- 2026-10-07 recall: 1/1\n\nSee [[self/profile]].\n")
     os.makedirs(os.path.join(brain, "private"))
     open(os.path.join(brain, "private", "id.md"), "w", encoding="utf-8").write("secret id")
     open(os.path.join(brain, "raw", "imports", "chat.txt"), "w", encoding="utf-8").write("someone else's message")
@@ -33,9 +33,10 @@ with tempfile.TemporaryDirectory() as tmp:
     open(mind, "w", encoding="utf-8").write(text)
 
     out = os.path.join(brain, "exports")
-    assert "2 cards" in run("anki", brain, os.path.join(out, "c.txt"))
+    assert "3 cards" in run("anki", brain, os.path.join(out, "c.txt"))
     deck = open(os.path.join(out, "c.txt"), encoding="utf-8").read()
     assert "What does a left join keep?\t" in deck and "Why use not exists?" in deck
+    assert "Which join keeps unmatched right rows?\tright join\t" in deck, "the stored answer is the back"
     assert "_example" not in deck and "n-1" not in deck, "template example cards are not exported"
 
     run("json", brain, os.path.join(out, "b.json"))
@@ -44,6 +45,8 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "knowledge/sql-joins.md" in paths and "MIND.md" in paths
     assert not any(p.startswith(("private/", "raw/imports/", "logs/")) for p in paths)
     assert {"box": 1, "due": "2026-10-10"}.items() <= next(c for c in data["cards"] if c["box"] == 1).items()
+    assert {"question": "Which join keeps unmatched right rows?", "answer": "right join", "box": 2, "s": 9.1, "d": 4.2}.items() <= \
+        next(c for c in data["cards"] if c["box"] == 2).items()
     assert "self/profile" in next(n for n in data["notes"] if n["path"] == "knowledge/sql-joins.md")["links"]
 
     run("bundle", brain, os.path.join(out, "b.zip"))

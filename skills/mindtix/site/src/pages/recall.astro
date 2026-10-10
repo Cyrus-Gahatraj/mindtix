@@ -20,9 +20,10 @@ const fmt = d => new Date(d + "T12:00").toLocaleDateString(undefined, { weekday:
     <div class="flash" id="card" aria-live="polite">
       <div class="where"><span id="count"></span><span>·</span><a id="topic"></a><span>·</span><span id="box"></span></div>
       <p class="q" id="q"></p>
-      <div class="a" id="answer" hidden><div id="hint"></div><a id="open" target="_blank" rel="noopener">check the note <Fragment set:html={icon("out")} /></a></div>
+      <div class="a" id="answer" hidden><p id="ans"></p><div id="hint"></div><a id="open" target="_blank" rel="noopener">check the note <Fragment set:html={icon("out")} /></a></div>
       <div class="actions">
-        <button class="btn" type="button" id="show">show answer <kbd>space</kbd></button>
+        <button class="btn" type="button" id="show">I know it <kbd>space</kbd></button>
+        <button class="btn ghost" type="button" id="unsure">not sure <kbd>u</kbd></button>
         <button class="btn ghost" type="button" id="wrong" hidden>missed it <kbd>1</kbd></button>
         <button class="btn" type="button" id="right" hidden>got it <kbd>2</kbd></button>
       </div>
@@ -36,22 +37,24 @@ const fmt = d => new Date(d + "T12:00").toLocaleDateString(undefined, { weekday:
     <p class="lede">All caught up. {next ? `The next card is due ${fmt(next)}.` : "Cards come from the Recall section of your knowledge notes."}</p>
     <div class="row" style="margin-top:28px"><a class="btn ghost" href={"/ask?draft=" + encodeURIComponent("/mindtix learn ")}>learn something new</a><a class="btn quiet" href="/insight">see your boxes</a></div>
   </>}
-  <p class="muted" style="margin-top:56px;font-size:13.5px;max-width:34em">Answer from memory first. Right moves a card up a box (1, 3, 7, 14, 30, 90 days); missed sends it back to box 0 and into learning/mistakes.md. For graded answers, run <code>/mindtix recall</code> in Ask.</p>
+  <p class="muted" style="margin-top:56px;font-size:13.5px;max-width:34em">Answer from memory first, then say whether you're sure. Each card comes back just before you'd forget it: sooner when you miss it or weren't sure, later each time you get it. A miss goes into learning/mistakes.md, and one you were sure of comes back once more this round. For graded answers, run <code>/mindtix recall</code> in Ask.</p>
   <script type="application/json" id="round" set:html={JSON.stringify({ round, after }).replace(/</g, "\\u003c")} />
 </Base>
 
 <script>
 import { $, api, toast, typing } from "../scripts/util.js";
 const { round, after } = JSON.parse($("round").textContent);
-let i = 0, score = 0, missed = [], busy = false;
+let i = 0, score = 0, missed = [], busy = false, sure = null;
+const again = new Set(); // cards missed while sure: asked once more at the end, not graded twice
 const revealed = () => !$("answer").hidden;
 function next() {
   $("bar").children[i]?.classList.add("now");
   const c = round[i];
   if (!c) {
     $("card").hidden = true; $("done").hidden = false;
-    $("score").innerHTML = `${score}<small>/${round.length}</small>`;
-    $("summary").textContent = (score === round.length ? "Every one. " : missed.length ? `Missed: ${missed.join("; ")}. ` : "") +
+    const graded = round.length - again.size;
+    $("score").innerHTML = `${score}<small>/${graded}</small>`;
+    $("summary").textContent = (score === graded ? "Every one. " : missed.length ? `Missed: ${missed.join("; ")}. ` : "") +
       (after > 0 ? `${after} more due by tomorrow.` : "Nothing else due by tomorrow.");
     return;
   }
@@ -59,31 +62,39 @@ function next() {
   Object.assign($("topic"), { textContent: c.title, href: c.href });
   $("box").textContent = `box ${c.box}`;
   $("q").textContent = c.question;
+  $("ans").textContent = c.answer || "";
   $("hint").textContent = c.hint;
   $("open").href = c.href;
   $("answer").hidden = $("right").hidden = $("wrong").hidden = true;
-  $("show").hidden = false;
+  $("show").hidden = $("unsure").hidden = false;
   $("show").focus();
 }
-function show() { $("answer").hidden = $("right").hidden = $("wrong").hidden = false; $("show").hidden = true; $("right").focus() }
+function show(s) { sure = s; $("answer").hidden = $("right").hidden = $("wrong").hidden = false; $("show").hidden = $("unsure").hidden = true; $("right").focus() }
 async function grade(right) {
   if (busy || !revealed()) return;
   busy = true;
   const c = round[i];
   try {
-    await api("/api/recall", { topic: c.topic, question: c.question, right });
+    const retry = again.has(c);
+    if (!retry) {
+      await api("/api/recall", { topic: c.topic, question: c.question, rating: !right ? "again" : sure ? "good" : "hard", sure });
+      score += right; if (!right) missed.push(c.question);
+      if (!right && sure) { again.add(c); round.push(c); $("bar").append(document.createElement("span")) }
+    }
     $("bar").children[i].className = right ? "ok" : "miss";
-    score += right; if (!right) missed.push(c.question); i++; next();
+    i++; next();
   } catch (e) { toast(e.message, true) }
   busy = false;
 }
 if (round.length) {
-  $("show").onclick = show;
+  $("show").onclick = () => show(true);
+  $("unsure").onclick = () => show(false);
   $("right").onclick = () => grade(true);
   $("wrong").onclick = () => grade(false);
   addEventListener("keydown", e => {
     if (typing() || e.metaKey || e.ctrlKey || !round[i]) return;
-    if ((e.key === " " || e.key === "Enter") && !revealed()) { e.preventDefault(); show() }
+    if ((e.key === " " || e.key === "Enter") && !revealed()) { e.preventDefault(); show(true) }
+    else if (e.key === "u" && !revealed()) show(false);
     else if (e.key === "1") grade(false);
     else if (e.key === "2") grade(true);
   });

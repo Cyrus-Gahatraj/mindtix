@@ -47,15 +47,18 @@ with only a README; the AI fills it once there is real content.
 Sources: [[raw/notes/...]] · Updated: YYYY-MM-DD
 ```
 
-**Cards** live in `## Recall`, one per line, with a Leitner box and a due date:
+**Cards** live in `## Recall`, one per line: a box and due date, the question, a short answer
+after ` :: `, and the FSRS state (`s` stability in days, `d` difficulty 1-10):
 
 ```markdown
-- [b0 · due 2026-10-08] What breaks if a graph search doesn't track visited nodes?
-- [b2 · due 2026-10-14] Why does BFS find the shortest path in an unweighted graph?
+- [b0 · due 2026-10-08] What breaks if a graph search doesn't track visited nodes? :: it loops forever
+- [b2 · due 2026-10-14] Why does BFS find the shortest path in an unweighted graph? :: it expands in distance order · s7.4 d5.1
 ```
 
-A right answer moves a card up one box; a wrong one sends it to `b0` and adds a line to
-`learning/mistakes.md`. Box intervals in days: b0 1, b1 3, b2 7, b3 14, b4 30, b5 90.
+`skills/mindtix/srs.py` grades cards (again, hard, good, easy): the next review is `s` days
+away, a miss adds a line to `learning/mistakes.md`, and every grade is a row in
+`learning/reviews.csv`. The box is just a label for `s` (b1 ≥ 3 days … b5 ≥ 90), so cards
+written as `- [b0 · due …] question` or plain `- question` still work.
 
 **Learning folder** (`learning/<topic>/`):
 - `map.md`: the specific goal, your level when you started, a checklist of modules with

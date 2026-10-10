@@ -26,11 +26,12 @@ export function folders() {
 const SKIP_DIRS = new Set([".git", "private", "logs", "exports", ".obsidian", ".claude", "node_modules"]);
 const SKIP_PAGES = new Set(["README.md", "CLAUDE.md", "AGENTS.md", "GEMINI.md"]);
 export const IMAGES = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml" };
-const CARD = /^\s*-\s*(?:\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]\s*)?(.+?)\s*$/;
+// - [b1 · due 2026-10-13] question :: short answer · s3.2 d5.3   (answer and FSRS state optional; like export.py)
+const CARD = /^\s*-\s*(?:\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]\s*)?(.+?)(?:\s+::\s+(.+?))?(?:\s+·\s+s([\d.]+)\s+d([\d.]+))?\s*$/;
 const OBS_LINK = /(!?)\[\[([^\]]+)\]\]/g;
 const CALLOUT = /^(\s*>\s*)\[!(\w+)\][+-]?[ \t]*(.*)$/gm;
 const MD_NOISE = /^\s*(#{1,6}\s+|>\s?|[-*+]\s+|\d+\.\s+|\|)|[*_`]|!?\[\[([^\]|#]+)[^\]]*\]\]|\[([^\]]*)\]\([^)]*\)|\[(stated|inferred)[^\]]*\]/gm;
-export const INTERVALS = [1, 3, 7, 14, 30, 90]; // days until the next review, per Leitner box
+export const INTERVALS = [1, 3, 7, 14, 30, 90]; // the old Leitner boxes, kept as labels for stability
 const INDEX_SECTIONS = { self: "Who I am", knowledge: "Knowledge", learning: "Learning now", projects: "Projects", hobbies: "Hobbies" };
 
 export const isBrain = () => fs.existsSync(path.join(BRAIN, "MIND.md"));
@@ -77,7 +78,7 @@ function describe(id, src) {
   return { title, excerpt, text: plain(src) };
 }
 
-/** Recall cards in knowledge/: {topic, question, box, due}. */
+/** Recall cards in knowledge/: {topic, question, answer, box, due, s, d}. */
 export function cards() {
   const out = [];
   for (const [rel, abs] of walk()) {
@@ -86,7 +87,8 @@ export function cards() {
     for (const line of read(abs).split("\n")) {
       if (line.startsWith("## ")) { inRecall = line.trim().toLowerCase() === "## recall"; continue }
       const m = inRecall && CARD.exec(line);
-      if (m && m[3]) out.push({ topic: rel.slice(10, -3), question: m[3], box: +(m[1] || 0), due: m[2] || today() });
+      if (m && m[3]) out.push({ topic: rel.slice(10, -3), question: m[3], answer: m[4] || "", box: +(m[1] || 0), due: m[2] || today(),
+        s: m[5] ? +m[5] : null, d: m[6] ? +m[6] : null });
     }
   }
   return out;
@@ -304,31 +306,64 @@ export function dueCards(data) {
   return out;
 }
 
-/** Grade one card in place: right moves it a box up, wrong sends it to b0 and into learning/mistakes.md. Logs the round. */
-export function grade(topic, question, right) {
+// FSRS-5 with default weights at 90% target retention, so the next interval is just s days.
+// A port of srs.py's review(); both test suites assert the same vectors.
+const W = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192,
+  1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
+export const RATINGS = ["again", "hard", "good", "easy"];
+const r1 = x => Math.round(x * 10) / 10, clamp = d => Math.min(10, Math.max(1, d));
+const d0 = g => clamp(W[4] - Math.exp(W[5] * (g - 1)) + 1);
+const days = s => Math.max(1, Math.floor(s + 0.5));
+const boxOf = s => INTERVALS.reduce((b, n, i) => n <= s ? i : b, 0);
+/** One FSRS step: s, d before (null = new card), g 1-4, t days since the last review → {s, d, r}. */
+export function review(s, d, g, t) {
+  if (s == null) return { s: r1(W[g - 1]), d: r1(d0(g)), r: null };
+  const r = (1 + 19 / 81 * Math.max(0, t) / s) ** -0.5;
+  const s2 = g === 1
+    ? Math.min(s, W[11] * d ** -W[12] * ((s + 1) ** W[13] - 1) * Math.exp(W[14] * (1 - r)))
+    : s * (1 + Math.exp(W[8]) * (11 - d) * s ** -W[9] * (Math.exp(W[10] * (1 - r)) - 1) * (g === 2 ? W[15] : 1) * (g === 4 ? W[16] : 1));
+  const d2 = clamp(W[7] * d0(4) + (1 - W[7]) * (d - W[6] * (g - 3) * (10 - d) / 9));
+  return { s: r1(Math.min(Math.max(s2, 0.1), 36500)), d: r1(d2), r };
+}
+
+/** Grade one card in place with FSRS (rating again|hard|good|easy, sure true/false/null). A miss goes into
+ * learning/mistakes.md; every grade into learning/reviews.csv. Logs the round. */
+export function grade(topic, question, rating, sure = null) {
+  const g = RATINGS.indexOf(rating) + 1;
+  if (!g) throw new WriteError("Rating must be again, hard, good or easy.");
   const { abs } = notePath("knowledge/" + topic);
   const text = read(abs);
   if (text === null) throw new WriteError("No such topic.", 404);
   const lines = text.split("\n");
-  let inRecall = false, at = -1, box = 0;
+  let inRecall = false, at = -1, m = null;
   lines.forEach((l, i) => {
     if (l.startsWith("## ")) inRecall = l.trim().toLowerCase() === "## recall";
-    const m = inRecall && at === -1 && CARD.exec(l);
-    if (m && m[3] === question) { at = i; box = +(m[1] || 0) }
+    const c = inRecall && at === -1 && CARD.exec(l);
+    if (c && c[3] === question) { at = i; m = c }
   });
   if (at === -1) throw new WriteError("That card isn't in the note any more. Reload.", 409);
-  box = right ? Math.min(box + 1, 5) : 0;
-  lines[at] = `- [b${box} · due ${today(INTERVALS[right ? box : 0])}] ${question}`;
-  log(lines, right, question);
+  // State before: s/d on the line; an old bN≥1 card keeps its interval; b0 or no box is new
+  const b = +(m[1] || 0), s0 = m[5] ? +m[5] : b ? INTERVALS[b] : null, dd = m[6] ? +m[6] : 5;
+  const t = s0 == null ? 0 : Math.round((Date.parse(today()) - Date.parse(m[2])) / 864e5) + days(s0);
+  const { s, d, r } = review(s0, dd, g, t);
+  const box = boxOf(s), due = today(days(s));
+  lines[at] = `- [b${box} · due ${due}] ${question}${m[4] ? " :: " + m[4] : ""} · s${s} d${d}`;
+  log(lines, g > 1, question);
   fs.writeFileSync(abs, lines.join(eolOf(abs)));
-  if (!right) {
+  const csvFile = path.join(BRAIN, "learning", "reviews.csv"), q = v => /[",\n]/.test(v) ? `"${v.replaceAll('"', '""')}"` : v;
+  fs.mkdirSync(path.dirname(csvFile), { recursive: true });
+  const now = new Date();
+  fs.appendFileSync(csvFile, (fs.existsSync(csvFile) ? "" : "when,topic,question,rating,sure,r,s,d,via\n") +
+    [`${today()}T${pad(now.getHours())}:${pad(now.getMinutes())}`, topic, question, rating, sure == null ? "" : +sure,
+      r == null ? "" : r.toFixed(2), s, d, "site"].map(v => q(String(v))).join(",") + "\n");
+  if (g === 1) {
     const file = path.join(BRAIN, "learning", "mistakes.md");
     let m = read(file) ?? "# Mistakes\n\n| Date | Topic | Mistake | Guessed root cause |\n|---|---|---|---|\n";
     fs.mkdirSync(path.dirname(file), { recursive: true });
     const eol = eolOf(file);
-    fs.writeFileSync(file, (m.replace(/\n*$/, "\n") + `| ${today()} | ${topic} | missed: ${question.replaceAll("|", "/")} | |\n`).replaceAll("\n", eol));
+    fs.writeFileSync(file, (m.replace(/\n*$/, "\n") + `| ${today()} | ${topic} | missed: ${question.replaceAll("|", "/")} | ${sure ? "misconception: was sure" : ""} |\n`).replaceAll("\n", eol));
   }
-  return { box, due: today(INTERVALS[right ? box : 0]) };
+  return { box, due, s, d };
 }
 
 /** Today's "- YYYY-MM-DD recall: right/total, missed: ..." line in ## Log, updated as cards are graded. */

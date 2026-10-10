@@ -18,7 +18,8 @@ with tempfile.TemporaryDirectory() as tmp:
     assert sorted(os.listdir(os.path.join(skill, "workflows"))) == workflows
     for n in workflows:
         assert n[:-3] in text, f"SKILL.md lists the {n[:-3]} workflow"
-    assert os.path.isfile(os.path.join(skill, "to_text.py")) and os.path.isfile(os.path.join(skill, "export.py"))
+    assert os.path.isfile(os.path.join(skill, "to_text.py")) and os.path.isfile(os.path.join(skill, "export.py")) \
+        and os.path.isfile(os.path.join(skill, "srs.py"))
     assert os.path.isfile(os.path.join(skill, "template", "AGENTS.md"))
     imp = open(os.path.join(skill, "workflows", "import.md"), encoding="utf-8").read()
     assert "<this skill's dir>" not in imp and os.path.abspath(skill).replace(os.sep, "/") + "/to_text.py" in imp

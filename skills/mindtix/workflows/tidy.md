@@ -14,6 +14,8 @@ Never touches `raw/` (the user's), `logs/`, `private/` or `insight/` (only `/min
      sed 's|\.md$||' | while read -r n; do grep -qF "$n" INDEX.md || echo "not in INDEX: $n"; done
    # Empty folders
    find . -type d -empty -not -path './.git/*'
+   # Yes/no cards (rewrite them so the answer has to be produced)
+   grep -rnE '^\s*-\s*(\[b[0-5] · due [0-9-]+\]\s*)?(Is|Are|Does|Do|Did|Can|Could|Should|Will|Has|Have) ' knowledge --exclude='_example*'
    # Secrets and ID-like numbers
    grep -rnIE '(api[_-]?key|token|secret|password)\s*[:=]|sk-[A-Za-z0-9]{20,}|[0-9]{9,}' --exclude-dir=raw --exclude-dir=private --exclude-dir=logs --exclude-dir=.git --include='*.md' .
    # Overdue recall cards (due before today)

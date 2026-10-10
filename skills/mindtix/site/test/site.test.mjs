@@ -14,7 +14,7 @@ fs.cpSync(path.join(HERE, "../../template"), brain, { recursive: true });
 const w = (rel, s) => { fs.mkdirSync(path.dirname(path.join(brain, rel)), { recursive: true }); fs.writeFileSync(path.join(brain, rel), s) };
 const r = rel => fs.readFileSync(path.join(brain, rel), "utf8");
 const lf = rel => r(rel).replace(/\r\n/g, "\n"); // template files are CRLF on a Windows checkout
-w("knowledge/sql-joins.md", "# SQL joins\n\nA left join keeps every row.\n\n## Recall\n- [b1 · due 2020-01-01] What does a left join keep?\n- Which join drops rows?\n\nSources: lecture\n");
+w("knowledge/sql-joins.md", "# SQL joins\n\nA left join keeps every row.\n\n## Recall\n- [b1 · due 2020-01-01] What does a left join keep? :: every left row\n- Which join drops rows?\n\nSources: lecture\n");
 w("private/id.md", "# ID\n\nsecret number 12345\n");
 w("MIND.md", r("MIND.md").replace("- Name:", "- Name: Ada *Lovelace* [stated]"));
 for (const k of ["MINDTIX_API_URL", "MINDTIX_API_KEY", "MINDTIX_MODEL", "ANTHROPIC_API_KEY", "ANTHROPIC_BASE_URL", "MINDTIX_FOLDERS"]) delete process.env[k];
@@ -174,15 +174,30 @@ test("capture: a timed line in today's raw note; secrets refused", () => {
   assert.throws(() => B.capture("password: hunter2hunter2"), e => e.status === 422);
 });
 
-test("recall: boxes move, misses go to mistakes.md, the round is logged", () => {
+test("FSRS: the same vectors as tests/test_srs.py", () => {
+  const sd = (...a) => { const { s, d } = B.review(...a); return [s, d] };
+  assert.deepEqual(sd(null, null, 3, 0), [3.2, 5.3]);
+  assert.deepEqual(sd(null, null, 1, 0), [0.4, 7.2]);
+  assert.deepEqual(sd(7, 5, 3, 7), [23.8, 5]);
+  assert.deepEqual(sd(7, 5, 1, 7), [1.7, 6.6]);
+  for (const s of [0.4, 3.2, 30, 400]) for (const t of [0, 1, 30, 900]) assert.ok(B.review(s, 5, 1, t).s <= s, "again never raises stability");
+});
+
+test("recall: FSRS grades, misses go to mistakes.md and every grade to reviews.csv, the round is logged", () => {
   assert.deepEqual(B.dueCards(B.load()).map(c => c.box), [0, 1]);
-  assert.deepEqual(B.grade("sql-joins", "What does a left join keep?", true), { box: 2, due: B.today(7) });
-  assert.deepEqual(B.grade("sql-joins", "Which join drops rows?", false), { box: 0, due: B.today(1) });
+  assert.equal(B.load().cards.find(c => c.box === 1).answer, "every left row");
+  const kept = B.grade("sql-joins", "What does a left join keep?", "good", true); // legacy b1, 3 days, reviewed late
+  assert.ok(kept.s > 3 && kept.box >= 1, JSON.stringify(kept));
+  assert.deepEqual(B.grade("sql-joins", "Which join drops rows?", "again", true), { box: 0, due: B.today(1), s: 0.4, d: 7.2 });
+  assert.throws(() => B.grade("sql-joins", "Which join drops rows?", "meh"), e => e.status === 400);
   const note = r("knowledge/sql-joins.md");
-  assert.ok(note.includes(`- [b2 · due ${B.today(7)}] What does a left join keep?`));
+  assert.ok(note.includes(`- [b${kept.box} · due ${kept.due}] What does a left join keep? :: every left row · s${kept.s} d${kept.d}\n`), note);
+  const csv = r("learning/reviews.csv").trim().split("\n");
+  assert.equal(csv[0], "when,topic,question,rating,sure,r,s,d,via");
+  assert.match(csv[2], /^\d{4}-\d\d-\d\dT\d\d:\d\d,sql-joins,Which join drops rows\?,again,1,,0\.4,7\.2,site$/);
   assert.ok(note.includes(`## Log\n- ${B.today()} recall: 1/2, missed: Which join drops rows?\n\nSources: lecture`), note);
-  assert.ok(lf("learning/mistakes.md").endsWith(`| ${B.today()} | sql-joins | missed: Which join drops rows? | |\n`));
-  assert.throws(() => B.grade("sql-joins", "not a card", true), e => e.status === 409);
+  assert.ok(lf("learning/mistakes.md").endsWith(`| ${B.today()} | sql-joins | missed: Which join drops rows? | misconception: was sure |\n`));
+  assert.throws(() => B.grade("sql-joins", "not a card", "good"), e => e.status === 409);
 });
 
 test("api setup: Settings saves the AI to .env, keeps other lines, and git ignores it", () => {
@@ -219,10 +234,10 @@ test("windows line ends (CRLF): parsed like LF, and kept when the site writes", 
   const n = B.load().byId["knowledge/crlf"];
   assert.equal(n.title, "CRLF note");
   assert.equal(n.excerpt, "A summary line.", "frontmatter and the heading are skipped");
-  B.grade("crlf", "Does it parse?", true);
+  B.grade("crlf", "Does it parse?", "good");
   B.saveNote("knowledge/crlf-two", "# Two\n\nNew.", null);
   for (const f of ["knowledge/crlf.md", "INDEX.md"]) assert.ok(!/(^|[^\r])\n/.test(r(f)), f + " keeps CRLF everywhere");
-  assert.match(r("knowledge/crlf.md"), new RegExp(`\\[b1 · due ${B.today(3)}\\] Does it parse\\?\\r\\n`));
+  assert.match(r("knowledge/crlf.md"), new RegExp(`\\[b1 · due ${B.today(3)}\\] Does it parse\\? · s3\\.2 d5\\.3\\r\\n`));
   assert.match(r("knowledge/crlf.md"), new RegExp(`- ${B.today()} recall: 1/1\\r\\n`));
   const saved = B.readNote("knowledge/crlf");
   B.saveNote("knowledge/crlf", saved.src + "\nMore.", saved.mod);

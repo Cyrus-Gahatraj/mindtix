@@ -22,7 +22,9 @@ import zipfile
 from datetime import date
 
 SKIP_DIRS = {".git", "private", "logs", "exports", ".obsidian", ".claude"}
-CARD = re.compile(r"^\s*-\s*(?:\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]\s*)?(.+?)\s*$")
+# - [b1 · due 2026-10-13] question :: short answer · s3.2 d5.3   (answer and FSRS state optional; see srs.py)
+CARD = re.compile(r"^\s*-\s*(?:\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]\s*)?(.+?)"
+                  r"(?:\s+::\s+(.+?))?(?:\s+·\s+s([\d.]+)\s+d([\d.]+))?\s*$")
 LINK = re.compile(r"\[\[([^\]|#]+)")
 
 
@@ -42,7 +44,7 @@ def walk(brain):
 
 
 def cards(brain):
-    """Every recall card in knowledge/: dicts with topic, question, box, due."""
+    """Every recall card in knowledge/: dicts with topic, question, answer, box, due, s, d."""
     out = []
     for rel, path in walk(brain):
         if not (rel.startswith("knowledge/") and rel.endswith(".md")):
@@ -55,7 +57,10 @@ def cards(brain):
             m = CARD.match(line) if in_recall else None
             if m and m.group(3):
                 out.append({"topic": rel[len("knowledge/"):-3], "question": m.group(3),
-                            "box": int(m.group(1) or 0), "due": m.group(2) or date.today().isoformat()})
+                            "answer": m.group(4) or "", "box": int(m.group(1) or 0),
+                            "due": m.group(2) or date.today().isoformat(),
+                            "s": float(m.group(5)) if m.group(5) else None,
+                            "d": float(m.group(6)) if m.group(6) else None})
     return out
 
 
@@ -76,7 +81,7 @@ def export_anki(brain, out):
     rows = ["#separator:tab", "#html:false", "#tags column:3"]
     for c in cards(brain):
         s = summary(brain, c["topic"])
-        back = (s + " " if s else "") + f"(Full answer: knowledge/{c['topic']}.md in your mindtix brain)"
+        back = c["answer"] or (s + " " if s else "") + f"(Full answer: knowledge/{c['topic']}.md in your mindtix brain)"
         tag = "mindtix " + re.sub(r"[^A-Za-z0-9_/-]", "_", c["topic"])
         rows.append("\t".join(x.replace("\t", " ") for x in (c["question"], back, tag)))
     with open(out, "w", encoding="utf-8") as f:

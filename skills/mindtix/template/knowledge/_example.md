@@ -18,8 +18,8 @@ out; the square root brings the unit back.
 - Used in [[learning/_example/map]] for the A/B test
 
 ## Recall
-- [b0 · due 2026-10-08] Why divide by n-1 instead of n for a sample?
-- [b2 · due 2026-10-14] What does a larger SD tell you about the data?
+- [b0 · due 2026-10-08] Why divide by n-1 instead of n for a sample? :: the sample mean sits closer to its own data
+- [b2 · due 2026-10-14] What does a larger SD tell you about the data? :: values sit further from the mean · s7.4 d5.1
 
 ## Log
 - 2026-10-07 quiz: 3/4, missed: why divide by n-1

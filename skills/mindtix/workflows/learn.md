@@ -69,7 +69,8 @@ Push back on vague answers. Score at the end, name 2-3 fixes, raise the difficul
   - Missed: …
   ```
 - Each miss: one row in `learning/mistakes.md` (date, topic, mistake, guessed root cause), and
-  a card in `knowledge/<topic>.md` `## Recall`: `- [b0 · due <tomorrow>] <question>`.
+  a card in `knowledge/<topic>.md` `## Recall`: `- [b0 · due <tomorrow>] <question> :: <answer>`,
+  following "Writing cards" in `recall.md`.
 - What they now understand goes into `knowledge/<topic>.md` (shape in `/mindtix capture`):
   the code they built, why it works, connections. Add a `## Log` line:
   `- YYYY-MM-DD learn <mode>: score 3/5, missed: …`.

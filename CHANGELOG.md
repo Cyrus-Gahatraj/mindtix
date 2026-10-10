@@ -1,7 +1,28 @@
 # Changelog
 
-## Unreleased
+## 1.5.0
 
+- **FSRS scheduling.** Recall cards are scheduled with FSRS-5 (the algorithm Anki uses) instead of
+  fixed Leitner boxes: each card keeps a stability and a difficulty, so easy cards drift out to
+  months and hard ones stay close, for fewer reviews at the same recall. A card line can now hold
+  a short answer and its memory state:
+  `- [b1 · due 2026-10-13] question :: short answer · s3.2 d5.3`. The `[bN · due …]` prefix is
+  unchanged (the box is now a label for stability), so old cards, the due-card hook, `tidy` and
+  older site copies keep working, and old cards migrate on their next grade.
+- **`srs.py`** (next to `export.py`, standard library only) grades a card: again, hard, good or
+  easy, with `--sure`/`--unsure`. `recall` and `today` use it instead of editing cards by hand.
+- **Confidence before the answer.** `recall` asks "sure or guessing?" before grading; a card
+  missed while sure is asked again at the end of the round and logged as a misconception. Rounds
+  interleave topics.
+- **`learning/reviews.csv`:** every grade, with time, rating, confidence and predicted recall.
+  It's the evidence the next release uses to learn how you learn.
+- **Writing cards:** one idea each, no yes/no questions, 3-5 angles per concept, at most 10 new
+  per pass, always a short answer (`recall.md`). `tidy` flags yes/no cards.
+- **Export:** the Anki back is the card's answer when it has one; JSON cards carry `answer`,
+  `s` and `d`.
+- **Site:** Recall asks "I know it" or "not sure" before showing the answer, shows the card's
+  answer, and schedules with the same FSRS. Run `/mindtix export site --replace` to get it; an
+  older copy still grades new cards without breaking them.
 - **`sort` workflow:** moves loose files (dropped in the brain root or the wrong folder) to
   where they belong, asking when it can't tell what a file is. It also brings files in from
   outside the brain (`/mindtix sort ~/Downloads/song.mp3`) and reads each one (audio key and

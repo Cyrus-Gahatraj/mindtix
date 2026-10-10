@@ -31,8 +31,8 @@ with tempfile.TemporaryDirectory() as root:
     assert not check(ev("Edit", "/tmp/not-a-brain.md", new_string="password: hunter2hunter2")), "outside a brain: no-op"
 
     with open(os.path.join(root, "knowledge/t.md"), "w", encoding="utf-8") as f:
-        f.write("## Recall\n- [b0 · due 2000-01-01] old\n- [b2 · due 2999-01-01] future\n")
-    assert due_cards(root, date(2026, 1, 1)) == 1
+        f.write("## Recall\n- [b0 · due 2000-01-01] old\n- [b2 · due 2999-01-01] future\n- [b1 · due 2000-01-02] fsrs card :: an answer · s3.2 d5.3\n")
+    assert due_cards(root, date(2026, 1, 1)) == 2, "cards with an answer and FSRS state count too"
 
     # Auto-commit: only when the brain is the top of its own git repo
     assert autocommit(root) is None and git(root, "log").returncode, "not a repo: no-op"

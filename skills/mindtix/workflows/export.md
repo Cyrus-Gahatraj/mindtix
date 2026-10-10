@@ -27,11 +27,11 @@ PY "<this skill's dir>/export.py" json   . exports/mindtix-YYYY-MM-DD.json
 PY "<this skill's dir>/export.py" bundle . exports/mindtix-YYYY-MM-DD.zip
 ```
 
-- **anki:** one note per recall card (front = question, back = which page holds the
-  answer, tags = `mindtix` + topic). In Anki: File → Import, pick the file. Mention that the
+- **anki:** one note per recall card (front = question, back = its short `:: answer`, or
+  which page holds the answer, tags = `mindtix` + topic). In Anki: File → Import, pick the file. Mention that the
   cards keep living in the brain; Anki is a copy.
-- **json:** every note with its path, title, links and text, plus every card with box and
-  due date. Useful for other apps or scripts.
+- **json:** every note with its path, title, links and text, plus every card with its answer,
+  box, due date and FSRS state (`s`, `d`). Useful for other apps or scripts.
 - **bundle:** a zip of the brain for backup or moving machines. It leaves out `.git`; tell
   them the git history is the fuller backup (`git push` to a private repo).
 - **all:** profile plus the anki, json and bundle files.
@@ -84,8 +84,9 @@ PY "<this skill's dir>/export.py" site . [folder path] [brain folder ...]
 - **Write** adds new notes to `INDEX.md`. It refuses `insight/`, `private/`, `logs/` and
   `raw/imports/`, anything that looks like a secret, and a note that changed on disk since it
   was opened.
-- **Recall** moves a right card up a box. A miss sends the card to b0 and into
-  `learning/mistakes.md`. Each round is logged in the topic's `## Log`.
+- **Recall** asks "I know it" or "not sure" before showing the answer, then schedules the card
+  with FSRS like `srs.py`: a miss goes into `learning/mistakes.md`, every grade into
+  `learning/reviews.csv`, and a card missed while sure comes back once more that round. Each round is logged in the topic's `## Log`.
 - **Ask** keeps each chat in `logs/<date>-chat.md`. It has two engines, picked in Settings:
   - **Claude Code** is the default when `claude` is installed. It runs `claude -p` in the brain
     with their own login, one Claude Code session per chat. It reads and edits notes itself and

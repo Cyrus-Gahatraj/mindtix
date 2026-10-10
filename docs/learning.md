@@ -30,8 +30,11 @@ yourself holds up. So the AI's main job is to make you produce, not to explain m
 
 1. **Redo without help.** After any explanation, go back to the start of the task and do it
    alone. It takes about 10-15% more time and is where the learning happens.
-2. **Spaced repetition.** Cards come back just before you'd forget them (b0 1 day … b5 90
-   days). Each review makes the memory stronger and slower to fade.
+2. **Spaced repetition.** Cards come back just before you'd forget them. The scheduler is
+   [FSRS](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm), the one Anki
+   uses: each card keeps a stability (days until recall drops to 90%) and a difficulty, so easy
+   cards drift out to months and hard ones stay close. You say whether you were sure before the
+   grade; a confident wrong answer is the one most worth fixing, so it comes back the same round.
 3. **Stay just above your level.** Difficulty follows the topic level in
    `insight/knowledge.md`: hard enough to struggle, not so hard you guess.
 4. **Explain it at several levels.** If you can explain a topic to a child and to an expert,

@@ -14,8 +14,8 @@ suggest `/mindtix init`.
    tick. If nothing is being learned, offer `/mindtix learn` and skip this step.
 3. **One old question.** Pick one card or idea from a `knowledge/` topic that wasn't touched
    in steps 1-2 and wasn't reviewed in the last week, and ask it as a "what would happen
-   if…" or "how does this connect to…" question. Grade in 1-2 lines; update the card as
-   recall does if it was a card.
+   if…" or "how does this connect to…" question. Grade in 1-2 lines; if it was a card, ask sure
+   or guessing first and grade it with `srs.py` as recall does (`--via today`).
 4. **Report in 2 lines:** what they did today, and what's waiting tomorrow (cards due
    tomorrow, the next module).
 
