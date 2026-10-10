@@ -1,0 +1,97 @@
+---
+import Base from "../layouts/Base.astro";
+import { load } from "../lib/brain.js";
+import { fc, fcIndex } from "../lib/ui.js";
+
+const D = load();
+const data = { nodes: D.notes.map(n => [n.id, n.folder, n.title, fcIndex(n.folder)]), links: D.links };
+---
+<Base D={D} title="Graph" active="notes" layout="bare">
+  <div class="graphwrap">
+    <canvas id="graph" aria-label="Graph of your notes and their links"></canvas>
+    <div class="gpanel">
+      <div><h1>Graph</h1><p class="muted" style="margin:4px 0 0">{D.notes.length} notes · {D.links.length} links</p></div>
+      <input class="field" id="find" placeholder="highlight notes…" autocomplete="off" aria-label="Highlight notes">
+      <div class="chips" id="folders">{D.folders.map(f => <button class="chip tag" style={`--c:${fc(f)}`} type="button" aria-pressed="true" data-f={f}>{f}</button>)}</div>
+      <p class="muted" style="margin:0">hover to trace · click to open · drag to move · scroll to zoom</p>
+    </div>
+  </div>
+  <script type="application/json" id="graph-data" set:html={JSON.stringify(data).replace(/</g, "\\u003c")} />
+</Base>
+
+<script>
+import { $, noteUrl } from "../scripts/util.js";
+// A small force layout; each note takes its folder's colour, matches get a ring.
+// ponytail: O(n²) repulsion, fine for a few hundred notes; switch to d3-force if it lags.
+const G = JSON.parse($("graph-data").textContent), cv = $("graph"), ctx = cv.getContext("2d");
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const nodes = G.nodes.map(([id, folder, title, ci], i) => { const a = i / G.nodes.length * Math.PI * 2; return { id, folder, title, ci, x: Math.cos(a) * 80, y: Math.sin(a) * 80, vx: 0, vy: 0, deg: 0 } });
+const by = Object.fromEntries(nodes.map(n => [n.id, n]));
+const links = G.links.map(([a, b]) => [by[a], by[b]]).filter(([a, b]) => a && b);
+for (const [a, b] of links) { a.deg++; b.deg++ }
+// Calm by default: only the best-connected notes are labelled until you hover, search or zoom in
+const hub = nodes.map(n => n.deg).sort((a, b) => b - a)[Math.min(9, nodes.length - 1)] || 1;
+const on = new Set(nodes.map(n => n.folder));
+let W = 0, H = 0, heat = 1, frame = 0, hover = null, drag = null, pan = null, moved = false, find = "", zoom = 1, ox = 0, oy = 0;
+const r = n => 3.5 + Math.sqrt(n.deg) * 2;
+const live = n => on.has(n.folder);
+const hit = n => find && (n.title.toLowerCase().includes(find) || n.id.toLowerCase().includes(find));
+function size() { const b = cv.getBoundingClientRect(); if (!W) ox = b.width > 780 ? 150 : 0; W = b.width; H = b.height; cv.width = W * devicePixelRatio; cv.height = H * devicePixelRatio; wake() }
+function step() {
+  const shown = nodes.filter(live), ls = links.filter(([a, b]) => live(a) && live(b));
+  for (const a of shown) for (const b of shown) { if (a === b) continue; const dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy + 1, f = 2800 / d2 / Math.sqrt(d2); a.vx += dx * f; a.vy += dy * f }
+  for (const [a, b] of ls) { const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, f = (d - 90) * .02; a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f }
+  for (const n of shown) { n.vx -= n.x * .01; n.vy -= n.y * .013; if (n !== drag) { n.x += n.vx * heat; n.y += n.vy * heat } n.vx *= .6; n.vy *= .6 }
+  heat = Math.max(heat * .985, .02);
+}
+function draw() {
+  const near = n => n === hover || links.some(([a, b]) => (a === hover && b === n) || (b === hover && a === n));
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  ctx.translate(W / 2 + ox, H / 2 + oy); ctx.scale(zoom, zoom);
+  for (const [a, b] of links) {
+    if (!live(a) || !live(b)) continue;
+    const hot = hover && (a === hover || b === hover);
+    ctx.globalAlpha = hover ? (hot ? .9 : .06) : find ? .15 : .45;
+    ctx.strokeStyle = css(hot ? "--fg" : "--line-2"); ctx.lineWidth = (hot ? 1.4 : 1) / zoom;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+  ctx.font = `${11.5 / zoom}px "iA Writer Mono", ui-monospace, monospace`; ctx.textAlign = "center";
+  for (const n of nodes) {
+    if (!live(n)) continue;
+    const lit = hover ? near(n) : find ? hit(n) : true;
+    ctx.globalAlpha = lit ? 1 : .15;
+    ctx.fillStyle = css(n === hover ? "--fg" : "--c" + n.ci);
+    ctx.beginPath(); ctx.arc(n.x, n.y, r(n), 0, Math.PI * 2); ctx.fill();
+    if (hit(n)) { ctx.strokeStyle = css("--fg"); ctx.lineWidth = 2 / zoom; ctx.beginPath(); ctx.arc(n.x, n.y, r(n) + 4 / zoom, 0, Math.PI * 2); ctx.stroke() }
+    if (lit && (hover ? near(n) : find ? hit(n) : zoom >= 1.7 || n.deg >= Math.max(hub, 2))) { ctx.fillStyle = css(hover && n !== hover ? "--muted" : "--fg"); ctx.fillText(n.title.length > 32 ? n.title.slice(0, 31) + "…" : n.title, n.x, n.y + r(n) + 14 / zoom) }
+  }
+}
+function loop() { step(); draw(); frame = heat > .02 || drag ? requestAnimationFrame(loop) : 0 }
+function wake(h = 0) { heat = Math.max(heat, h); if (!frame) frame = requestAnimationFrame(loop) }
+const world = e => { const b = cv.getBoundingClientRect(); return [(e.clientX - b.left - W / 2 - ox) / zoom, (e.clientY - b.top - H / 2 - oy) / zoom] };
+const at = e => { const [x, y] = world(e); return nodes.find(n => live(n) && Math.hypot(n.x - x, n.y - y) < r(n) + 5 / zoom) || null };
+cv.onpointerdown = e => { drag = at(e); moved = false; pan = drag ? null : [e.clientX - ox, e.clientY - oy]; cv.setPointerCapture(e.pointerId) };
+cv.onpointermove = e => {
+  if (drag) { moved = true; [drag.x, drag.y] = world(e); wake(.3); return }
+  if (pan) { ox = e.clientX - pan[0]; oy = e.clientY - pan[1]; draw(); return }
+  const h = at(e); if (h !== hover) { hover = h; cv.style.cursor = h ? "pointer" : "grab"; draw() }
+};
+cv.onpointerup = () => { if (drag && !moved) location.href = noteUrl(drag.id); drag = pan = null };
+cv.onpointerleave = () => { hover = null; draw() };
+cv.onwheel = e => {
+  e.preventDefault();
+  const b = cv.getBoundingClientRect(), mx = e.clientX - b.left - W / 2, my = e.clientY - b.top - H / 2, z = Math.min(4, Math.max(.25, zoom * Math.exp(-e.deltaY / 400)));
+  ox = mx - (mx - ox) * z / zoom; oy = my - (my - oy) * z / zoom; zoom = z; draw();
+};
+$("find").oninput = e => { find = e.target.value.trim().toLowerCase(); draw() };
+for (const b of $("folders").querySelectorAll("[data-f]")) b.onclick = () => {
+  const f = b.dataset.f, keep = on.has(f) && on.size > 1;
+  keep ? on.delete(f) : on.add(f);
+  b.setAttribute("aria-pressed", on.has(f)); wake(.6);
+};
+addEventListener("resize", size); addEventListener("themechange", draw);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+document.fonts.ready.then(draw);
+size(); wake(1);
+</script>

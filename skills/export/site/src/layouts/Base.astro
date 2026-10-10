@@ -1,0 +1,51 @@
+---
+import "@fontsource/ia-writer-quattro/400.css";
+import "@fontsource/ia-writer-quattro/400-italic.css";
+import "@fontsource/ia-writer-quattro/700.css";
+import "@fontsource/ia-writer-mono/400.css";
+import "../styles/site.css";
+import { today } from "../lib/brain.js";
+import { icon } from "../lib/icons.js";
+
+// D: the brain from load(); active: the current tab; layout: "" (reading width), "wide" or "bare"
+const { D, title, active = "", layout = "" } = Astro.props;
+const owner = D.name || "My brain";
+const due = (D.cards || []).filter(c => c.due <= today()).length;
+const tabs = [["/", "today", "today", "spark"], ["/notes", "notes", "notes", "menu"], ["/ask", "ask", "ask", "chat"],
+  ...(D.cards ? [["/recall", "recall", "recall", "cards"]] : []), ["/insight", "insight", "insight", "graph"]];
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{title} · mindtix</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2326231e'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='18' text-anchor='middle' fill='%23ff8a5c'%3E%23%3C/text%3E%3C/svg%3E">
+<script is:inline>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t } catch {}</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/" aria-label="mindtix: today"><span class="dot" aria-hidden="true"></span>mindtix</a>
+  <nav class="tabs" aria-label="Main">
+    {tabs.map(([href, key, label, ic]) => <a href={href} aria-current={key === active ? "page" : undefined}><Fragment set:html={icon(ic)} />{label}{key === "recall" && due > 0 && <span class="badge" aria-label={`${due} due`}>{due}</span>}</a>)}
+  </nav>
+  <div class="tools">
+    <button class="searchbtn" type="button" id="open-search" aria-label="Search and commands"><span class="slash" aria-hidden="true">/</span><span class="label">search</span><kbd>⌘K</kbd></button>
+    <a class="iconbtn" href="/write" title="New note (N)" aria-label="New note" aria-current={active === "write" ? "page" : undefined}><Fragment set:html={icon("plus")} /></a>
+    <a class="iconbtn" href="/settings" title="Settings" aria-label="Settings" aria-current={active === "settings" ? "page" : undefined}><Fragment set:html={icon("settings")} /></a>
+    <a class="me" href="/profile" title={D.photo ? `${owner} · profile` : "Profile: add your picture"} aria-label="Profile" aria-current={active === "profile" ? "page" : undefined}>
+      {D.photo ? <img src={`/photo?v=${D.photoV}`} alt=""> : <span aria-hidden="true">{owner[0]}</span>}
+    </a>
+  </div>
+</header>
+<main class={layout}><slot /></main>
+<div id="palette" role="dialog" aria-modal="true" aria-label="Search and commands">
+  <div class="pbox">
+    <div class="pinput"><span class="slash" aria-hidden="true">/</span><input id="pinput" placeholder="search notes, or type an action…" autocomplete="off" spellcheck="false" aria-controls="presults"></div>
+    <div id="presults" role="listbox"></div>
+    <div class="pfoot"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div>
+  </div>
+</div>
+<script>import "../scripts/client.js";</script>
+</body>
+</html>

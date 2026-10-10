@@ -1,0 +1,59 @@
+---
+import Base from "../layouts/Base.astro";
+import { load, today } from "../lib/brain.js";
+import { activity, bars, bell, byFolder, columns, donut, esc, noteBars, rows, stats, sum, testBars } from "../lib/ui.js";
+
+// Insight: the AI's read of you (insight/, when shown) and the shape of the brain itself
+const D = load(), S = D.scores || {}, notes = D.notes, cards = D.cards || [];
+const HOW = { asked: "Asked here: you answered the test items", self: "Self: you wrote or stated it", inferred: "Inferred: estimated by the AI from your notes" };
+const tag = b => b?.method ? `<span class="tag" title="${esc(HOW[b.method] || b.method)}">${esc(b.method)}</span>` : "";
+const chart = (name, body, b, wide) => body ? `<section class="${wide ? "span" : ""}"><div class="head"><h2>${name} ${tag(b)}</h2></div>${body}${b?.source ? `<div class="src">${esc(b.source)}</div>` : ""}</section>` : "";
+const ocean = testBars(S.ocean, ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"]);
+const grit = testBars(S.grit, ["Consistency of interest", "Perseverance of effort"]);
+const riasec = testBars(S.riasec, ["Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"]);
+const axes = (S.mbti?.axes || []).map(a => `<div class="axis" title="${esc(a.left)} ${a.left_pct}% · ${esc(a.right)} ${100 - a.left_pct}%"><span>${esc(a.left)} ${a.left_pct}%</span><span class="split"><span class="fill" style="width:${a.left_pct}%"></span></span><span class="r">${100 - a.left_pct}% ${esc(a.right)}</span></div>`).join("");
+const you = [];
+if (S.iq?.high) you.push([`${S.iq.low}–${S.iq.high}`, "IQ, estimated"]);
+if (S.mbti?.type) you.push([S.mbti.type, "Type"]);
+if (S.grit?.overall) you.push([S.grit.overall.toFixed(1), "Grit, of 5"]);
+if (S.riasec?.code) you.push([S.riasec.code, "Holland code"]);
+const youCharts = [
+  chart("IQ estimate", S.iq?.high ? bell(S.iq.low, S.iq.high) : "", { method: "inferred", ...S.iq }, true),
+  chart("Big Five", ocean.length && bars(ocean), S.ocean),
+  chart("MBTI", axes && `<div class="bars">${axes}</div>`, S.mbti),
+  chart("Grit", grit.length && bars(grit), S.grit),
+  chart("Career interests", riasec.length && bars(riasec), S.riasec),
+].join("");
+const deg = {};
+for (const [a, b] of D.links) { deg[a] = (deg[a] || 0) + 1; deg[b] = (deg[b] || 0) + 1 }
+const brain = [[notes.length, "notes"], [sum(notes, "words").toLocaleString(), "words"], [D.links.length, "links"], [D.folders.length, "folders"]];
+if (cards.length) brain.push([cards.length, "recall cards"], [cards.filter(c => c.due <= today()).length, "due today"]);
+const linked = noteBars(notes.filter(n => deg[n.id]), n => deg[n.id], n => String(deg[n.id]));
+const boxes = [0, 1, 2, 3, 4, 5].map(b => ({ label: "box " + b, value: cards.filter(c => c.box === b).length }));
+const analysis = notes.filter(n => n.folder === "insight");
+---
+<Base D={D} title="Insight" active="insight" layout="wide">
+  <p class="eyebrow">{D.scores ? `Written by the AI from everything in your brain${S.updated ? " · updated " + S.updated : ""}` : "The shape of your brain"}</p>
+  <h1>Insight</h1>
+
+  {D.scores && (you.length > 0 || youCharts || D.knowledge?.length > 0) && <section class="section">
+    {you.length > 0 && <Fragment set:html={stats(you)} />}
+    <div class="cols" style="margin-top:48px" set:html={youCharts + chart("Knowledge · 0 never touched … 5 expert", D.knowledge?.length && bars(D.knowledge), { method: "inferred" }, true)} />
+    {!you.length && !youCharts && !D.knowledge?.length && <p class="lede">Nothing yet. Run <a href={"/ask?run=" + encodeURIComponent("/mindtix:reflect")} style="color:var(--accent)">/mindtix:reflect</a> to write it.</p>}
+  </section>}
+
+  <section class="section">
+    <div class="head"><h2>Your brain</h2><a href="/graph">Open the graph</a></div>
+    <Fragment set:html={stats(brain)} />
+    <div class="cols" style="margin-top:48px">
+      <section><div class="head"><h2>Notes by folder</h2></div><Fragment set:html={donut(byFolder(D, "notes"), "notes")} /></section>
+      <section><div class="head"><h2>Words by folder</h2></div><Fragment set:html={bars(byFolder(D, "words").map((b, _, all) => ({ ...b, max: all[0].value || 1, text: b.value.toLocaleString() })))} /></section>
+      <section class="span"><div class="head"><h2>Notes touched per week</h2></div><Fragment set:html={activity(notes, 16)} /></section>
+      {linked.length > 0 && <section><div class="head"><h2>Most connected</h2></div><Fragment set:html={bars(linked)} /></section>}
+      <section><div class="head"><h2>Longest notes</h2></div><Fragment set:html={bars(noteBars(notes, n => n.words, n => n.words.toLocaleString()))} /></section>
+      {cards.length > 0 && <section class="span"><div class="head"><h2>Recall cards by box · 0 new … 5 known</h2><a href="/recall">Recall</a></div><Fragment set:html={columns(boxes, "cards")} /></section>}
+    </div>
+  </section>
+
+  {analysis.length > 0 && <section class="section"><div class="head"><h2>Read the analysis</h2></div><Fragment set:html={rows(analysis)} /></section>}
+</Base>

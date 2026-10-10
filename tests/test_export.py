@@ -51,23 +51,29 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "MIND.md" in names and "knowledge/sql-joins.md" in names
     assert not any(n.startswith(("private/", "raw/imports/", "exports/", ".git/")) for n in names), names
 
-    # site: one HTML file; default is knowledge + projects only, "all" adds the rest but never private/
-    os.makedirs(os.path.join(brain, "self"), exist_ok=True)
-    open(os.path.join(brain, "self", "people.md"), "w", encoding="utf-8").write("# People\n\nA friend </script><script>alert(1)</script>\n")
-    assert "1 notes" in run("site", brain, os.path.join(out, "s.html"))
-    page = open(os.path.join(out, "s.html"), encoding="utf-8").read()
-    data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
-    assert [n["id"] for n in data["notes"]] == ["knowledge/sql-joins"] and "scores" not in data
-    assert {"box": 1, "due": "2026-10-10"} in data["cards"], "recall boxes feed the Stats charts"
-    assert "[[" not in data["notes"][0]["md"], "a link to a note that isn't exported becomes plain text"
-    assert data["name"] == "Ada Lovelace", "labels and markdown are stripped from About me"
-    run("site", brain, os.path.join(out, "a.html"), "all")
-    page = open(os.path.join(out, "a.html"), encoding="utf-8").read()
-    data = json.loads(page.split('id="data">', 1)[1].split("</script>", 1)[0])
-    ids = {n["id"] for n in data["notes"]}
-    assert {"knowledge/sql-joins", "self/people"} <= ids and not any(i.startswith(("private/", "raw/imports/")) for i in ids)
-    assert ["knowledge/sql-joins", "self/profile"] not in data["links"] and "(<#/n/self/people>)" not in page
-    assert "alert(1)" in json.dumps(data) and "<script>alert" not in page, "note text can't break out of the data block"
+    # site: sets up the Astro app in exports/site/ by default, remembers where, keeps the user's copy
+    site = os.path.join(brain, "exports", "site")
+    os.makedirs(site)
+    open(os.path.join(site, "index.html"), "w").write("old one-file export")
+    out_ = run("site", brain, "--no-install")
+    assert "copied" in out_ and os.path.isfile(os.path.join(site, "package.json")) and not os.path.exists(os.path.join(site, "index.html")), out_
+    assert not os.path.exists(os.path.join(site, "node_modules")) and not os.path.exists(os.path.join(site, "dist"))
+    conf = json.load(open(os.path.join(site, "mindtix.json")))
+    assert conf == {"brain": os.path.abspath(brain), "folders": "all"}, conf
+    assert json.load(open(os.path.join(brain, "exports", "site.json")))["path"] == site
+    open(os.path.join(site, "src", "mine.txt"), "w").write("my change")
+    assert "kept your copy" in run("site", brain, "knowledge", "projects", "--no-install")
+    assert os.path.isfile(os.path.join(site, "src", "mine.txt")), "a second run keeps their copy"
+    assert json.load(open(os.path.join(site, "mindtix.json")))["folders"] == "knowledge projects"
+    assert "replaced" in run("site", brain, "--replace", "--no-install")
+    assert not os.path.exists(os.path.join(site, "src", "mine.txt")) and json.load(open(os.path.join(site, "mindtix.json")))["folders"] == "knowledge projects"
+    other = os.path.join(tmp, "brain-site")
+    assert "copied" in run("site", brain, other, "--no-install") and os.path.isfile(os.path.join(other, "package.json"))
+    assert "brain-site" in run("site", brain, "--no-install"), "the folder is remembered"
+    open(os.path.join(tmp, "afile"), "w").write("x")
+    for bad in (os.path.join(brain, "knowledge", "site"), tmp, os.path.join(tmp, "afile")):
+        r = subprocess.run([sys.executable, SCRIPT, "site", brain, bad, "--no-install"], capture_output=True, text=True)
+        assert r.returncode == 1, (bad, r.stdout)
 
     r = subprocess.run([sys.executable, SCRIPT, "anki", tmp, os.path.join(tmp, "x.txt")], capture_output=True, text=True)
     assert r.returncode == 1 and "not a mindtix brain" in r.stdout

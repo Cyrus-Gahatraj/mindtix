@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+import { load } from "../lib/brain.js";
+import { icon } from "../lib/icons.js";
+import { fc, rows, title } from "../lib/ui.js";
+
+// The library: every note, filtered by folder (?f=) and by typing, newest first or A–Z
+const D = load(), f = Astro.url.searchParams.get("f") || "";
+const folder = D.folders.includes(f) ? f : "";
+const list = [...D.notes].sort((a, b) => b.mod - a.mod);
+const count = x => D.notes.filter(n => n.folder === x).length;
+---
+<Base D={D} title={folder ? title(folder) : "Notes"} active="notes">
+  <div class="pagehead">
+    <div class="grow"><p class="eyebrow">{D.notes.length} notes · {D.links.length} links</p><h1>{folder ? title(folder) : "Notes"}</h1></div>
+    <a class="btn ghost sm" href="/graph"><Fragment set:html={icon("graph")} />graph</a>
+    <a class="btn sm" href={"/write" + (folder ? "?folder=" + encodeURIComponent(folder) : "")}><Fragment set:html={icon("plus")} />new note</a>
+  </div>
+
+  <div class="filterbar">
+    <label class="search-wrap"><input class="field" id="filter" placeholder="filter notes  (F)" autocomplete="off" aria-label="Filter notes"></label>
+    <div class="seg" role="group" aria-label="Sort"><button type="button" data-sort="recent" aria-pressed="true">recent</button><button type="button" data-sort="title" aria-pressed="false">a–z</button></div>
+  </div>
+  <nav class="chips folderbar" aria-label="Folders">
+    <a class="chip" href="/notes" aria-current={folder ? undefined : "page"}>all <small>{D.notes.length}</small></a>
+    {D.folders.map(x => <a class="chip tag" style={`--c:${fc(x)}`} href={"/notes?f=" + encodeURIComponent(x)} aria-current={x === folder ? "page" : undefined}>{x} <small>{count(x)}</small></a>)}
+  </nav>
+  <div id="notes" set:html={rows(folder ? list.filter(n => n.folder === folder) : list, !folder)} />
+  <p class="empty-note" id="none" hidden>no note matches</p>
+</Base>
+
+<script>
+import { $ } from "../scripts/util.js";
+const box = $("notes"), list = box.querySelector(".list"), filter = $("filter");
+filter.oninput = () => {
+  const q = filter.value.trim().toLowerCase();
+  let any = false;
+  for (const el of box.querySelectorAll(".item")) {
+    const hit = !q || el.dataset.title.includes(q) || el.textContent.toLowerCase().includes(q);
+    el.hidden = !hit; any ||= hit;
+  }
+  $("none").hidden = any;
+};
+for (const b of document.querySelectorAll("[data-sort]")) b.onclick = () => {
+  for (const o of document.querySelectorAll("[data-sort]")) o.setAttribute("aria-pressed", o === b);
+  const items = [...box.querySelectorAll(".item")];
+  items.sort(b.dataset.sort === "title" ? (x, y) => x.dataset.title.localeCompare(y.dataset.title) : (x, y) => y.dataset.mod - x.dataset.mod);
+  list?.append(...items);
+};
+addEventListener("keydown", e => { if (e.key === "f" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName) && !e.metaKey && !e.ctrlKey) { e.preventDefault(); filter.focus() } });
+</script>

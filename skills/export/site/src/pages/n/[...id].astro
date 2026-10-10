@@ -1,0 +1,40 @@
+---
+import Base from "../../layouts/Base.astro";
+import { load, noteUrl, writable } from "../../lib/brain.js";
+import { icon } from "../../lib/icons.js";
+import { ago, fc, md, rows } from "../../lib/ui.js";
+
+const D = load(), id = Astro.params.id || "", n = D.byId[id];
+if (!n) return new Response("No such note", { status: 404 });
+const parts = id.split("/");
+const from = (D.back[id] || []).map(x => D.byId[x]).filter(Boolean);
+const to = D.links.filter(([a]) => a === id).map(([, b]) => D.byId[b]).filter(Boolean);
+const canEdit = writable().includes(n.folder);
+// The page shows the title itself, so the note's own "# Title" line is dropped
+const body = n.md.replace(/^\s*# [^\n]*\n/, "");
+---
+<Base D={D} title={n.title} active="notes">
+  <div class="notehead">
+    <nav class="crumbs" aria-label="Where"><a href="/notes">notes</a> / <a class="tagf" style={`--c:${fc(parts[0])}`} href={"/notes?f=" + encodeURIComponent(parts[0])}>{parts[0]}</a>{parts.slice(1, -1).map(p => <> / {p}</>)} / {parts.at(-1)}.md</nav>
+    <h1>{n.title}</h1>
+    <div class="meta">
+      <span>edited {ago(n.mod)}</span><span>{n.words.toLocaleString()} words · {Math.max(1, Math.ceil(n.words / 220))} min</span>
+      {from.length > 0 && <span>{from.length} backlink{from.length > 1 ? "s" : ""}</span>}
+      <span class="acts">
+        <a class="btn quiet sm" href={"/ask?draft=" + encodeURIComponent(`About [[${id}]]: `)}><Fragment set:html={icon("chat")} />ask about it</a>
+        {canEdit && <a class="btn quiet sm" href={"/write?id=" + encodeURIComponent(id)} title="Edit (E)"><Fragment set:html={icon("edit")} />edit</a>}
+      </span>
+    </div>
+  </div>
+  <article class="reader" set:html={md(body)} />
+  {(from.length > 0 || to.length > 0) && <div class="related">
+    {from.length > 0 && <section><div class="head"><h2>Linked from</h2></div><Fragment set:html={rows(from, true)} /></section>}
+    {to.length > 0 && <section><div class="head"><h2>Links to</h2></div><div class="linkchips">{to.map(t => <a href={noteUrl(t.id)}>{t.title}</a>)}</div></section>}
+  </div>}
+</Base>
+
+<script>
+import { typing } from "../../scripts/util.js";
+const edit = document.querySelector('a[href^="/write?id="]');
+addEventListener("keydown", e => { if (e.key === "e" && edit && !typing() && !e.metaKey && !e.ctrlKey) location.href = edit.href });
+</script>

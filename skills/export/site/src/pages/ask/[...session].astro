@@ -1,0 +1,183 @@
+---
+import Base from "../../layouts/Base.astro";
+import { load, today } from "../../lib/brain.js";
+import { COMMANDS, engine, hasSession, readLog, sessions } from "../../lib/ask.js";
+import { icon } from "../../lib/icons.js";
+import { answerHtml } from "../../lib/ui.js";
+
+const D = load(), session = Astro.params.session || "";
+if (session && !hasSession(session)) return Astro.redirect("/ask");
+const turns = session ? readLog(session) : [];
+const how = engine();
+const chats = sessions(), yesterday = today(-1);
+const groups = [["Today", chats.filter(c => c.id.startsWith(today()))], ["Yesterday", chats.filter(c => c.id.startsWith(yesterday))],
+  ["Earlier", chats.filter(c => !c.id.startsWith(today()) && !c.id.startsWith(yesterday))]].filter(([, l]) => l.length);
+const title = turns.length ? chats.find(c => c.id === session)?.title || "Ask" : "Ask";
+const ideas = [...(how.commands ? ["/mindtix:today", "/mindtix:recall"] : []), "What am I learning right now?", "What should I work on next?"];
+---
+<Base D={D} title={title} active="ask" layout="bare">
+  <div class="chatapp" id="app">
+    <aside class="chatside" aria-label="Chats">
+      <a class="btn ghost" href="/ask"><Fragment set:html={icon("plus")} />new chat</a>
+      {groups.map(([label, list]) => <>
+        <div class="group">{label}</div>
+        {list.map(c => <div class="chatlink" aria-current={c.id === session ? "page" : undefined} data-id={c.id}>
+          <a href={"/ask/" + c.id} title={c.title}>{c.title}</a>
+          <button class="iconbtn del" type="button" aria-label={"Delete chat: " + c.title} title="Delete"><Fragment set:html={icon("trash")} /></button>
+        </div>)}
+      </>)}
+    </aside>
+
+    <section class="chatmain">
+      <div class="thread" id="thread">
+        <div class="thread-in" id="chat" data-session={session} data-ready={how.ready ? "1" : ""}>
+          {turns.length ? turns.map(t => t.role === "user"
+            ? <div class="msg you">{t.content}</div>
+            : <div class="msg brain"><article class="reader" set:html={answerHtml(D, t.content)} /></div>)
+          : <div class="welcome" id="welcome">
+              <h1>What's on your mind?</h1>
+              {how.ready
+                ? <p class="lede">Ask about anything in your notes{how.commands ? ", or type / to run a mindtix command" : ""}. Try:</p>
+                : <p class="lede">Ask needs an AI first. <a href="/settings#chat" style="color:var(--accent)">Set one up in Settings →</a></p>}
+              {how.ready && <div class="ideas">{ideas.map(s => <button class={s.startsWith("/") ? "cmd-idea" : ""} type="button" data-idea={s}>{s}</button>)}</div>}
+            </div>}
+        </div>
+      </div>
+      <div class="composer-wrap">
+        <form class="composer" id="composer">
+          <div class="cmdmenu" id="cmdmenu" role="listbox" hidden></div>
+          <textarea id="q" rows="1" placeholder={how.commands ? "ask anything, or / for commands" : "ask anything about your notes"} aria-label="Message" disabled={!how.ready}></textarea>
+          <div class="bar">
+            <button class="iconbtn chattoggle" type="button" id="chats" aria-label="Chats"><Fragment set:html={icon("menu")} /></button>
+            <a class={"engine" + (how.ready ? "" : " off")} href="/settings#chat" title="Change in Settings">{how.label}</a>
+            <span class="keyhint">↵ send · ⇧↵ new line</span>
+            <button class="send" id="send" type="submit" aria-label="Send" disabled><Fragment set:html={icon("up")} /></button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+  <script type="application/json" id="cmds" set:html={JSON.stringify({ list: COMMANDS, on: how.commands })} />
+</Base>
+
+<script>
+import { Marked } from "marked";
+import { $, api, esc, toast } from "../../scripts/util.js";
+
+const chat = $("chat"), thread = $("thread"), q = $("q"), sendBtn = $("send"), menu = $("cmdmenu");
+const { list: COMMANDS, on: commandsOn } = JSON.parse($("cmds").textContent);
+const marked = new Marked({ renderer: { html: t => esc(typeof t === "string" ? t : t.text) } });
+const UP = sendBtn.innerHTML, STOP = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>';
+let session = chat.dataset.session || null, busy = null;
+const nearBottom = () => thread.scrollHeight - thread.scrollTop - thread.clientHeight < 120;
+const toBottom = (force) => { if (force || nearBottom()) thread.scrollTop = thread.scrollHeight };
+toBottom(true);
+
+// Composer: grows with the text; ↵ sends, ⇧↵ is a new line
+const fit = () => { q.style.height = "auto"; q.style.height = Math.min(q.scrollHeight, 220) + "px"; sendBtn.disabled = !busy && !q.value.trim() };
+q.addEventListener("input", () => { fit(); commands() });
+q.addEventListener("keydown", e => {
+  if (!menu.hidden && onMenuKey(e)) return;
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("composer").requestSubmit() }
+});
+$("composer").onsubmit = e => { e.preventDefault(); busy ? busy.abort() : send(q.value) };
+
+// / opens the mindtix commands (they run through Claude Code)
+let shown = [], sel = 0;
+function commands() {
+  const m = /^\/([\w:-]*)$/.exec(q.value);
+  if (!m) return (menu.hidden = true);
+  const w = m[1].replace(/^mindtix:?/, "");
+  shown = COMMANDS.filter(([name]) => name.startsWith(w) || ("mindtix:" + name).startsWith(m[1]));
+  sel = 0;
+  menu.innerHTML = (commandsOn ? "" : `<div class="note">Commands run through Claude Code. <a href="/settings#chat">Switch the engine in Settings</a>.</div>`) +
+    shown.map(([name, hint, what], i) => `<div class="cmd" role="option" data-i="${i}" aria-selected="${i === 0}"><b>/mindtix:${name} <i>${esc(hint)}</i></b><span>${esc(what)}</span></div>`).join("");
+  menu.hidden = !shown.length && commandsOn;
+}
+function paintMenu() { menu.querySelectorAll(".cmd").forEach(el => el.setAttribute("aria-selected", +el.dataset.i === sel)) }
+function choose(i) {
+  const [name, hint] = shown[i];
+  menu.hidden = true;
+  if (!commandsOn) return;
+  if (hint && !hint.startsWith("[")) { q.value = `/mindtix:${name} `; fit(); q.focus() }
+  else send(`/mindtix:${name}`);
+}
+function onMenuKey(e) {
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + shown.length) % shown.length; paintMenu(); return true }
+  if ((e.key === "Enter" || e.key === "Tab") && shown.length) { e.preventDefault(); choose(sel); return true }
+  if (e.key === "Escape") { menu.hidden = true; return true }
+  return false;
+}
+menu.onmousedown = e => { const el = e.target.closest(".cmd"); if (el) { e.preventDefault(); choose(+el.dataset.i) } };
+
+// One turn: stream the answer in, showing Claude Code's steps as they happen
+async function send(text) {
+  text = text.trim();
+  if (!text || busy) return;
+  $("welcome")?.remove();
+  q.value = ""; fit(); menu.hidden = true;
+  chat.insertAdjacentHTML("beforeend", `<div class="msg you">${esc(text)}</div><div class="msg brain"><div class="steps"></div><article class="reader"><span class="thinking"></span></article></div>`);
+  const box = chat.lastElementChild, steps = box.querySelector(".steps"), out = box.querySelector(".reader");
+  toBottom(true);
+  busy = new AbortController();
+  sendBtn.innerHTML = STOP; sendBtn.disabled = false; sendBtn.setAttribute("aria-label", "Stop");
+  let raw = "", frame = 0;
+  const paint = () => { frame = 0; out.innerHTML = marked.parse(raw); toBottom() };
+  const settle = () => steps.querySelectorAll(".live").forEach(s => s.classList.remove("live"));
+  try {
+    const r = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session, question: text }), signal: busy.signal });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.statusText);
+    const reader = r.body.getReader(), dec = new TextDecoder();
+    let buf = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      for (let i; (i = buf.indexOf("\n")) >= 0; buf = buf.slice(i + 1)) {
+        const ev = JSON.parse(buf.slice(0, i));
+        if (ev.t === "session" && !session) { session = ev.v; history.replaceState(null, "", "/ask/" + session); listChat(session, text) }
+        else if (ev.t === "text") { raw += ev.v; frame ||= requestAnimationFrame(paint) }
+        else if (ev.t === "step") { settle(); raw += raw && !raw.endsWith("\n\n") ? "\n\n" : ""; steps.insertAdjacentHTML("beforeend", `<div class="step live">${esc(ev.v)}</div>`); toBottom() }
+        else if (ev.t === "done") { cancelAnimationFrame(frame); out.innerHTML = ev.html || "<p class=\"muted\">(no answer)</p>" }
+        else if (ev.t === "error") throw new Error(ev.v);
+      }
+    }
+  } catch (err) {
+    cancelAnimationFrame(frame);
+    if (raw) paint(); else out.innerHTML = "";
+    out.insertAdjacentHTML("afterend", busy?.signal.aborted ? `<p class="stopped">Stopped.</p>` : `<p class="failed">${esc(err.message)}</p>`);
+    if (!busy?.signal.aborted && !raw) q.value = text;
+  }
+  settle();
+  busy = null;
+  sendBtn.innerHTML = UP; sendBtn.setAttribute("aria-label", "Send"); fit(); q.focus();
+  toBottom();
+}
+
+// Ideas, ?run= (send now) and ?draft= (fill in)
+for (const b of document.querySelectorAll("[data-idea]")) b.onclick = () => send(b.dataset.idea);
+const params = new URLSearchParams(location.search);
+if (chat.dataset.ready) {
+  if (params.get("run")) { history.replaceState(null, "", location.pathname); send(params.get("run")) }
+  else if (params.get("draft")) { q.value = params.get("draft"); history.replaceState(null, "", location.pathname); fit(); q.focus(); q.setSelectionRange(q.value.length, q.value.length) }
+  else q.focus();
+}
+
+// Chats: a new one joins the list at once; delete; the list on small screens
+function listChat(id, text) {
+  const side = document.querySelector(".chatside"), row = document.createElement("div");
+  row.className = "chatlink"; row.dataset.id = id; row.setAttribute("aria-current", "page");
+  row.innerHTML = `<a href="/ask/${id}"></a>`;
+  row.firstChild.textContent = row.firstChild.title = text.split("\n")[0].slice(0, 80);
+  let group = side.querySelector(".group");
+  if (group?.textContent !== "Today") side.querySelector(".btn").after(group = Object.assign(document.createElement("div"), { className: "group", textContent: "Today" }));
+  group.after(row);
+  document.title = row.firstChild.textContent + document.title.slice(document.title.indexOf(" · "));
+}
+for (const b of document.querySelectorAll(".chatlink .del")) b.onclick = async () => {
+  const row = b.closest(".chatlink"), id = row.dataset.id;
+  if (!confirm("Delete this chat? Its log in logs/ goes too.")) return;
+  try { await api("/api/sessions/" + id, {}, "DELETE"); id === session ? (location.href = "/ask") : row.remove() } catch (e) { toast(e.message, true) }
+};
+$("chats").onclick = () => $("app").classList.toggle("side-open");
+</script>

@@ -1,0 +1,133 @@
+---
+import Base from "../layouts/Base.astro";
+import { load, noteUrl, readNote, writable, WriteError } from "../lib/brain.js";
+import { icon } from "../lib/icons.js";
+
+// /write: a new note (?folder= picks the folder); /write?id=folder/name: edit that note
+const D = load(), folders = writable();
+const id = Astro.url.searchParams.get("id") || "";
+let note = null;
+try { note = id ? readNote(id) : null } catch (e) { if (!(e instanceof WriteError)) throw e }
+if (id && !note) return Astro.redirect("/write");
+const folder = Astro.url.searchParams.get("folder");
+const pick = folders.includes(folder) ? folder : folders.includes("knowledge") ? "knowledge" : folders[0];
+const back = note ? noteUrl(id) : "/notes";
+---
+<Base D={D} title={note ? "Edit · " + id : "New note"} active="write" layout="bare">
+  <form class="writer" id="write" data-id={note ? id : ""} data-mod={note ? String(note.mod) : ""}>
+    <div class="writebar">
+      <a class="iconbtn" href={back} aria-label="Back" title="Back"><Fragment set:html={icon("back")} /></a>
+      <div class="pathpick">
+        {note ? <span class="path">{id}.md</span> : <>
+          <select class="field" id="folder" aria-label="Folder">{folders.map(f => <option selected={f === pick}>{f}</option>)}</select>
+          <span>/</span>
+          <input class="field" id="name" placeholder="name-from-the-title" aria-label="File name" spellcheck="false" autocomplete="off"><span class="md">.md</span>
+        </>}
+      </div>
+      <button class="btn ghost sm" type="button" id="toggle"><Fragment set:html={icon("eye")} /><span>preview</span></button>
+      <button class="btn sm" type="submit">save <kbd>⌘S</kbd></button>
+    </div>
+    <div class="editor-wrap">
+      <textarea class="editor" id="text" aria-label="Note, in markdown" spellcheck="true" placeholder="# Title&#10;&#10;Write in markdown. Type [[ to link a note.">{note ? note.src : ""}</textarea>
+      <div class="suggest" id="suggest" role="listbox" hidden></div>
+    </div>
+    <article class="reader preview" id="preview" hidden></article>
+  </form>
+</Base>
+
+<script>
+import { $, api, esc, noteUrl, toast } from "../scripts/util.js";
+const form = $("write"), text = $("text"), preview = $("preview"), toggle = $("toggle"), suggest = $("suggest");
+const editing = form.dataset.id, mod = form.dataset.mod ? +form.dataset.mod : null;
+const DRAFT = "mindtix-draft:" + (editing || "new");
+let dirty = false;
+
+const slug = s => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^\p{L}\p{N}/]+/gu, "-").replace(/^-+|-+$|(?<=\/)-+|-+(?=\/)/g, "");
+const titleOf = () => (text.value.match(/^# (.+)$/m) || [])[1] || "";
+const noteId = () => editing || $("folder").value + "/" + slug($("name").value.trim() || titleOf());
+const grow = () => { text.style.height = "auto"; text.style.height = Math.max(text.scrollHeight, innerHeight * .66) + "px" };
+
+// A draft survives a closed tab; it's only restored onto the same version of the note
+try {
+  const d = JSON.parse(localStorage.getItem(DRAFT) || "null");
+  if (d && d.text !== text.value && (editing ? d.mod === mod : !text.value)) { text.value = d.text; dirty = true; toast("Restored your unsaved draft") }
+} catch {}
+let timer;
+const keep = () => { clearTimeout(timer); timer = setTimeout(() => { try { localStorage.setItem(DRAFT, JSON.stringify({ text: text.value, mod })) } catch {} }, 400) };
+const placeholder = () => { if (!editing) $("name").placeholder = slug(titleOf()) || "name-from-the-title" };
+text.addEventListener("input", () => { dirty = true; grow(); keep(); placeholder(); complete() });
+addEventListener("beforeunload", e => { if (dirty) e.preventDefault() });
+grow(); placeholder();
+text.focus();
+if (!editing && !text.value) { text.value = "# "; text.setSelectionRange(2, 2) }
+
+// Preview, rendered by the server so [[links]] resolve the same way as on note pages
+toggle.onclick = async () => {
+  const showing = !preview.hidden;
+  if (!showing) preview.innerHTML = (await api("/api/preview", { md: text.value }).catch(e => ({ html: `<p class="error">${esc(e.message)}</p>` }))).html;
+  preview.hidden = showing; text.closest(".editor-wrap").hidden = !showing;
+  toggle.querySelector("span").textContent = showing ? "preview" : "edit";
+  if (showing) text.focus();
+};
+
+form.onsubmit = async e => {
+  e.preventDefault();
+  const id = noteId();
+  if (id.endsWith("/")) return toast("Give the note a title first.", true);
+  try {
+    const r = await api("/api/notes", { id, md: text.value, mod });
+    dirty = false;
+    try { localStorage.removeItem(DRAFT) } catch {}
+    location.href = noteUrl(r.id);
+  } catch (err) { toast(err.message, true) }
+};
+addEventListener("keydown", e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); form.requestSubmit() }
+});
+
+// [[ autocomplete: suggests notes while typing a link, placed at the caret
+let notes = null, hits = [], sel = 0;
+function caret() {
+  const m = document.createElement("div"), cs = getComputedStyle(text);
+  for (const k of ["font", "lineHeight", "letterSpacing", "padding", "border", "tabSize", "width"]) m.style[k] = cs[k];
+  Object.assign(m.style, { position: "absolute", visibility: "hidden", whiteSpace: "pre-wrap", overflowWrap: "break-word", top: "0", left: "0" });
+  m.textContent = text.value.slice(0, text.selectionStart);
+  const mark = m.appendChild(document.createElement("span"));
+  mark.textContent = "​";
+  text.parentElement.append(m);
+  const at = { top: mark.offsetTop + parseFloat(cs.lineHeight), left: Math.min(mark.offsetLeft, text.clientWidth - 320) };
+  m.remove();
+  return at;
+}
+async function complete() {
+  const q = /\[\[([^\]\n|]*)$/.exec(text.value.slice(0, text.selectionStart))?.[1];
+  if (q === undefined) return (suggest.hidden = true);
+  notes ||= await fetch("/search.json").then(r => r.json()).catch(() => []);
+  const w = q.toLowerCase();
+  hits = notes.filter(n => n.id.toLowerCase().includes(w) || n.title.toLowerCase().includes(w)).slice(0, 8);
+  if (!hits.length) return (suggest.hidden = true);
+  sel = 0;
+  suggest.innerHTML = hits.map((n, i) => `<div role="option" data-i="${i}" aria-selected="${i === 0}">${esc(n.title)}<small>${esc(n.id)}</small></div>`).join("");
+  Object.assign(suggest.style, Object.fromEntries(Object.entries(caret()).map(([k, v]) => [k, v + "px"])));
+  suggest.hidden = false;
+}
+function pick(i) {
+  const end = text.selectionStart, start = text.value.lastIndexOf("[[", end) + 2;
+  const after = text.value.slice(end).startsWith("]]") ? "" : "]]";
+  text.setRangeText(hits[i].id + after, start, end, "end");
+  suggest.hidden = true;
+  text.dispatchEvent(new Event("input"));
+  text.focus();
+}
+text.addEventListener("keydown", e => {
+  if (suggest.hidden) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + hits.length) % hits.length;
+    suggest.querySelectorAll("[data-i]").forEach(el => el.setAttribute("aria-selected", +el.dataset.i === sel));
+  } else if (e.key === "Enter" || e.key === "Tab") { e.preventDefault(); pick(sel) }
+  else if (e.key === "Escape") suggest.hidden = true;
+});
+suggest.onmousedown = e => { const el = e.target.closest("[data-i]"); if (el) { e.preventDefault(); pick(+el.dataset.i) } };
+text.addEventListener("blur", () => setTimeout(() => { suggest.hidden = true }, 100));
+</script>

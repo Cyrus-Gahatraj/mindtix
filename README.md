@@ -79,7 +79,7 @@ Then open your agent in an empty folder and say "set up mindtix". See
 | `/mindtix:know-me` | A short interview round that fills in `self/` |
 | `/mindtix:reflect [test]` | Rewrites `insight/`, or runs a personality test |
 | `/mindtix:connect-dots` | Finds how everything you know connects |
-| `/mindtix:export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or a website of your brain: static (graph, search, backlinks, insight), live with an Ask chatbot that remembers, or custom |
+| `/mindtix:export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or your brain as a local web app (Today, Notes, Ask that runs `/mindtix` commands, Write, Recall, Insight, Graph) |
 | `/mindtix:forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
 | `/mindtix:tidy` | Health check: broken links, index drift, secrets, overdue cards |
 | `/mindtix:review` | Weekly review: focus, learning progress, what to grow |

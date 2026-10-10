@@ -56,7 +56,7 @@ def install(dest, uninstall=False):
         if uninstall:
             continue
         shutil.copytree(os.path.join(SKILLS, name), target,
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "node_modules", "dist", ".astro"))
         for root, _, files in os.walk(target):  # SKILL.md and the template it ships
             for f in files:
                 if f.endswith(".md"):

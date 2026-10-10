@@ -1,7 +1,50 @@
 # Changelog
 
-## Unreleased
+## 1.3.0
 
+- **The site, redesigned in "source mode":** it looks like a markdown file being written.
+  - **Colors:** oat paper with warm ink, or night ink in dark mode; one vermilion accent,
+    ink-blue links, highlighter selections, and a colour per folder (`#tags`, graph, charts).
+  - **Type:** iA Writer Quattro and Mono, bundled so it works offline.
+  - **Markdown markers:** hanging `#` on headings, `[[ ]]` on links between notes, `- ` bullets,
+    fenced code, `> [!callout]` tiles, `<!-- notes -->`, a `---` frontmatter header on Today,
+    and Claude Code's steps as a `- [x]` task list.
+  - **Profile:** the avatar (top right) opens it: your picture, added there and cropped to a
+    square in the browser, saved as `self/photo.jpg`; About me from MIND.md; your `self/` notes.
+    The top bar says mindtix.
+  - **Navigation:** a top bar (`today notes ask recall insight`, the current one in `[ ]`) that
+    becomes a bottom tab bar on phones, and ⌘K for search and actions everywhere.
+  - **Today:** greeting, quick capture into `raw/notes/<date>.md`, due cards, the last chat,
+    learning now, recent notes and projects.
+  - **Notes:** a library with filter, folder chips and sort. Note pages have Edit (E), "Ask
+    about it", backlinks and outgoing links.
+  - **Ask:** streams, and the Claude Code engine (default when installed) runs the `/mindtix`
+    commands with a `/` menu, shows each step (Reading…, Editing…), has a Stop button that keeps
+    the partial answer, and keeps one Claude Code session per chat. Chats can be deleted.
+  - **Write:** `[[` autocomplete, drafts that survive a closed tab, and a warning before leaving
+    unsaved work.
+  - **Recall:** keyboard (Space, 1, 2), progress, and an end-of-round summary.
+  - **Graph:** only on its own page, with highlight, folder filters, zoom and pan.
+  - **Settings:** chat engine (Claude Code model and edits, or an API AI), folders, theme and
+    keyboard shortcuts.
+  - Stats moved into Insight. The old `/all`, `/stats` and `/f/<folder>` addresses redirect.
+- **`export site` is one local Astro app you own, set up without questions:**
+  `export.py site` copies `skills/export/site/` (never linked) into `exports/site/` in the brain,
+  or a folder you name, which is remembered in `exports/site.json`. It writes `mindtix.json`
+  (the brain's path and folders, so it runs from anywhere) and runs `npm install`. A copy that's
+  already there is kept; `--replace` updates it. Start it with `npm run dev` on `127.0.0.1:4321`. It reads the notes on every request and has notes,
+  backlinks, folders, index, graph, ⌘K search, stats and insight, plus:
+  - **Ask:** the chatbot that remembers.
+  - **Write:** new notes and edits; new notes get a line in `INDEX.md`; it refuses insight/,
+    private/, logs/, secrets and stale edits.
+  - **Recall:** due cards, Leitner boxes, `mistakes.md` and `## Log`, like `/mindtix:recall`.
+  - It answers only to 127.0.0.1, and writes must be JSON.
+  - **No AI set up?** The Ask page asks for one (Claude, or an OpenAI-compatible endpoint with an
+    optional key and model), saves it to the brain's `.env` and keeps `.env` gitignored. Keys
+    never go back to the page. Ask shows which AI it uses, with a link to change it. The export
+    report says so in its last line.
+  - **Removed:** the static one-file site (`site.html`, `export.py site`) and `serve.py` (live).
+  - **CI:** runs the self-check (`npm test`) and an Astro build.
 - **`export site` charts:** a Stats page (donut of notes by folder, words by folder, weekly
   activity, most connected and longest notes, recall cards by box, knowledge levels); home gets
   the folder donut and activity; each folder page gets its activity and longest notes. Every
