@@ -31,10 +31,12 @@ from `s`. Never edit the state or due date by hand; grade through the script.
    - `easy`: instant, sure, and trivially so
 5. **Record it** (from the brain root):
    ```sh
-   python3 "<this skill's dir>/srs.py" grade . <topic> "<question, or its unique start>" <rating> --sure|--unsure [--note "<what they got wrong>"]
+   python3 "<this skill's dir>/srs.py" grade . <topic> "<question, or its unique start>" <rating> --sure|--unsure [--note "<what they got wrong>"] [--cause "<type>: <why>"]
    ```
    It rewrites the card, appends to `learning/reviews.csv`, and on `again` adds a row to
-   `learning/mistakes.md` (with `--note` as the mistake). If it says 0 or 2+ cards match,
+   `learning/mistakes.md` (with `--note` as the mistake). Give a miss its type in `--cause` when
+   you can tell: `slip:` (knew it, careless), `misconception:` (believed something wrong) or
+   `prereq <module>:` (a missing earlier idea). If it says 0 or 2+ cards match,
    pass more of the question.
 6. **Hypercorrection:** a card they got wrong while **sure** is the one most worth fixing.
    Ask it once more at the end of the round (don't grade it twice), and say in one line why
@@ -57,5 +59,6 @@ Wozniak's guides):
 - **At most 10 new cards per pass.** Card what would take more than a few minutes to look up
   again; skip trivia.
 - **Always a short answer** (12 words or fewer) after ` :: `.
-- A new card is `- [b0 · due <tomorrow>] <question> :: <answer>`; the script adds the state on
-  its first grade.
+- Add new cards with the script, which checks them and records how they were made:
+  `python3 "<this skill's dir>/srs.py" add . <topic> "<question>" --answer "<answer>" --via capture|learn:<format>`.
+  It writes `- [b0 · due <tomorrow>] <question> :: <answer>`; the state comes on its first grade.

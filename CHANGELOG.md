@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.6.0
+
+- **Mindtix learns how you learn.** `/mindtix reflect` writes `insight/learning.md` from what
+  actually happened, not from what you say you prefer: which teaching formats lead to mastery
+  and to cards you still remember days later (with the numbers, and "too early" until there are
+  enough), how well your confidence matches your answers, your mix of mistakes, and a
+  **Teaching plan** that `/mindtix learn` follows.
+- **`learn` teaches by evidence:**
+  - Every session uses one of four formats (`worked`, `build`, `socratic`, `explain`), chosen
+    from the Teaching plan, with another tried about one session in four.
+  - A pretest comes before each module, and hints come up a three-rung ladder.
+  - Novices get faded worked examples.
+  - Explain-backs are saved under `## In my words`.
+  - A module is ticked only after an unaided redo and 4/5 on unseen questions, and the next
+    module is one whose prerequisites are done.
+  - A miss caused by a missing prerequisite reopens that module.
+- **Mistakes have a type:** `slip:`, `misconception:` or `prereq <module>:` (`srs.py grade
+  --cause`).
+- **`srs.py add`** writes new cards (refusing yes/no questions, ones over 160 characters and
+  duplicates) and records how each was made. **`srs.py stats [--days N]`** prints recall rate
+  vs predicted, calibration, first-review retention by format, topics and leeches. `review`
+  shows the week's.
+
 ## 1.5.0
 
 - **FSRS scheduling.** Recall cards are scheduled with FSRS-5 (the algorithm Anki uses) instead of

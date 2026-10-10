@@ -80,6 +80,7 @@ Rules for both:
 
    ## Recall
    - [b0 · due YYYY-MM-DD] A question to answer from memory (due tomorrow) :: short answer
+   (added with `srs.py add … --via capture`, see "Writing cards" in recall.md)
 
    ## Log
    - YYYY-MM-DD capture: from raw/notes/...
@@ -89,7 +90,9 @@ Rules for both:
 
    Keep their ideas and examples, fill gaps, and **correct mistakes** marked
    "(corrected: you wrote X)". Anything well beyond their notes goes under `## Going further`.
-   Cards follow "Writing cards" in `recall.md` (one idea each, no yes/no, at most 10 per pass).
+   Write the page, then add its cards with `python3 "<this skill's dir>/srs.py" add . <topic>
+   "<question>" --answer "<answer>" --via capture`, following "Writing cards" in `recall.md` (one
+   idea each, no yes/no, at most 10 per pass).
    `## Log` and `## Recall` are shared with `/mindtix learn` and `/mindtix recall`; append,
    never rewrite.
 4. **Report** in a few lines: what was created or updated, corrections made, anything

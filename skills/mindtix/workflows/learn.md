@@ -7,13 +7,14 @@ like learning. So ask before telling, make the user try first, and explain only 
 they're stuck on. Method: `docs/learning.md` in the mindtix repo.
 
 Work from the brain root (the folder with `MIND.md`); if there is none, suggest
-`/mindtix init`. **Before any mode**, read: how they like to learn in `MIND.md`, their level
-in `insight/knowledge.md`, `learning/<topic>/` if it exists, `knowledge/<topic>.md`, and
-`raw/notes/` on the topic. Pitch everything just above their level: hard enough to
-struggle, not so hard they guess.
+`/mindtix init`. **Before any mode**, read: the **Teaching plan** in `insight/learning.md`,
+their level in `insight/knowledge.md`, `learning/<topic>/` if it exists, `knowledge/<topic>.md`,
+and `raw/notes/` on the topic. Pitch everything just above their level: hard enough to
+struggle, not so hard they guess. "How I like to learn" in `MIND.md` is only a first guess;
+what `insight/learning.md` measured wins.
 
 Pick the mode from the arguments or what they say. If unclear: no `learning/<topic>/` yet → **start**;
-otherwise **teach** the next unchecked module.
+otherwise **teach** the next module.
 
 ## start: interview + map
 1. **Interview**, 3-5 short questions at once: what it's for, by when, what they already
@@ -25,19 +26,44 @@ otherwise **teach** the next unchecked module.
 3. Write `learning/<topic>/map.md`: goal, deadline, level at start, how they'll be tested,
    a `- [ ]` checklist of modules with `(needs: …)`, stuck points, best explanations. Add
    it to `INDEX.md` under "Learning now".
-4. Go straight into **teach** for module 1.
+4. Go straight into **teach** for the first module.
 
-## teach: build first
-1. **Build first.** The smallest runnable thing (or concrete exercise) that shows the idea,
-   plus a tiny task to change it. Run code yourself first. Use examples from their own
-   projects and interests (`projects/`, `hobbies/`).
-2. **Let them try.** When stuck, explain **only that part**, at their level, a hint before
-   the answer. Offer it at two levels (beginner, expert) if it helps.
-3. **Redo without help.** Once it works, they go back to the start and do the whole task
+## teach: one module
+
+**Which module:** a module marked `(review)` comes first, opening with 2 questions on it
+(both right → untick the mark; a miss → teach it again). Otherwise the first unchecked module
+whose `(needs: …)` are all ticked.
+
+**Which format**, from one closed list so the brain can count what works:
+
+| Format | What it is |
+|---|---|
+| `worked` | A fully worked example, then the same kind of problem with the last step blank, then the last two, until they do it all (faded examples) |
+| `build` | The smallest runnable thing that shows the idea, plus a small change for them to make |
+| `socratic` | Questions only, until they find the idea themselves |
+| `explain` | A short explanation at their level, then practice straight away |
+
+- Use the Teaching plan's default for their level. No plan yet: worked examples for levels
+  0-1 and build-first for 2 and up (beginners learn more from worked examples; past that
+  they get in the way).
+- **Try something else** when there is no plan and a format has fewer than 2 sessions (rotate
+  through them), or when the plan names a "Try next" format and the last 3 sessions all used
+  the default. Say it in one line: "trying worked examples today to see what sticks".
+
+**The session:**
+1. **Pretest:** 2-3 quick questions on the module before teaching anything. Trying first
+   helps even when they get it wrong. 3/3 right → tick it and move on.
+2. **Teach in the chosen format.** Use examples from their own projects and interests
+   (`projects/`, `hobbies/`). Run code yourself first.
+3. **Let them try.** When stuck, climb the hint ladder one rung at a time, and count the rungs:
+   a question that nudges → point at the exact spot → one worked step. Never the whole answer.
+4. **Redo without help.** Once it works, they go back to the start and do the whole task
    alone. This is where the learning happens; don't skip it.
-4. **Theory last**, in short chunks tied to what they built, each ending with 1-2 questions
-   answered from memory.
-5. Tick the module in `map.md` once they can redo it unaided.
+5. **Explain-back:** in 3-5 plain sentences with one example of their own. Grade it against
+   the source, name what's missing, and save it (see below).
+6. **Mastery check:** 5 questions they haven't seen, mixed in with a neighbouring module.
+   **Tick the module only after an unaided redo and 4/5.** Otherwise it stays open; a module
+   can take several sessions.
 
 ## quiz: make them produce
 - **Socratic:** why and what-if questions until they find the gap themselves. Never hand
@@ -49,7 +75,7 @@ otherwise **teach** the next unchecked module.
 - **Checker:** they show their work; check the steps, not just the answer, and point to a
   shorter path. Don't rewrite it.
 
-Correct in 1-2 lines with a tiny example.
+Ask "sure or guessing?" before you grade. Correct in 1-2 lines with a tiny example.
 
 ## diagnose: find the root
 When mistakes repeat, read `learning/mistakes.md`, every `sessions.md`, and the `missed:`
@@ -62,15 +88,24 @@ question at a time, with a time limit (30-60 s per answer, or what the real thin
 Push back on vague answers. Score at the end, name 2-3 fixes, raise the difficulty next round.
 
 ## Save every session
-- Append to `learning/<topic>/sessions.md`:
+- Append to `learning/<topic>/sessions.md`, always with the format (for quiz, spar and
+  diagnose, the mode is enough):
   ```markdown
-  ## YYYY-MM-DD · <mode>
-  - Task: … · Produced: … · Score: 3/5 · Redid without help: yes
-  - Missed: …
+  ## YYYY-MM-DD · teach · worked
+  - Module: spread · Pretest: 1/3 · Hints: 2 · Redid without help: yes · Mastery: 4/5
+  - Produced: … · Missed: …
   ```
-- Each miss: one row in `learning/mistakes.md` (date, topic, mistake, guessed root cause), and
-  a card in `knowledge/<topic>.md` `## Recall`: `- [b0 · due <tomorrow>] <question> :: <answer>`,
-  following "Writing cards" in `recall.md`.
+- Each miss: one row in `learning/mistakes.md`. Start the root-cause cell with its type:
+  `slip:` (knew it, careless), `misconception:` (believed something wrong) or
+  `prereq <module>:` (a missing earlier idea). A `prereq` miss marks that module `(review)`
+  in `map.md` and unticks it.
+- Cards for what they learned, following "Writing cards" in `recall.md`, each through the
+  script so the brain knows which format made it (write `knowledge/<topic>.md` first if it's new):
+  ```sh
+  python3 "<this skill's dir>/srs.py" add . <topic> "<question>" --answer "<short answer>" --via learn:<format>
+  ```
+- Their explain-back goes under `## In my words` in `knowledge/<topic>.md`:
+  `- YYYY-MM-DD: "<what they said>" (missed: …)`. Later sessions ask for it again from scratch.
 - What they now understand goes into `knowledge/<topic>.md` (shape in `/mindtix capture`):
   the code they built, why it works, connections. Add a `## Log` line:
   `- YYYY-MM-DD learn <mode>: score 3/5, missed: …`.

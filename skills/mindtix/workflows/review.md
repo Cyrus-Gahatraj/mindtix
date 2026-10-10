@@ -7,7 +7,9 @@
    they wonder about), topics in `learning/` that moved and ones that stalled, projects that
    went quiet, open questions, and files in `raw/` that `/mindtix capture` hasn't processed.
 3. **Learning check:** modules ticked this week in each `learning/<topic>/map.md`, scores in
-   `sessions.md`, new rows in `learning/mistakes.md`, and how many recall cards are due.
+   `sessions.md`, new rows in `learning/mistakes.md`, and how many recall cards are due. Run
+   `python3 "<this skill's dir>/srs.py" stats . --days 7` for the week's recall rate,
+   calibration and leeches.
 4. **Run `/mindtix tidy` in report-only mode** and keep the count of problems.
 5. **Check before you claim.** Anything about git or ignore rules must be confirmed with a
    command (`git check-ignore -v`, `git status`, `git log`) first; leave out what you can't confirm.
@@ -15,7 +17,9 @@
    - what they focused on, and what that says about them (`[inferred]`)
    - patterns: repeated topics, unfinished threads, contradictions
    - learning: progress per topic, the most repeated mistake (suggest
-     `/mindtix learn diagnose` if one repeats), due cards (offer a `/mindtix recall` round)
+     `/mindtix learn diagnose` if one repeats), due cards (offer a `/mindtix recall` round),
+     and one line on calibration and the mistake mix (slips, misconceptions, prerequisites).
+     If it contradicts the Teaching plan in `insight/learning.md`, suggest `/mindtix reflect`
    - housekeeping: unprocessed `raw/` files, tidy problems
 7. **Propose growth:** at most 3 changes, each justified by real content (e.g. "8 notes
    about chess sit in `knowledge/`, so give chess its own `hobbies/chess/` folder"). If

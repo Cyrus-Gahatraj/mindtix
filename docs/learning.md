@@ -43,6 +43,32 @@ yourself holds up. So the AI's main job is to make you produce, not to explain m
    level and links it, instead of writing a weaker one.
 6. **Fix the root, not the symptom.** Repeated mistakes usually share one missing idea.
 
+## How mindtix learns how you learn
+
+"Learning styles" (visual, auditory, …) don't hold up in studies: teaching to a stated style
+doesn't help. What does differ between people is which *methods* work for them on which
+material, and that can be measured. So mindtix treats "how I like to learn" as a first guess
+and then watches what actually happens:
+
+- **Every session is labelled** with one of four formats: `worked` (faded worked examples),
+  `build` (build first), `socratic` (questions only) and `explain` (short explanation, then
+  practice). Each records the pretest, the hints you needed, whether you redid it alone, and a
+  mastery check on questions you hadn't seen.
+- **Every card remembers how it was made** (`srs.py add --via learn:worked`), and every review
+  goes into `learning/reviews.csv` with your confidence. Whether a card survives its first
+  review a few days later is the honest signal of which format worked.
+- **Every mistake gets a type:** a slip, a misconception, or a missing prerequisite. Each
+  needs a different fix.
+- `/mindtix reflect` turns this into `insight/learning.md`: what works for you, with the
+  numbers; how well your confidence matches your answers; your mix of mistakes; and a
+  **Teaching plan**. `/mindtix learn` follows that plan, and still tries another format about
+  one session in four, so it keeps checking and doesn't lock into an early guess.
+
+Two defaults hold until there's evidence: beginners (level 0-1) get worked examples, because
+solving from scratch overloads them, and people with some footing (2+) build first, because
+worked examples start to get in the way. A module is ticked only after you redo it alone and
+get 4 of 5 new questions right, and the next module is one whose prerequisites are all done.
+
 ## When not to lean on AI
 
 Learning happens in the struggle. If the AI explains every hard part straight away, you get

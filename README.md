@@ -37,7 +37,10 @@ Details: [docs/structure.md](docs/structure.md).
 You don't learn by reading. You learn by producing: recalling, explaining, predicting, doing.
 Mindtix puts the AI in ten roles around that idea (interviewer, mapmaker, explainer, Socratic
 questioner, examiner, checker, listener, diagnostician, sparring partner, clerk) and schedules
-reviews with spaced repetition. See [docs/learning.md](docs/learning.md).
+reviews with spaced repetition (FSRS, the scheduler Anki uses). It also learns *how you* learn:
+every session, card and mistake is labelled, and `/mindtix reflect` works out which teaching
+formats actually stick for you, how well your confidence matches your answers, and writes a
+Teaching plan that `/mindtix learn` follows. See [docs/learning.md](docs/learning.md).
 
 ```
 interview → map → try → explain only the stuck part → redo without help

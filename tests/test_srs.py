@@ -11,7 +11,7 @@ from datetime import date
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(HERE, "..", "skills", "mindtix", "srs.py")
 sys.path.insert(0, os.path.dirname(SCRIPT))
-from srs import grade, review  # noqa: E402
+from srs import add, grade, review, stats  # noqa: E402
 
 # (s, d, rating, days since last review) -> (s, d) after
 assert review(None, None, 3, 0)[:2] == (3.2, 5.3), review(None, None, 3, 0)
@@ -60,5 +60,62 @@ with tempfile.TemporaryDirectory() as brain:
     r = subprocess.run([sys.executable, SCRIPT, "grade", brain, "graphs", "Why does BFS", "easy", "--unsure"],
                        capture_output=True, text=True)
     assert r.returncode == 0 and r.stdout.startswith("b"), r.stdout + r.stderr
+    r = subprocess.run([sys.executable, SCRIPT, "grade", brain, "graphs", "Why, in a DAG, can", "again",
+                        "--cause", "prereq dfs: no finishing order"], capture_output=True, text=True)
+    assert r.returncode == 0 and open(os.path.join(brain, "learning", "mistakes.md"), encoding="utf-8").read().endswith(
+        "| missed: Why, in a DAG, can you do DP? | prereq dfs: no finishing order |\n"), r.stdout
+
+# add: the end of ## Recall, else a new section before ## Log or Sources:, and a creation row
+with tempfile.TemporaryDirectory() as brain:
+    os.makedirs(os.path.join(brain, "knowledge"))
+    pages = {"a": "# A\n\n## Recall\n- [b0 · due 2026-10-11] Old one\n\n## Log\n- x\n",
+             "b": "# B\nText.\n\n## Log\n- x\n",
+             "c": "# C\nText.\n\nSources: raw/notes/c.md\n"}
+    for name, text in pages.items():
+        open(os.path.join(brain, "knowledge", name + ".md"), "w", encoding="utf-8").write(text)
+    for name in pages:
+        add(brain, name, "Why  does it   work?", answer="because", via="learn:worked", today=TODAY)
+    read = lambda n: open(os.path.join(brain, "knowledge", n + ".md"), encoding="utf-8").read()  # noqa: E731
+    card = "- [b0 · due 2026-10-11] Why does it work? :: because"
+    assert read("a") == f"# A\n\n## Recall\n- [b0 · due 2026-10-11] Old one\n{card}\n\n## Log\n- x\n", read("a")
+    assert read("b") == f"# B\nText.\n\n## Recall\n{card}\n\n## Log\n- x\n", read("b")
+    assert read("c") == f"# C\nText.\n\n## Recall\n{card}\n\nSources: raw/notes/c.md\n", read("c")
+    for q in ("Does it work?", "Why " * 41, "Why does it work?"):
+        try:
+            add(brain, "a", q, today=TODAY)
+            raise AssertionError("must refuse: " + q[:20])
+        except ValueError:
+            pass
+    rows = list(csv.reader(open(os.path.join(brain, "learning", "reviews.csv"), encoding="utf-8")))
+    assert len(rows) == 4 and rows[1][1:] == ["a", "Why does it work?", "", "", "", "", "", "learn:worked"], rows
+    r = subprocess.run([sys.executable, SCRIPT, "add", brain, "a", "Is it?"], capture_output=True, text=True)
+    assert r.returncode == 1 and "yes/no" in r.stdout, r.stdout
+
+# stats: exact numbers on a small log
+with tempfile.TemporaryDirectory() as brain:
+    os.makedirs(os.path.join(brain, "learning"))
+    assert stats(brain) == "No reviews yet."
+    open(os.path.join(brain, "learning", "reviews.csv"), "w", encoding="utf-8").write("""when,topic,question,rating,sure,r,s,d,via
+2026-09-30T09:00,t,q1,,,,,,learn:worked
+2026-09-30T09:00,t,q2,,,,,,learn:build
+2026-09-30T09:00,t,q3,,,,,,capture
+2026-10-01T09:00,t,q1,good,1,0.90,3.2,5.3,recall
+2026-10-01T09:01,t,q2,again,1,0.80,0.4,7.2,recall
+2026-10-01T09:02,t,q3,hard,0,0.70,1.2,6.4,recall
+2026-10-05T09:00,t,q2,again,0,0.90,0.4,7.9,recall
+2026-10-06T09:00,u,q4,again,,0.85,0.4,8,recall
+2026-10-07T09:00,u,q4,again,,,0.4,8.5,recall
+2026-10-08T09:00,u,q4,again,,,0.4,9,recall
+2026-10-09T09:00,u,q4,again,1,0.95,0.4,9.4,today
+""")
+    out = stats(brain, today=date(2026, 10, 9))
+    for line in ("| 8 | 25% | 85% |", "| Sure | 3 | 33% |", "| Not sure | 2 | 50% |",
+                 "| capture | 1 | 100% |", "| learn:build | 1 | 0% |", "| learn:worked | 1 | 100% |",
+                 "| t | 4 | 50% | 2 |", "| u | 4 | 0% | 4 |", "- u: q4 (4 misses)"):
+        assert line in out.split("\n"), (line, out)
+    week = stats(brain, days=3, today=date(2026, 10, 9))
+    assert "## Reviews (last 3 days)" in week and "| 4 | 0% | 90% |" in week, week
+    r = subprocess.run([sys.executable, SCRIPT, "stats", brain, "--days", "3"], capture_output=True, text=True)
+    assert r.returncode == 0 and "## Calibration" in r.stdout, r.stdout + r.stderr
 
 print("srs ok")

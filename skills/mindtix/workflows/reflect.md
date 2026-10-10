@@ -19,6 +19,24 @@ and rewrites `insight/` from that evidence, so it reflects all of it, not just t
      0 never touched · 1 heard of it · 2 can follow along · 3 can build with it · 4 can teach
      it · 5 expert. Every level needs evidence (a project, a quiz score from `learning/`, a
      note). `/mindtix learn` uses these levels to pitch difficulty.
+   - `insight/learning.md`: **how they learn**, from what actually happened, never from
+     what they say they prefer. Run `python3 "<this skill's dir>/srs.py" stats .` and read every
+     `learning/*/sessions.md` (the format, pretest, hints, redo and mastery fields),
+     the types in `learning/mistakes.md` and the `## In my words` lines. Sections:
+     - **What works for you:** which formats (`worked`, `build`, `socratic`, `explain`) lead
+       to passing the mastery check and to cards remembered at their first review, each claim
+       with its numbers (n) and a confidence. Under 5 cards and 2 sessions for a format, say
+       "too early" instead of guessing.
+     - **Calibration:** right when sure vs not sure. Name overconfidence plainly ("you're
+       sure and wrong about a third of the time on SQL").
+     - **Mistake mix:** slips vs misconceptions vs missing prerequisites, and what that means
+       (slips → slow down; misconceptions → contrast cases; prereqs → go back a module).
+     - **Rhythm:** session length and time of day where results hold up, if `reviews.csv`
+       and git show it; leeches to rewrite.
+     - **Teaching plan:** the lines `/mindtix learn` follows, e.g. `Default: level 0-1 →
+       worked; 2+ → build. Try next: socratic. Always pretest. Hints: stop at rung 2.`
+     Say that "How I like to learn" in `MIND.md` is a starting guess and these numbers win;
+     there is no evidence for fixed learning styles (visual, auditory…), so don't use them.
    - `insight/mind.md`: how they think and how mature they are, each point with evidence and
      a confidence level (low, medium, high). Any IQ range only at medium confidence or above,
      always called a guess, never a test result.
