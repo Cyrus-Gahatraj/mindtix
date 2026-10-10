@@ -36,7 +36,7 @@ export const COMMANDS = [
   ["review", "", "Weekly review: patterns, progress, what to grow"],
   ["reflect", "", "Reread everything and rewrite insight/"],
   ["connect-dots", "", "How everything you know fits together"],
-  ["sort", "[files]", "Move loose files to the folder they belong in"],
+  ["sort", "[files]", "Bring files in, or move loose ones, to where they belong"],
   ["tidy", "", "Health check: links, index, secrets, old guesses"],
   ["forget", "<name or topic>", "Remove someone or something everywhere"],
 ];

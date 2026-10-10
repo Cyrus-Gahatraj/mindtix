@@ -88,7 +88,7 @@ npx skills add Cyrus-Gahatraj/mindtix
 | `/mindtix connect-dots` | Finds how everything you know connects |
 | `/mindtix export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or your brain as a local web app (Today, Notes, Ask that runs `/mindtix` commands, Write, Recall, Insight, Graph) |
 | `/mindtix forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
-| `/mindtix sort [files]` | Moves loose files (audio, photos, PDFs dropped anywhere) to the folder they belong in |
+| `/mindtix sort [files]` | Brings files in from anywhere, or moves loose ones, to the right folder, and notes what's in them (audio key and tempo, photo, PDF text) so `reflect` can use them |
 | `/mindtix tidy` | Health check: broken links, index drift, secrets, overdue cards |
 | `/mindtix review` | Weekly review: focus, learning progress, what to grow |
 

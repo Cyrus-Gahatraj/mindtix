@@ -1,6 +1,6 @@
 ---
 name: mindtix
-description: A second brain that gets to know you and helps you actually learn, kept as a folder of plain markdown. Sets up a brain, imports exports (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian), files notes, teaches topics by making the user produce, runs spaced-repetition recall, writes an evidence-based read of the user, and exports a profile, Anki deck, backup or local web app. Use when the user says "mindtix", "set up mindtix", "my brain", "second brain", "save this", "import my export", "teach me X", "quiz me", "what's due", "today", "reflect on me", "weekly review", "tidy the brain", "sort these files", "export my brain", or "forget someone", or works in a folder that has MIND.md.
+description: A second brain that gets to know you and helps you actually learn, kept as a folder of plain markdown. Sets up a brain, imports exports (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian), files notes, teaches topics by making the user produce, runs spaced-repetition recall, writes an evidence-based read of the user, and exports a profile, Anki deck, backup or local web app. Use when the user says "mindtix", "set up mindtix", "my brain", "second brain", "save this", "import my export", "teach me X", "quiz me", "what's due", "today", "reflect on me", "weekly review", "tidy the brain", "sort these files", "put this file in my brain", "export my brain", or "forget someone", or works in a folder that has MIND.md.
 argument-hint: "[workflow] [arguments]"
 ---
 
@@ -24,7 +24,7 @@ the one that fits. Read that file in full and follow it.
 | `reflect` | get the AI's read of them (`insight/`), or take a personality test |
 | `connect-dots` | find how everything they know connects |
 | `review` | do the weekly review |
-| `sort` | move loose files (dropped in the root or the wrong folder) to where they belong |
+| `sort` | bring files in from anywhere, or move loose ones, to where they belong, noting what they hold |
 | `tidy` | health-check the brain: links, index, secrets, overdue cards |
 | `export` | export a profile, Anki deck, JSON, zip backup, or the local web app |
 | `forget` | remove a person or topic from the whole brain |

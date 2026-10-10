@@ -3,7 +3,9 @@
 ## Unreleased
 
 - **`sort` workflow:** moves loose files (dropped in the brain root or the wrong folder) to
-  where they belong, asking when it can't tell what a file is.
+  where they belong, asking when it can't tell what a file is. It also brings files in from
+  outside the brain (`/mindtix sort ~/Downloads/song.mp3`) and reads each one (audio key and
+  tempo, image contents, PDF text) into a note, so `/mindtix reflect` can use it.
 
 ## 1.4.0
 
