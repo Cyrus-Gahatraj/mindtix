@@ -169,7 +169,7 @@ test("write: new notes go in INDEX.md; guards hold", () => {
 test("write: notes/ is offered first-class, and an older INDEX.md gets its section", () => {
   assert.ok(B.writable().includes("notes") && !B.writable().includes("insight"));
   const old = r("INDEX.md");
-  w("INDEX.md", old.replace(/^## Notes\n/m, ""));
+  w("INDEX.md", old.replace(/^## Notes\r?\n/m, "")); // CRLF on a Windows checkout
   B.saveNote("notes/idea-one", "# Idea one\n\nFirst.", null);
   B.saveNote("notes/idea-two", "# Idea two\n\nSecond.", null);
   assert.match(lf("INDEX.md"), /\n## Notes\n- \[\[notes\/idea-one\]\]: First\.\n- \[\[notes\/idea-two\]\]: Second\.\n$/);
