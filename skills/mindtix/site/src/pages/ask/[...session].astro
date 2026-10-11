@@ -21,8 +21,6 @@ const ideas = [...(how.commands ? ["/mindtix today", "/mindtix recall"] : []), "
   <div class="chatapp" id="app">
     <aside class="chatside" aria-label="Chats">
       <a class="btn ghost" href="/ask"><Fragment set:html={icon("plus")} />new chat</a>
-      {chats.length > 0 && <a class="btn ghost toinsight" href={reflect} title={how.commands ? "Runs /mindtix reflect: it rereads your chats and writes what your questions show into insight/" : "Needs Claude Code as the chat engine (Settings)"}>
-        <Fragment set:html={icon("spark")} />{!pending ? "all chats in insight ✓" : how.commands ? `chats → insight · ${pending} new` : `${pending} chats not in insight · needs Claude Code`}</a>}
       {groups.map(([label, list]) => <>
         <div class="group">{label}</div>
         {list.map(c => <div class="chatlink" aria-current={c.id === session ? "page" : undefined} data-id={c.id}>
@@ -31,6 +29,8 @@ const ideas = [...(how.commands ? ["/mindtix today", "/mindtix recall"] : []), "
           <button class="iconbtn del" type="button" aria-label={"Delete chat: " + c.title} title="Delete"><Fragment set:html={icon("trash")} /></button>
         </div>)}
       </>)}
+      {chats.length > 0 && <a class="btn ghost toinsight" href={reflect} title={how.commands ? "Runs /mindtix reflect: it rereads your chats and writes what your questions show into insight/" : "Needs Claude Code as the chat engine (Settings)"}>
+        <Fragment set:html={icon("spark")} />{!pending ? "all chats in insight ✓" : how.commands ? `chats → insight · ${pending} new` : `${pending} chats not in insight · needs Claude Code`}</a>}
     </aside>
 
     <section class="chatmain">
