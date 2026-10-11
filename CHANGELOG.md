@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.7.0
+
+- **`notes/`: what you write on the site lands here.** Write and quick capture save to
+  `notes/` (listed under `## Notes` in `INDEX.md`). `/mindtix reflect` tidies it in place
+  first (titles, `[[links]]`, merges, theme folders, always your words) and then reads it for
+  `insight/`. `raw/` stays read-only.
+- **Write several notes at once.** The Write page opens notes in tabs (`+` adds one); ⌘S saves
+  every changed tab, and unsaved new tabs survive a closed browser tab.
+
+- **Answers from your notes cite them.** Asking your brain a question reads `INDEX.md` first,
+  cites every claim as `[[note#Heading]]`, says "not in your brain" before falling back on
+  general knowledge, and offers to file a good answer that combines notes as a new page.
+- **Capture links everything:** every new note links to at least one existing note, plain
+  mentions of page titles become links, one input updates every page it touches, and each
+  page's one-line summary gets tighter every time it's touched.
+- **Source notes** (`knowledge/sources/<slug>.md`) for articles, books, talks and videos: the
+  exact highlights with where they are, and your take. Facts taken from them cite them.
+- **`today` resurfaces highlights.** Its last step alternates between an old idea and a
+  highlight you haven't seen in 30 days, and adds what you think now to `## My take`.
+- **`tidy` lints:** orphan notes, unlinked mentions of page titles, contradictions, stale
+  time-sensitive claims, terms used in 3+ notes with no page, and leech cards.
+- **`review` proposes hub pages** once 8+ notes share a theme, never before.
+
 ## 1.6.0
 
 - **Mindtix learns how you learn.** `/mindtix reflect` writes `insight/learning.md` from what

@@ -27,7 +27,7 @@ const url = id => "/n/" + id.split("/").map(encodeURIComponent).join("/");
   <h1>{hello}</h1>
   {intro && <p class="lede">{intro}</p>}
 
-  <form class="capture" id="capture" title="Saved as a line in today's raw/notes file">
+  <form class="capture" id="capture" title="Saved as a line in today's notes/ file">
     <span class="pre" aria-hidden="true"><b>-</b> <span id="clock">{time}</span></span>
     <input id="thought" placeholder="capture a thought…" autocomplete="off" aria-label="Capture a thought">
     <kbd>↵</kbd>
@@ -79,7 +79,7 @@ form.onsubmit = async e => {
     const r = await api("/api/capture", { text });
     input.value = "";
     note.replaceChildren(`saved to ${r.file} · `, Object.assign(document.createElement("a"), {
-      href: "/ask?run=" + encodeURIComponent("/mindtix capture process my notes"), textContent: "file it into the brain" }));
+      href: "/ask?run=" + encodeURIComponent("/mindtix reflect"), textContent: "tidy and reflect" }));
   } catch (err) { toast(err.message, true) }
 };
 </script>

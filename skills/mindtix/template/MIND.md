@@ -20,6 +20,7 @@ update it whenever you add, move or delete a note.
 - Make me produce: ask before explaining, and make me redo things without help.
 - Keep answers short; explain more only when I ask.
 - Write notes in my voice, as plain markdown, linked with `[[wikilinks]]`.
+- Answer from my notes first and cite them (`[[note#Heading]]`); say when something isn't in here.
 
 ## Rules
 
@@ -30,6 +31,7 @@ update it whenever you add, move or delete a note.
 5. Grow only when there's content. No empty folders or placeholder notes.
 6. Only `/mindtix reflect` writes `insight/` (`/mindtix forget` may delete from it).
 7. `logs/` and `private/` are never committed.
+8. `notes/` is what I write on the site. `/mindtix reflect` may tidy it, but keeps my words.
 
 See the folder READMEs for what goes where.
 

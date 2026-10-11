@@ -4,7 +4,7 @@ Rewrites `insight/connections.md` from scratch each run. Touches no other file.
 
 1. **Gather** (reuse what `/mindtix reflect` just read): `INDEX.md`, `knowledge/`,
    `learning/`, the levels in `insight/knowledge.md`, `projects/`, `hobbies/`, `extra/`, `self/`,
-   `raw/notes/` and `raw/writing/`.
+   `notes/`, `raw/notes/` and `raw/writing/`.
 2. **Find the lines between the dots:**
    - **Bridges:** one idea in two areas under different names (the chain rule in calculus is
      backpropagation in a neural net; meter in poetry is a syntax rule in a language).

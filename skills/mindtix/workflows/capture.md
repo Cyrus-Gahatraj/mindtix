@@ -15,9 +15,18 @@ Rules for both:
   --exclude-dir=raw --exclude-dir=private .`). Merge into an existing note when one fits.
 - **`raw/` is read-only.** Never edit or delete anything in it, except saving new input in
   job A as described below.
+- **`notes/` belongs to `/mindtix reflect`**, which tidies it in place. Job B may file what a
+  note teaches into other folders (citing it under `Sources:`), but leaves the note where it is.
 - **Never write `insight/`** (only `/mindtix reflect`). If something shows how they think or
   what they know, say so and suggest it.
 - Label every fact about the user `[stated]` (they said it) or `[inferred]` (your guess).
+- **Link every new note** to at least one existing note, and turn plain mentions of existing
+  page titles into `[[links]]`. A note nothing links to gets lost.
+- **Touch every page the input touches.** After the main note, add a line and a link to each
+  existing page (from `INDEX.md`) that the input adds to, corrects or contradicts. One source
+  usually updates several pages; say which.
+- **Tighten the summary.** Each time a page is touched, rewrite its one-line summary to be
+  shorter and truer to the whole page.
 - New folder only when it will hold more than one note. No empty folders.
 - Update `INDEX.md` for every note you create, move or delete.
 
@@ -33,7 +42,8 @@ Rules for both:
    | News about something they make | `projects/<project>.md` |
    | A hobby | `hobbies/<hobby>/` |
    | Anything else (school, work, health, travel) | `extra/<area>/` |
-   | A long source (article, transcript) | `raw/imports/`, then run job B on it |
+   | A long source (article, book, talk, transcript) | `raw/imports/`, then run job B on it |
+   | A quote or highlight from something they read | The source note in `knowledge/sources/` (shape in job B) |
    | A data export or a whole folder of notes | Use `/mindtix import <path>` instead |
 
 2. **Write the note** at `kebab-case-title.md`: a `# Title`, a one-line summary, the content
@@ -43,13 +53,14 @@ Rules for both:
 
 ## B. Process raw/ into the brain
 
-1. **Find what's pending:** files in `raw/` not yet listed under `Sources:` in any note, or
+1. **Find what's pending:** files in `raw/` and `notes/` not yet listed under `Sources:` in any note, or
    changed since the note that cites them. Skip the READMEs.
 2. **Sort each file:**
 
    | File | Do |
    |---|---|
    | A note about a topic | Elaborate into `knowledge/` (step 3) |
+   | An article, book, talk or video transcript | A source note (step 4), then what it teaches into `knowledge/` pages (step 3) |
    | Creative writing | Leave it; mention it to `/mindtix reflect` for writing style |
    | About them (diary, bio, habits) | Facts into `self/`, labeled |
    | About a project or hobby | Into `projects/` or `hobbies/` |
@@ -95,5 +106,24 @@ Rules for both:
    idea each, no yes/no, at most 10 per pass).
    `## Log` and `## Recall` are shared with `/mindtix learn` and `/mindtix recall`; append,
    never rewrite.
-4. **Report** in a few lines: what was created or updated, corrections made, anything
+4. **Source note** for an article, book, talk or transcript (`knowledge/sources/<slug>.md`),
+   so what they read keeps its exact words next to what they made of it:
+
+   ```markdown
+   # Title of the source
+   Source: author · url or where it lives · read YYYY-MM-DD
+
+   ## Highlights
+   - "the exact words, verbatim" (p. 12 / 14:05 / section)
+
+   ## My take
+   What they think of it, in their words. [[links]] to the pages it fed.
+
+   ## Log
+   - YYYY-MM-DD capture
+   ```
+
+   Pages that take a fact from it cite `[[sources/<slug>#Highlights]]`. Highlights are never
+   reworded; "My take" is only theirs (ask if they haven't said).
+5. **Report** in a few lines: what was created or updated, corrections made, anything
    skipped. Offer to commit as "Capture YYYY-MM-DD".

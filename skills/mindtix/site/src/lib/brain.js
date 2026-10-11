@@ -32,7 +32,7 @@ const OBS_LINK = /(!?)\[\[([^\]]+)\]\]/g;
 const CALLOUT = /^(\s*>\s*)\[!(\w+)\][+-]?[ \t]*(.*)$/gm;
 const MD_NOISE = /^\s*(#{1,6}\s+|>\s?|[-*+]\s+|\d+\.\s+|\|)|[*_`]|!?\[\[([^\]|#]+)[^\]]*\]\]|\[([^\]]*)\]\([^)]*\)|\[(stated|inferred)[^\]]*\]/gm;
 export const INTERVALS = [1, 3, 7, 14, 30, 90]; // the old Leitner boxes, kept as labels for stability
-const INDEX_SECTIONS = { self: "Who I am", knowledge: "Knowledge", learning: "Learning now", projects: "Projects", hobbies: "Hobbies" };
+const INDEX_SECTIONS = { notes: "Notes", self: "Who I am", knowledge: "Knowledge", learning: "Learning now", projects: "Projects", hobbies: "Hobbies" };
 
 export const isBrain = () => fs.existsSync(path.join(BRAIN, "MIND.md"));
 export const today = (plus = 0) => new Date(Date.now() + plus * 864e5).toLocaleDateString("en-CA"); // local YYYY-MM-DD
@@ -197,10 +197,11 @@ export function findSecret(text) {
 
 export class WriteError extends Error { constructor(msg, status = 400) { super(msg); this.status = status } }
 
-/** Folders the site may write notes into: those shown, minus insight/ (only /mindtix reflect writes it). */
-export const writable = () => fs.readdirSync(BRAIN, { withFileTypes: true })
-  .filter(e => e.isDirectory() && !SKIP_DIRS.has(e.name) && !e.name.startsWith(".") && e.name !== "insight" && shown(e.name + "/x"))
-  .map(e => e.name).sort();
+/** Folders the site may write notes into: those shown, minus insight/ (only /mindtix reflect writes it).
+ * notes/ is always offered: it's where the site's notes land, and /mindtix reflect tidies them there. */
+export const writable = () => [...new Set(["notes", ...fs.readdirSync(BRAIN, { withFileTypes: true })
+  .filter(e => e.isDirectory() && !SKIP_DIRS.has(e.name) && !e.name.startsWith(".") && e.name !== "insight").map(e => e.name)])]
+  .filter(f => shown(f + "/x")).sort();
 
 /** A note id ("folder/sub/name") checked and turned into its absolute .md path. */
 export function notePath(id) {
@@ -242,8 +243,13 @@ export function saveNote(id, md, mod) {
 function addToIndex(id, md) {
   const file = path.join(BRAIN, "INDEX.md"), text = read(file), heading = INDEX_SECTIONS[top(id)];
   if (text === null || !heading || text.includes(`[[${id}]]`)) return;
-  const lines = text.split("\n"), start = lines.findIndex(l => l.trim() === "## " + heading);
-  if (start === -1) return;
+  const lines = text.split("\n");
+  let start = lines.findIndex(l => l.trim() === "## " + heading);
+  if (start === -1) { // an older brain without this section: add it at the end
+    while (lines.length && !lines.at(-1).trim()) lines.pop();
+    lines.push("", "## " + heading, "");
+    start = lines.length - 2;
+  }
   let end = start + 1;
   while (end < lines.length && !lines[end].startsWith("## ")) end++;
   while (end > start + 1 && !lines[end - 1].trim()) end--;
@@ -283,16 +289,17 @@ export function removePhoto() {
   return { photo: "" };
 }
 
-/** Quick capture: a line in today's raw/notes/YYYY-MM-DD.md (the user's own notes; /mindtix capture files them). */
+/** Quick capture: a line in today's notes/YYYY-MM-DD.md (/mindtix reflect tidies notes/ and reads it for insight). */
 export function capture(text) {
   text = String(text || "").trim();
   if (!text) throw new WriteError("Write something first.");
   const secret = findSecret(text);
   if (secret) throw new WriteError(`This looks like a secret (${secret.slice(0, 6)}…). Brains never store passwords, keys or tokens.`, 422);
-  const rel = `raw/notes/${today()}.md`, file = path.join(BRAIN, rel), now = new Date();
+  const rel = `notes/${today()}.md`, file = path.join(BRAIN, rel), now = new Date();
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const head = fs.existsSync(file) ? "" : `# Notes · ${today()}\n\n`;
   fs.appendFileSync(file, `${head}- ${pad(now.getHours())}:${pad(now.getMinutes())} ${text.replace(/\s*\n\s*/g, "\n  ")}\n`);
+  if (head) addToIndex(rel.slice(0, -3), head + text);
   return { file: rel };
 }
 

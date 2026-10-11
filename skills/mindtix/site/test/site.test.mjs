@@ -166,10 +166,21 @@ test("write: new notes go in INDEX.md; guards hold", () => {
   assert.equal(B.findSecret("api_key = process.env.KEY"), null);
 });
 
-test("capture: a timed line in today's raw note; secrets refused", () => {
-  assert.deepEqual(B.capture("first idea"), { file: `raw/notes/${B.today()}.md` });
+test("write: notes/ is offered first-class, and an older INDEX.md gets its section", () => {
+  assert.ok(B.writable().includes("notes") && !B.writable().includes("insight"));
+  const old = r("INDEX.md");
+  w("INDEX.md", old.replace(/^## Notes\n/m, ""));
+  B.saveNote("notes/idea-one", "# Idea one\n\nFirst.", null);
+  B.saveNote("notes/idea-two", "# Idea two\n\nSecond.", null);
+  assert.match(lf("INDEX.md"), /\n## Notes\n- \[\[notes\/idea-one\]\]: First\.\n- \[\[notes\/idea-two\]\]: Second\.\n$/);
+  w("INDEX.md", old);
+});
+
+test("capture: a timed line in today's notes/ file, listed once in INDEX.md; secrets refused", () => {
+  assert.deepEqual(B.capture("first idea"), { file: `notes/${B.today()}.md` });
   B.capture("second\nline two");
-  assert.match(r(`raw/notes/${B.today()}.md`), new RegExp(`^# Notes · ${B.today()}\n\n- \\d\\d:\\d\\d first idea\n- \\d\\d:\\d\\d second\n  line two\n$`));
+  assert.match(r(`notes/${B.today()}.md`), new RegExp(`^# Notes · ${B.today()}\n\n- \\d\\d:\\d\\d first idea\n- \\d\\d:\\d\\d second\n  line two\n$`));
+  assert.equal(lf("INDEX.md").split(`[[notes/${B.today()}]]`).length, 2);
   assert.throws(() => B.capture("  "), e => e.status === 400);
   assert.throws(() => B.capture("password: hunter2hunter2"), e => e.status === 422);
 });

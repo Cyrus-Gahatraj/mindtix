@@ -85,14 +85,14 @@ npx skills add Cyrus-Gahatraj/mindtix
 | `/mindtix learn diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
 | `/mindtix learn spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
 | `/mindtix recall [topic]` | Spaced-repetition review of the cards that are due |
-| `/mindtix today` | The daily 5-10 minutes: a few due cards, one learning step, one old question |
+| `/mindtix today` | The daily 5-10 minutes: a few due cards, one learning step, one old idea or highlight |
 | `/mindtix know-me` | A short interview round that fills in `self/` |
-| `/mindtix reflect [test]` | Rewrites `insight/`, or runs a personality test |
+| `/mindtix reflect [test]` | Tidies `notes/` in place, then rewrites `insight/`; or runs a personality test |
 | `/mindtix connect-dots` | Finds how everything you know connects |
 | `/mindtix export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or your brain as a local web app (Today, Notes, Ask that runs `/mindtix` commands, Write, Recall, Insight, Graph) |
 | `/mindtix forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
 | `/mindtix sort [files]` | Brings files in from anywhere, or moves loose ones, to the right folder, and notes what's in them (audio key and tempo, photo, PDF text) so `reflect` can use them |
-| `/mindtix tidy` | Health check: broken links, index drift, secrets, overdue cards |
+| `/mindtix tidy` | Health check: broken links, orphans, unlinked mentions, contradictions, stale claims, index drift, secrets, overdue cards |
 | `/mindtix review` | Weekly review: focus, learning progress, what to grow |
 
 Mindtix is one skill, [`skills/mindtix/`](skills/mindtix/): `SKILL.md` picks the workflow, and
@@ -101,6 +101,8 @@ each workflow is a file in [`workflows/`](skills/mindtix/workflows/). One helper
 reports back facts only, so your chat stays light. It can't edit anything.
 
 You can also just talk ("teach me SQL", "save this", "quiz me") and Claude picks the right workflow.
+Ask your brain anything and it answers from your notes, citing each one, and offers to save a
+good answer as a new page so the next question starts from it.
 
 **Hooks** ([`hooks/`](hooks/)) enforce the rules that matter most, only inside a folder
 that has `MIND.md`:

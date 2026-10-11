@@ -29,8 +29,18 @@ the one that fits. Read that file in full and follow it.
 | `export` | export a profile, Anki deck, JSON, zip backup, or the local web app |
 | `forget` | remove a person or topic from the whole brain |
 
-No match but they're in a brain (a folder with `MIND.md`)? Answer from the notes, following
-`MIND.md`. Not in a brain yet? Offer `init`.
+No match but they're in a brain (a folder with `MIND.md`)? **Answer from the notes**, following
+`MIND.md`:
+- Read `INDEX.md` first and open only the notes that match; grep (outside `raw/imports/` and
+  `private/`) for what the index misses.
+- Cite every claim with the note it came from, as `[[note#Heading]]`. Quote at most a line when
+  the exact words matter.
+- If the brain doesn't hold the answer, say "not in your brain" before using what you know.
+- An answer that pulls 2+ notes together and will matter again: offer to file it as a new
+  `knowledge/` page titled with its claim ("BFS is Dijkstra with equal weights"), linked from
+  each note it used, so the next question starts from it.
+
+Not in a brain yet? Offer `init`.
 
 ## Reading a workflow
 

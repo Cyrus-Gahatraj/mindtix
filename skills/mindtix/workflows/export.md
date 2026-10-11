@@ -99,8 +99,9 @@ PY "<this skill's dir>/export.py" site . [folder path] [brain folder ...]
     `MINDTIX_MODEL` picks the model. These come from the environment or the brain's `.env`.
     Check which names are set, never their values. Settings saves one to `.env` and keeps `.env`
     in `.gitignore`. Never ask them to paste a key into the chat.
-- **Quick capture** on Today adds a timed line to `raw/notes/<date>.md`, the user's own notes.
-  `/mindtix capture` files it into the brain later.
+- **Write** opens notes in tabs and saves every changed one at once (⌘S). New notes go to
+  `notes/` unless another folder is picked. **Quick capture** on Today adds a timed line to
+  `notes/<date>.md`. `/mindtix reflect` tidies `notes/` in place and reads it for `insight/`.
 - Mention that `/mindtix reflect` reads `logs/`, so what they ask shapes `insight/`. What they
   write and grade on the site lands in the brain right away.
 

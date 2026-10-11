@@ -12,9 +12,14 @@ suggest `/mindtix init`.
    short `/mindtix learn teach` step on its next unchecked module: one small task, a hint only
    if they're stuck, then redo without help. A module can take several days; don't rush the
    tick. If nothing is being learned, offer `/mindtix learn` and skip this step.
-3. **One old question.** Pick one card or idea from a `knowledge/` topic that wasn't touched
-   in steps 1-2 and wasn't reviewed in the last week, and ask it as a "what would happen
-   if…" or "how does this connect to…" question. Grade in 1-2 lines; if it was a card, ask sure
+3. **One old thing, resurfaced.** Alternate day by day:
+   - **An old idea:** a card or idea from a `knowledge/` topic that wasn't touched in steps 1-2
+     and wasn't reviewed in the last week, asked as a "what would happen if…" or "how does this
+     connect to…" question.
+   - **A highlight:** one quote from `## Highlights` in `knowledge/sources/` not resurfaced in
+     the last 30 days (check that page's `## Log`). Show it with its source and ask "still
+     agree? what would you add?". Append their answer, dated, to `## My take`, and a
+     `- YYYY-MM-DD today: resurfaced` line to its `## Log`. No sources yet → an old idea. For an idea, grade in 1-2 lines; if it was a card, ask sure
    or guessing first and grade it with `srs.py` as recall does (`--via today`).
 4. **Report in 2 lines:** what they did today, and what's waiting tomorrow (cards due
    tomorrow, the next module).

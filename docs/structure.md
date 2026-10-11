@@ -7,11 +7,12 @@ with only a README; the AI fills it once there is real content.
 |---|---|---|
 | `MIND.md` | Rules for the AI, and a short summary of who you are | You + AI |
 | `INDEX.md` | One line per note. The AI reads it before searching | AI |
+| `notes/` | What you write on the site; tidied in place, never moved out | You, tidied by `/mindtix reflect` |
 | `raw/notes/` | Your own notes, in any shape | You |
 | `raw/imports/` | Exports (Instagram, chats, Google), transcripts, PDFs, articles | You |
 | `raw/writing/` | Poems, stories, drafts, kept exactly as written | You |
 | `self/` | Profile, personality, people in your life, a timeline of your life | AI, from what you say and import |
-| `knowledge/` | One page per topic you understand, with recall cards | AI, from `raw/` and `learning/` |
+| `knowledge/` | One page per topic you understand, with recall cards; `sources/` holds one note per thing you read or watched | AI, from `raw/` and `learning/` |
 | `learning/` | One folder per thing you're learning now, plus a mistakes ledger | AI, during sessions |
 | `projects/` | One note per thing you build or make | AI + you |
 | `hobbies/` | One subfolder per hobby (chess, music, ...) | AI + you |
@@ -31,7 +32,12 @@ with only a README; the AI fills it once there is real content.
 4. **Update, don't duplicate.** Search `INDEX.md` first and merge into the existing note.
 5. **Grow only when there's content.** No empty folders or placeholder notes.
 6. **Only `/mindtix reflect` writes `insight/`.** Other skills suggest running it.
-7. **Link notes** with `[[wikilinks]]` so the brain works as a graph in Obsidian.
+7. **Link notes** with `[[wikilinks]]` so the brain works as a graph in Obsidian. Every new
+   note links to at least one existing note, and one input updates every page it touches.
+8. **Answers cite their notes** (`[[note#Heading]]`), and a good answer that combines notes can
+   be filed back as a page, so the brain compounds instead of being searched from scratch.
+9. **Structure is earned.** A hub page that ties a theme together appears only once 8+ notes
+   share it.
 
 ## Pages
 
@@ -65,6 +71,11 @@ written as `- [b0 · due …] question` or plain `- question` still work.
   prerequisites, where people usually get stuck, the best explanations found
 - `sessions.md`: one entry per session: date, role, task, what you produced, score, mistakes,
   and whether you redid it without help
+
+**Source note** (`knowledge/sources/<slug>.md`): a `Source:` line (author, where, when read),
+`## Highlights` with the exact words and where they are, and `## My take` in your words. Pages
+that take a fact from it cite `[[sources/<slug>#Highlights]]`; `/mindtix today` brings old
+highlights back and adds what you think now to `## My take`.
 
 When a topic in `learning/` is understood, its lasting content becomes a page in
 `knowledge/`. `learning/` is the process; `knowledge/` is the result.
