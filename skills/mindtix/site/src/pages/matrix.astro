@@ -1,0 +1,100 @@
+---
+import Base from "../layouts/Base.astro";
+import { connections, load, noteUrl } from "../lib/brain.js";
+import { ago, arcs, bars, fc, md } from "../lib/ui.js";
+
+// Matrix: insight/connections.md drawn. Every note a connection links is a dot; a lit cell joins two dots.
+const D = load(), C = connections(D), conn = D.byId["insight/connections"];
+const KIND = { Bridges: 1, Clusters: 4, Leverage: 2, "Missing links": 6, Combinations: 3 };
+const kc = k => `var(--c${KIND[k] ?? 7})`;
+const kinds = [...new Set(C.map(c => c.kind))];
+const deg = {};
+for (const c of C) for (const id of c.ids) deg[id] = (deg[id] || 0) + 1;
+// Grouped by folder, best-connected first, so each folder's block reads as one colour
+const dots = Object.keys(deg).filter(id => D.byId[id])
+  .sort((a, b) => D.byId[a].folder.localeCompare(D.byId[b].folder) || deg[b] - deg[a] || a.localeCompare(b));
+const T = id => D.byId[id].title, F = id => fc(D.byId[id].folder);
+const both = (a, b) => C.flatMap((c, i) => c.ids.includes(a) && c.ids.includes(b) ? [i] : []);
+// Each cell: the connections joining its row and column note
+const grid = dots.map((a, i) => dots.map((b, j) => {
+  if (i === j) return { self: true, j, title: `${T(a)}: in ${deg[a]} connection${deg[a] > 1 ? "s" : ""}` };
+  const hit = both(a, b);
+  return { j, n: hit.length, kinds: hit.map(x => C[x].kind).join("|"), go: hit.join(" "), t: `${T(a)} × ${T(b)}`,
+    style: hit.length ? `--k:${kc(C[hit[0]].kind)}` : undefined };
+}));
+const hubs = dots.map(id => ({ label: T(id), value: deg[id], text: String(deg[id]), c: F(id) }))
+  .sort((a, b) => b.value - a.value).slice(0, 8).map((b, _, all) => ({ ...b, max: all[0].value }));
+
+const run = "/ask?run=" + encodeURIComponent("/mindtix connect-dots");
+---
+<Base D={D} title="Matrix" active="insight" layout="wide">
+  <p class="eyebrow">{conn ? `Written by /mindtix connect-dots · updated ${ago(conn.mod)}` : "How everything you know fits together"}</p>
+  <h1>Matrix</h1>
+  {C.length > 0 && <p class="lede">{C.length} connections between {dots.length} notes. Each row and column is a note; a lit cell means a connection joins the two. Hover to trace, click to read it.</p>}
+  {!C.length && <p class="lede">Nothing connected yet. Let the AI read everything you know and find the lines between the dots.</p>}
+  <p style="margin-top:22px"><a class="btn" href={run}>{C.length ? "connect the dots again" : "connect the dots"}</a></p>
+
+  {C.length > 0 && <>
+    <section class="section">
+      <div class="chips" id="kinds">{kinds.map(k => <button class="chip tag" type="button" aria-pressed="true" data-k={k} style={`--c:${kc(k)}`}>{k} · {C.filter(c => c.kind === k).length}</button>)}</div>
+      <div class="mx-wrap">
+        <table class="mx" id="mx">
+          <thead><tr><th></th>{dots.map((id, j) => <th class="mx-col" data-c={j} style={`--c:${F(id)}`} title={T(id)}><span>{T(id)}</span></th>)}</tr></thead>
+          <tbody>{dots.map((a, i) => <tr>
+            <th class="mx-row" data-r={i} style={`--c:${F(a)}`}><a href={noteUrl(a)} title={T(a)}>{T(a)}</a></th>
+            {grid[i].map(g => g.self ? <td class="self" data-r={i} data-c={g.j} style={`--k:${F(a)}`} title={g.title}>{deg[a]}</td> : <td data-r={i} data-c={g.j} data-k={g.kinds} data-go={g.go} data-t={g.t} style={g.style}>{g.n > 1 ? g.n : ""}</td>)}
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p class="mx-say muted" id="say" aria-live="polite">hover a cell</p>
+    </section>
+
+    <section class="section">
+      <div class="head"><h2>Hubs</h2></div>
+      <Fragment set:html={bars(hubs)} />
+    </section>
+
+    {kinds.map(k => <section class="section" data-kind={k}>
+      <div class="head"><h2 style={`color:${kc(k)}`}>{k}</h2></div>
+      <div class="stars">{C.map((c, i) => [c, i]).filter(([c]) => c.kind === k).map(([c, i]) =>
+        <article class="star" id={`c${i}`} style={`--k:${kc(k)}`}>
+          <Fragment set:html={arcs(c.ids.filter(id => D.byId[id]).map(id => D.byId[id]))} />
+          <h3>{c.title}</h3>
+          <div class="reader" set:html={md(c.text)} />
+        </article>)}</div>
+    </section>)}
+  </>}
+  <script type="application/json" id="mx-titles" set:html={JSON.stringify(C.map(c => [c.kind, c.title])).replace(/</g, "\\u003c")} />
+</Base>
+
+<script>
+import { $ } from "../scripts/util.js";
+const mx = $("mx"), say = $("say");
+if (mx) {
+  const titles = JSON.parse($("mx-titles").textContent), cells = [...mx.querySelectorAll("[data-r],[data-c]")];
+  const off = new Set();
+  const shown = td => (td.dataset.go || "").split(" ").filter(Boolean).map(Number).filter(i => !off.has(titles[i][0]));
+  mx.addEventListener("mouseover", e => {
+    const td = e.target.closest("td"); if (!td) return;
+    for (const c of cells) c.classList.toggle("on", c.dataset.r === td.dataset.r || c.dataset.c === td.dataset.c);
+    const hit = shown(td);
+    say.textContent = td.dataset.t ? `${td.dataset.t}: ${hit.length ? hit.map(i => titles[i][1]).join(" · ") : "no connection yet"}` : td.title;
+  });
+  mx.addEventListener("mouseleave", () => { for (const c of cells) c.classList.remove("on"); say.textContent = "hover a cell" });
+  mx.addEventListener("click", e => {
+    const i = shown(e.target.closest("td") || {})[0], card = i != null && $("c" + i);
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
+  });
+  // A kind switched off empties its cells and hides its section
+  $("kinds").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", on);
+    on ? off.delete(b.dataset.k) : off.add(b.dataset.k);
+    for (const td of mx.querySelectorAll("td[data-go]")) td.classList.toggle("dim", !!td.dataset.go && !shown(td).length);
+    for (const s of document.querySelectorAll("section[data-kind]")) s.hidden = off.has(s.dataset.kind);
+  });
+}
+</script>

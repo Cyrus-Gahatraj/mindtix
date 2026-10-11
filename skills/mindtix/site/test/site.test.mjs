@@ -61,6 +61,14 @@ test("load reads the notes, never private/, and resolves links", () => {
   assert.equal(D.name, "Ada Lovelace", "labels and markdown are stripped from About me");
 });
 
+test("connections: one per bullet, kind from the heading, ids from its links", () => {
+  w("insight/connections.md", "# Connections\n\n## Bridges\n- **Joins ↔ sets:** a join is a set op. [[sql-joins]] · [[nowhere]]\n\n## Missing links\n- **The *why* at the edge.** checks.\n\n## Combinations (project ideas)\n- **Build it:** use [[sql-joins]] twice [[sql-joins]].\nplain line\n");
+  assert.deepEqual(B.connections(B.load()).map(c => [c.kind, c.title, c.ids]),
+    [["Bridges", "Joins ↔ sets", ["knowledge/sql-joins"]], ["Missing links", "The why at the edge", []], ["Combinations", "Build it", ["knowledge/sql-joins"]]]);
+  fs.rmSync(path.join(brain, "insight/connections.md"));
+  assert.deepEqual(B.connections(B.load()), []);
+});
+
 test("settings: folders apply at once; unknown values never reach the file", () => {
   B.saveSettings({ folders: "knowledge" });
   assert.deepEqual(B.load().folders, ["knowledge"]);

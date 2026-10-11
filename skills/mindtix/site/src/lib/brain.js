@@ -188,6 +188,20 @@ const ASSIGN = /\b(?:password|passwd|api[_-]?key|secret|token)\s*[:=]\s*['"]?([^
 const NOT_A_SECRET = /^(?:os\.|process\.env|getenv|environ|env\b|env\(|config\.|settings\.|self\.|req\.|request\.|\$|\{|<|%|your[_-]|my[_-]|example|placeholder|changeme|dummy|test|fake|x{4,}|\*{4,}|\.{3})/i;
 
 /** The first thing that looks like a real secret (same rules as hooks/guard.py), or null. */
+/** insight/connections.md as [{kind, title, text, ids}]: one per "- **Title:** text" (or "**Title.**") bullet, ids = the notes it links. */
+export function connections(D) {
+  const out = [];
+  let kind = "";
+  for (const line of (D.byId["insight/connections"]?.md || "").split(/\r?\n/)) {
+    const h = line.match(/^## (.+?)\s*(\(.*\))?$/);
+    if (h) { kind = h[1]; continue }
+    const m = kind && line.match(/^- \*\*(.+?)[:.]?\*\*\s*(.*)/);
+    if (m) out.push({ kind, title: m[1].replace(/[*_`]/g, ""), text: m[2],
+      ids: [...new Set([...line.matchAll(/\]\(<\/n\/([^>]+)>\)/g)].map(x => x[1].split("/").map(decodeURIComponent).join("/")))] });
+  }
+  return out;
+}
+
 export function findSecret(text) {
   const k = KEYS.exec(text);
   if (k) return k[0];

@@ -8,9 +8,11 @@
   `insight/`. `raw/` stays read-only.
 - **Write several notes at once.** The Write page opens notes in tabs (`+` adds one); ⌘S saves
   every changed tab, and unsaved new tabs survive a closed browser tab.
-- **Connections on Today.** A full-width tile under recall, ask and learning shows one
-  connection from `insight/connections.md` (a different one each day) and runs
-  `/mindtix connect-dots` when clicked.
+- **Matrix: see how your knowledge connects.** A new `/matrix` page draws
+  `insight/connections.md`: a grid where every row and column is a note and a lit cell is a
+  connection (coloured by bridge, cluster, leverage, missing link or project idea; hover to
+  trace, click to read), the hub notes, and an arc diagram for each connection. Today gets a
+  full-width matrix tile with one connection a day; the page can run `/mindtix connect-dots` again.
 
 - **Answers from your notes cite them.** Asking your brain a question reads `INDEX.md` first,
   cites every claim as `[[note#Heading]]`, says "not in your brain" before falling back on

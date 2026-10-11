@@ -55,5 +55,5 @@ const analysis = notes.filter(n => n.folder === "insight");
     </div>
   </section>
 
-  {analysis.length > 0 && <section class="section"><div class="head"><h2>Read the analysis</h2></div><Fragment set:html={rows(analysis)} /></section>}
+  {analysis.length > 0 && <section class="section"><div class="head"><h2>Read the analysis</h2><a href="/matrix">Open the matrix</a></div><Fragment set:html={rows(analysis)} /></section>}
 </Base>

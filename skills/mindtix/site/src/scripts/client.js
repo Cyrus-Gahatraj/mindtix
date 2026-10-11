@@ -26,6 +26,7 @@ const ACTIONS = [
   ["All notes", "/notes", "menu"],
   ["Graph", "/graph", "graph"],
   ["Insight and stats", "/insight", "graph"],
+  ["Matrix: how your knowledge connects", "/matrix", "graph"],
   ["Profile and picture", "/profile", "edit"],
   ["Settings", "/settings", "settings"],
   ["Switch light / dark", () => setTheme(isDark() ? "light" : "dark"), "sun"],

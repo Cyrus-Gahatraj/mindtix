@@ -1,6 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
-import { load, today } from "../lib/brain.js";
+import { connections, load, today } from "../lib/brain.js";
 import { sessions } from "../lib/ask.js";
 import { ago, rows, sum } from "../lib/ui.js";
 
@@ -15,10 +15,8 @@ const cards = D.cards || [], due = cards.filter(c => c.due <= today()).length;
 const next = cards.map(c => c.due).filter(d => d > today()).sort()[0];
 const learning = notes.filter(n => n.folder === "learning" && n.id !== "learning/mistakes").sort((x, y) => y.mod - x.mod)[0];
 const chat = sessions()[0];
-// One connection from insight/connections.md (not the project ideas), a different one each day
-const conn = D.byId["insight/connections"];
-const bridges = conn ? [...conn.md.split("## Combinations")[0].matchAll(/^- \*\*(.+?):\*\*/gm)].map(m => m[1]) : [];
-const bridge = bridges[new Date().getDate() % (bridges.length || 1)];
+const links = connections(D), ideas = links.filter(c => c.kind !== "Combinations");
+const pick = ideas[new Date().getDate() % (ideas.length || 1)]; // a different connection each day
 const projects = notes.filter(n => n.folder === "projects").sort((x, y) => y.mod - x.mod).slice(0, 4);
 const recent = notes.filter(n => n.folder !== "insight" && !projects.includes(n)).sort((x, y) => y.mod - x.mod).slice(0, 6);
 const fmt = d => new Date(d + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
@@ -54,10 +52,10 @@ const url = id => "/n/" + id.split("/").map(encodeURIComponent).join("/");
       <span class="v">{learning ? learning.title : "Learn something"}</span>
       <span class="s">{learning ? `touched ${ago(learning.mod)}` : "start with /mindtix learn"}</span>
     </a>
-    <a class="tile wide" href={"/ask?run=" + encodeURIComponent("/mindtix connect-dots")} style="--c:var(--c3)">
-      <span class="k">connections</span>
-      <span class="v">{bridge || "Connect the dots"}</span>
-      <span class="s">{conn ? `${bridges.length} found, ${ago(conn.mod)} · connect the dots again` : "how everything you know fits together"}</span>
+    <a class="tile wide" href="/matrix" style="--c:var(--c3)">
+      <span class="k">matrix</span>
+      <span class="v">{pick ? pick.title : "Connect the dots"}</span>
+      <span class="s">{links.length ? `${links.length} connections between ${new Set(links.flatMap(c => c.ids)).size} notes · open the matrix` : "how everything you know fits together"}</span>
     </a>
   </div>
 

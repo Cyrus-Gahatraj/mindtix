@@ -82,5 +82,18 @@ export function bell(low, high) {
     <text x="${px(low)}" y="125" text-anchor="middle">${low}</text><text x="${px(high)}" y="125" text-anchor="middle">${high}</text></svg>`;
 }
 
+/** Arc diagram for one connection: its notes as dots on a line, every pair joined by an arc (stroke: var(--k)), then linked chips. */
+export function arcs(notes) {
+  const n = notes.length, x = i => n < 2 ? 160 : 24 + i * 272 / (n - 1);
+  let p = "";
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+    const dx = x(j) - x(i);
+    p += `<path d="M${x(i)} 78 A${dx / 2} ${Math.min(dx / 2, 66)} 0 0 1 ${x(j)} 78" />`;
+  }
+  return `<svg viewBox="0 0 320 92" role="img" aria-label="${esc(notes.map(o => o.title).join(", "))}"><g fill="none" stroke="var(--k)" stroke-width="1.6" opacity=".75">${p}</g>` +
+    notes.map((o, i) => `<circle cx="${x(i)}" cy="78" r="7" fill="${fc(o.folder)}"><title>${esc(o.title)}</title></circle>`).join("") + `</svg>` +
+    `<div class="chips">${notes.map(o => `<a class="chip tag" style="--c:${fc(o.folder)}" href="${noteUrl(o.id)}">${esc(o.title)}</a>`).join("")}</div>`;
+}
+
 /** An Ask answer as HTML: [[wikilinks]] to notes become links. */
 export const answerHtml = (D, text) => md(D.linkify(text));
