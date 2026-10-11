@@ -19,6 +19,11 @@
   connection (coloured by bridge, cluster, leverage, missing link or project idea; hover to
   trace, click to read), the hub notes, and an arc diagram for each connection. Today gets a
   full-width matrix tile with one connection a day; the page can run `/mindtix connect-dots` again.
+- **`forget` finds a topic everywhere.** It searches slug spellings (`night-train`,
+  `_`, joined) and the real file and folder names, so `[[links]]` and `INDEX.md` lines no
+  longer slip through; for a topic it also searches the words only that topic uses (character
+  names, chapter titles), reads PDFs and other binaries `grep` skips, and offers to delete the
+  chat log that asked to forget. The history command now also clears commit messages.
 
 - **Answers from your notes cite them.** Asking your brain a question reads `INDEX.md` first,
   cites every claim as `[[note#Heading]]`, says "not in your brain" before falling back on
