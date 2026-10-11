@@ -2,9 +2,12 @@
 import fs from "node:fs";
 import Base from "../layouts/Base.astro";
 import { BRAIN, brainFolders, folders, load, settings } from "../lib/brain.js";
-import { engine, hasClaude, llm, MODELS } from "../lib/ask.js";
+import { engine, hasClaude, llm, models, MODELS } from "../lib/ask.js";
 
 const D = load(), s = settings(), how = engine(), ai = llm(), claude = hasClaude();
+const current = ai && !["auto", "claude-opus-5-5"].includes(ai.model) ? ai.model : "";
+const list = await models();
+if (current && !list.includes(current)) list.unshift(current);
 const shownF = folders(), all = brainFolders();
 const isOn = f => shownF === "all" || shownF.includes(f);
 let astro = "";
@@ -38,7 +41,12 @@ try { astro = JSON.parse(fs.readFileSync("package.json", "utf8")).dependencies.a
           </div>
           <input class="field" id="url" placeholder="Endpoint, like http://localhost:20128/v1" value={ai?.kind === "openai" ? ai.url : ""} spellcheck="false" aria-label="Endpoint URL">
           <input class="field" id="key" type="password" autocomplete="off" placeholder={ai ? "API key · leave empty to keep the saved one" : "API key (empty for a local Ollama)"} aria-label="API key">
-          <input class="field" id="apimodel" placeholder="Model · empty for the default" value={ai && !["auto", "claude-opus-5-5"].includes(ai.model) ? ai.model : ""} spellcheck="false" aria-label="Model">
+          {list.length > 0 && <select class="field" id="apimodel" aria-label="Model">
+            <option value="" selected={!current}>Default model</option>
+            {list.map(m => <option value={m} selected={m === current}>{m}</option>)}
+          </select>}
+          {!list.length && <input class="field" id="apimodel" placeholder="Model · empty for the default" value={current} spellcheck="false" aria-label="Model">}
+          {ai && <p class="help" style="margin:0">{list.length ? `${list.length} models from ${ai.kind === "openai" && URL.canParse(ai.url) ? new URL(ai.url).host : "the Claude API"}.` : "Couldn't list this endpoint's models, so type one."} Change the endpoint or key and save to refresh the list.</p>}
           <p class="help" style="margin:0">Saved in the brain's .env, which git ignores. Keys are never shown here again and only go to that AI.</p>
         </div>
         <div class="row"><button class="btn" type="submit">Save</button><span class="saved" id="engine-saved" aria-live="polite"></span></div>

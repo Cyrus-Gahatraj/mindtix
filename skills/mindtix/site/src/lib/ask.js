@@ -96,6 +96,24 @@ export function llm() {
   return null;
 }
 
+// Models that can't chat (speech, images, music, embeddings, robots) are left out of the list.
+// ponytail: a name filter; trust a provider "capabilities" field if one ever becomes standard.
+const NOT_CHAT = /tts|audio|\blive\b|translate|image|imagen|veo|lyria|embed|transcribe|whisper|robotics|computer-use|nano-banana|aqa|moderation|dall-e|deep-research|antigravity/i;
+/** The API engine's chat models, from its /models list; [] when it can't be reached in 5 s. */
+export async function models() {
+  const get = config(), ai = llm();
+  if (!ai) return [];
+  try {
+    const r = ai.kind === "openai"
+      ? await fetch(ai.url.replace(/\/+$/, "") + "/models", { headers: get("MINDTIX_API_KEY") ? { Authorization: "Bearer " + get("MINDTIX_API_KEY") } : {}, signal: AbortSignal.timeout(5000) })
+      : await fetch(get("ANTHROPIC_BASE_URL", "https://api.anthropic.com").replace(/\/+$/, "") + "/v1/models?limit=100",
+        { headers: { "x-api-key": get("ANTHROPIC_API_KEY"), "anthropic-version": "2023-06-01" }, signal: AbortSignal.timeout(5000) });
+    if (!r.ok) return [];
+    const ids = ((await r.json()).data || []).map(m => String(m.id).replace(/^models\//, "")); // Gemini says "models/gemini-…"
+    return [...new Set(ids.filter(id => !NOT_CHAT.test(id)))].sort();
+  } catch { return [] }
+}
+
 /** The chat engine in use: Settings decides; unset means Claude Code when it's installed. */
 export function engine() {
   const s = settings(), kind = s.engine === "api" || s.engine === "claude" ? s.engine : hasClaude() ? "claude" : "api";

@@ -32,6 +32,7 @@ const SEEN = [];
 const llm = http.createServer((req, res) => {
   let data = "";
   req.on("data", c => data += c).on("end", () => {
+    if (req.url === "/v1/models") return res.end(JSON.stringify({ data: [{ id: "models/gemini-x" }, { id: "gemini-x-tts" }, { id: "gemini-x-live" }, { id: "a-chat" }] }));
     const body = JSON.parse(data);
     SEEN.push({ path: req.url, headers: req.headers, body });
     res.writeHead(200, { "Content-Type": "text/event-stream" });
@@ -96,6 +97,7 @@ test("api engine: no AI is a clear error, and commands need Claude Code", async 
 
 test("api engine: OpenAI-compatible streaming, chat memory, logs", async () => {
   w(".env", `# llm\nMINDTIX_API_URL=${base}/v1\nMINDTIX_API_KEY='k1'\n`);
+  assert.deepEqual(await A.models(), ["a-chat", "gemini-x"], "the Settings model list: prefix dropped, non-chat models left out");
   const got = [];
   const first = await A.ask(null, "What does a left join keep?", e => got.push(e));
   assert.equal(first.answer, "2 messages. See [[sql-joins]].");

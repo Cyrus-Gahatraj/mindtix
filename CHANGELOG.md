@@ -8,6 +8,9 @@
   `insight/`. `raw/` stays read-only.
 - **Write several notes at once.** The Write page opens notes in tabs (`+` adds one); ⌘S saves
   every changed tab, and unsaved new tabs survive a closed browser tab.
+- **Pick the API model from a list.** Settings fetches the endpoint's `/models` (OpenAI-compatible,
+  Gemini or the Claude API), drops models that can't chat (speech, images, live, music) and shows
+  a dropdown; it falls back to a text field when the list can't be reached.
 - **Matrix: see how your knowledge connects.** A new `/matrix` page draws
   `insight/connections.md`: a grid where every row and column is a note and a lit cell is a
   connection (coloured by bridge, cluster, leverage, missing link or project idea; hover to
