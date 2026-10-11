@@ -70,6 +70,16 @@ test("connections: one per bullet, kind from the heading, ids from its links", (
   assert.deepEqual(B.connections(B.load()), []);
 });
 
+test("chats in insight: reflect after a chat's last question ticks it", () => {
+  w("logs/2020-01-01-100000-chat.md", "# Old\n\n## You · 2020-01-01 10:00\n\nhi\n\n## Brain · 2020-01-01 10:00\n\nhello\n");
+  w("logs/2999-01-01-100000-chat.md", "# Later\n\n## You · 2999-01-01 10:00\n\nhi\n");
+  w("insight/mind.md", "# Mind\n");
+  const by = Object.fromEntries(A.sessions().map(c => [c.id, c.inInsight]));
+  assert.equal(by["2020-01-01-100000-chat"], true);
+  assert.equal(by["2999-01-01-100000-chat"], false);
+  for (const f of ["logs/2020-01-01-100000-chat.md", "logs/2999-01-01-100000-chat.md", "insight/mind.md"]) fs.rmSync(path.join(brain, f));
+});
+
 test("settings: folders apply at once; unknown values never reach the file", () => {
   B.saveSettings({ folders: "knowledge" });
   assert.deepEqual(B.load().folders, ["knowledge"]);

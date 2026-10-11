@@ -8,6 +8,9 @@
   `insight/`. `raw/` stays read-only.
 - **Write several notes at once.** The Write page opens notes in tabs (`+` adds one); ⌘S saves
   every changed tab, and unsaved new tabs survive a closed browser tab.
+- **Chats into insight.** The Ask sidebar has a "chats → insight" button that runs
+  `/mindtix reflect`, which reads your chats' questions into `insight/`. Each chat reflect has
+  read gets a ✓, and an open chat says whether it's in your insight yet.
 - **Pick the API model from a list.** Settings fetches the endpoint's `/models` (OpenAI-compatible,
   Gemini or the Claude API), drops models that can't chat (speech, images, live, music) and shows
   a dropdown; it falls back to a text field when the list can't be reached.

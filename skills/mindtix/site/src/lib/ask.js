@@ -329,12 +329,24 @@ export function readLog(id) {
 
 export const hasSession = id => SESSION.test(id) && fs.existsSync(path.join(LOGS(), id + ".md"));
 
+/** When /mindtix reflect last rewrote insight/ (ms). connect-dots only touches connections.md, so it doesn't count. */
+function reflectedAt() {
+  const dir = path.join(BRAIN, "insight");
+  try { return Math.max(0, ...fs.readdirSync(dir).filter(f => f.endsWith(".md") && f !== "connections.md" && f !== "README.md").map(f => fs.statSync(path.join(dir, f)).mtimeMs)) }
+  catch { return 0 }
+}
+
+/** The chats, newest first. inInsight: reflect has run since the chat's last question, so insight/ has read it.
+ *  ponytail: turns are stamped to the minute, so a question in the same minute as a reflect counts as read. */
 export function sessions() {
   let files = [];
   try { files = fs.readdirSync(LOGS()) } catch {}
+  const at = reflectedAt();
   return files.filter(f => f.endsWith(".md") && SESSION.test(f.slice(0, -3))).sort().reverse().map(f => {
-    const first = fs.readFileSync(path.join(LOGS(), f), "utf8").split("\n")[0];
-    return { id: f.slice(0, -3), title: first.replace(/^#\s*/, "").trim() || f.slice(0, -3) };
+    const text = fs.readFileSync(path.join(LOGS(), f), "utf8");
+    const last = [...text.matchAll(TURN)].filter(h => h[1] === "You").at(-1)?.[2];
+    return { id: f.slice(0, -3), title: text.split("\n")[0].replace(/^#\s*/, "").trim() || f.slice(0, -3),
+      inInsight: !!last && new Date(last.trim().replace(" ", "T")).getTime() < at };
   });
 }
 

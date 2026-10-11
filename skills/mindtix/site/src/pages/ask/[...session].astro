@@ -13,16 +13,21 @@ const chats = sessions(), yesterday = today(-1);
 const groups = [["Today", chats.filter(c => c.id.startsWith(today()))], ["Yesterday", chats.filter(c => c.id.startsWith(yesterday))],
   ["Earlier", chats.filter(c => !c.id.startsWith(today()) && !c.id.startsWith(yesterday))]].filter(([, l]) => l.length);
 const title = turns.length ? chats.find(c => c.id === session)?.title || "Ask" : "Ask";
+const cur = chats.find(c => c.id === session), pending = chats.filter(c => !c.inInsight).length;
+const reflect = how.commands ? "/ask?run=" + encodeURIComponent("/mindtix reflect") : "/settings#chat";
 const ideas = [...(how.commands ? ["/mindtix today", "/mindtix recall"] : []), "What am I learning right now?", "What should I work on next?"];
 ---
 <Base D={D} title={title} active="ask" layout="bare">
   <div class="chatapp" id="app">
     <aside class="chatside" aria-label="Chats">
       <a class="btn ghost" href="/ask"><Fragment set:html={icon("plus")} />new chat</a>
+      {chats.length > 0 && <a class="btn ghost toinsight" href={reflect} title={how.commands ? "Runs /mindtix reflect: it rereads your chats and writes what your questions show into insight/" : "Needs Claude Code as the chat engine (Settings)"}>
+        <Fragment set:html={icon("spark")} />{!pending ? "all chats in insight ✓" : how.commands ? `chats → insight · ${pending} new` : `${pending} chats not in insight · needs Claude Code`}</a>}
       {groups.map(([label, list]) => <>
         <div class="group">{label}</div>
         {list.map(c => <div class="chatlink" aria-current={c.id === session ? "page" : undefined} data-id={c.id}>
           <a href={"/ask/" + c.id} title={c.title}>{c.title}</a>
+          {c.inInsight && <span class="tick" title="In your insight: reflect has read this chat">✓</span>}
           <button class="iconbtn del" type="button" aria-label={"Delete chat: " + c.title} title="Delete"><Fragment set:html={icon("trash")} /></button>
         </div>)}
       </>)}
@@ -31,6 +36,9 @@ const ideas = [...(how.commands ? ["/mindtix today", "/mindtix recall"] : []), "
     <section class="chatmain">
       <div class="thread" id="thread">
         <div class="thread-in" id="chat" data-session={session} data-ready={how.ready ? "1" : ""}>
+          {cur && turns.length > 0 && (cur.inInsight
+            ? <p class="insight-note on">✓ in your insight · reflect has read these questions</p>
+            : <p class="insight-note">○ not in your insight yet · <a href={reflect}>{how.commands ? "add it with /mindtix reflect" : "switch to Claude Code to add it"}</a></p>)}
           {turns.length ? turns.map(t => t.role === "user"
             ? <div class="msg you">{t.content}</div>
             : <div class="msg brain"><article class="reader" set:html={answerHtml(D, t.content)} /></div>)
