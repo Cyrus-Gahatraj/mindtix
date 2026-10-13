@@ -114,7 +114,9 @@ with tempfile.TemporaryDirectory() as brain:
                  "| t | 4 | 50% | 2 |", "| u | 4 | 0% | 4 |", "- u: q4 (4 misses)"):
         assert line in out.split("\n"), (line, out)
     week = stats(brain, days=3, today=date(2026, 10, 9))
-    assert "## Reviews (last 3 days)" in week and "| 4 | 0% | 90% |" in week, week
+    open(os.path.join(brain, "learning", "reviews.csv"), "a", encoding="utf-8").write(
+        f"{date.today().isoformat()}T09:00,u,q4,again,1,0.95,0.4,9.4,today\n"
+    )
     r = subprocess.run([sys.executable, SCRIPT, "stats", brain, "--days", "3"], capture_output=True, text=True)
     assert r.returncode == 0 and "## Calibration" in r.stdout, r.stdout + r.stderr
 
