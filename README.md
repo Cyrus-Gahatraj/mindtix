@@ -1,13 +1,31 @@
 # mindtix
 
-[![test](https://github.com/Cyrus-Gahatraj/mindtix/actions/workflows/test.yml/badge.svg)](https://github.com/Cyrus-Gahatraj/mindtix/actions/workflows/test.yml)
+<p align="center">
+  <a href="https://github.com/Cyrus-Gahatraj/mindtix/actions/workflows/test.yml"><img src="https://github.com/Cyrus-Gahatraj/mindtix/actions/workflows/test.yml/badge.svg" alt="Build Status" /></a>
+  <a href="https://github.com/Cyrus-Gahatraj/mindtix/stargazers"><img src="https://img.shields.io/github/stars/Cyrus-Gahatraj/mindtix?style=flat&color=yellow" alt="GitHub Stars" /></a>
+  <a href="https://obsidian.md"><img src="https://img.shields.io/badge/Obsidian-Ready-7c3aed.svg" alt="Obsidian Ready" /></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+</p>
 
-A second brain that gets to know you, and helps you actually learn. Mind + *The Matrix*.
+<p align="center">
+  <strong>A second brain that gets to know you, and helps you actually learn.</strong><br>
+  <em>Mind + The Matrix.</em>
+</p>
 
-Mindtix is a folder of plain markdown that an AI agent (Claude Code, for now) keeps for you.
+<p align="center">
+  <img src="assets/mindtix-demo.gif" alt="Mindtix Demo with Claude Code and Obsidian" width="860" />
+</p>
+
+Mindtix is a folder of plain markdown that an AI agent (Claude Code, Cursor, Codex, Gemini CLI) keeps for you.
 You drop in your notes, writing and data exports. The AI builds pages about who you are and
 what you know, tracks what you're learning, and quizzes you until it sticks. Everything is
-local, readable in Obsidian, and yours.
+local, readable in [Obsidian](https://obsidian.md), and 100% yours.
+
+### Highlights
+- 🧠 **Active Recall over Passive Hoarding:** Doesn't just save notes; quizzes and spars with you until concepts stick.
+- 📇 **Spaced Repetition (FSRS):** Automatically schedules due reviews using modern FSRS algorithms (the same scheduler Anki uses).
+- 💎 **100% Local Markdown:** No proprietary databases or vendor lock-in. Reads natively in Obsidian as an interconnected graph.
+- 🛡️ **Zero Cloud / Privacy-First:** Your thoughts stay on your local disk. Built-in secret guards prevent credentials from leaking into notes.
 
 ## The layout
 
@@ -126,6 +144,15 @@ that has `MIND.md`:
 ```
 
 Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked graph.
+
+## Instagram Webhook
+
+Mindtix includes a built-in webhook receiver for the Meta / Instagram Graph API, enabling real-time notes capture and events directly into your brain:
+- **Cloud serverless:** Deployable with zero configuration to Vercel (`api/webhook.js`, `vercel.json`)
+- **Web app:** Built directly into the Mindtix web app (`/api/webhook`) to capture incoming Instagram direct messages into `notes/YYYY-MM-DD.md`
+- **Standalone:** Run locally with Node (`node api/webhook.js`) on port 3000
+- **Compliance:** Built-in endpoints for `/privacy`, `/terms`, and `/data-deletion`
+- See [docs/instagram-webhook.md](docs/instagram-webhook.md) for complete setup instructions.
 
 ## Privacy
 
