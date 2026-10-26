@@ -274,3 +274,30 @@ test("windows line ends (CRLF): parsed like LF, and kept when the site writes", 
   B.saveNote("knowledge/crlf", saved.src + "\nMore.", saved.mod);
   assert.ok(!/(^|[^\r])\n/.test(r("knowledge/crlf.md")), "an edit keeps the note's CRLF");
 });
+
+test("webhook: Meta verification and message capture into today's notes", async () => {
+  const WH = await import("../src/pages/api/webhook.js");
+  const getUrl = new URL("http://localhost/api/webhook?hub.mode=subscribe&hub.verify_token=cyrus_brain_insta_2026&hub.challenge=test_site_challenge");
+  const getRes = await WH.GET({ url: getUrl });
+  assert.equal(getRes.status, 200);
+  assert.equal(await getRes.text(), "test_site_challenge");
+
+  const postReq = new Request("http://localhost/api/webhook", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      object: "instagram",
+      entry: [{
+        messaging: [{
+          sender: { id: "test_user" },
+          message: { text: "Hello from Instagram" }
+        }]
+      }]
+    })
+  });
+  const postRes = await WH.POST({ request: postReq });
+  assert.equal(postRes.status, 200);
+  assert.equal(await postRes.text(), "EVENT_RECEIVED");
+  assert.ok(r(`notes/${B.today()}.md`).includes("Instagram [@test_user]: Hello from Instagram"));
+});
+

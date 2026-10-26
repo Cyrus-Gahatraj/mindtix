@@ -2,6 +2,11 @@
 
 ## 1.7.0
 
+- **Built-in Instagram Webhook.** Receive and verify webhooks directly from the Meta / Instagram
+  Graph API. Deployable with zero configuration on Vercel (`api/webhook.js`, `vercel.json`), runnable
+  standalone (`node api/webhook.js`), or served by the Mindtix web app (`/api/webhook`) where incoming
+  direct messages are automatically captured into `notes/YYYY-MM-DD.md`. Includes `/privacy`, `/terms`,
+  and `/data-deletion` compliance endpoints.
 - **`notes/`: what you write on the site lands here.** Write and quick capture save to
   `notes/` (listed under `## Notes` in `INDEX.md`). `/mindtix reflect` tidies it in place
   first (titles, `[[links]]`, merges, theme folders, always your words) and then reads it for

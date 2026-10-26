@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Base.astro";
+import { load } from "../lib/brain.js";
+
+const D = load();
+---
+<Base D={D} title="Privacy Policy" active="">
+  <article class="reading">
+    <h1>Privacy Policy</h1>
+    <p class="lede"><strong>Effective Date:</strong> October 16, 2026</p>
+
+    <p>This Privacy Policy describes how the Mindtix Instagram Webhook application ("the App") handles information received from the Meta / Instagram platform.</p>
+
+    <h2>1. Information We Receive</h2>
+    <p>When you interact with our connected Instagram account (@cyrus.nobody), our application receives webhook event notifications provided by Meta, including:</p>
+    <ul>
+      <li>Instagram Scoped User ID (an anonymized identifier for the sender)</li>
+      <li>Message content (text sent in direct messages)</li>
+      <li>Timestamp of the message</li>
+    </ul>
+
+    <h2>2. How We Use Information</h2>
+    <p>Information received through the webhook is processed exclusively to:</p>
+    <ul>
+      <li>Provide automated processing and notes synchronization with the Mindtix personal second brain system.</li>
+      <li>Troubleshoot application functionality and monitor service health.</li>
+    </ul>
+    <p>We do not sell, rent, or share user data with third-party advertisers or external data brokers.</p>
+
+    <h2>3. Data Retention and Deletion</h2>
+    <p>Data received by the serverless function is processed in real time and is not sold or retained for advertising. If you wish to have your message data deleted from our logs or notes, please see our <a href="/data-deletion">Data Deletion Instructions</a>.</p>
+
+    <h2>4. Contact</h2>
+    <p>If you have any questions about this Privacy Policy, you can reach out via GitHub: <a href="https://github.com/Cyrus-Gahatraj/mindtix">github.com/Cyrus-Gahatraj/mindtix</a>.</p>
+  </article>
+</Base>

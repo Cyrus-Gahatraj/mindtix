@@ -1,0 +1,24 @@
+{
+  "name": "mindtix",
+  "version": "1.7.0",
+  "description": "A second brain that gets to know you and helps you actually learn. Plain markdown, kept by Claude. Includes built-in Instagram webhook integration.",
+  "type": "module",
+  "main": "api/webhook.js",
+  "scripts": {
+    "start": "node api/webhook.js",
+    "test": "node --test tests/test_webhook.mjs"
+  },
+  "keywords": [
+    "second-brain",
+    "learning",
+    "spaced-repetition",
+    "obsidian",
+    "notes",
+    "instagram",
+    "webhook",
+    "meta",
+    "vercel"
+  ],
+  "author": "Cyrus Gahatraj",
+  "license": "MIT"
+}

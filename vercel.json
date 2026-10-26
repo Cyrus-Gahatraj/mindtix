@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/privacy", "destination": "/api/privacy" },
+    { "source": "/terms", "destination": "/api/terms" },
+    { "source": "/data-deletion", "destination": "/api/data-deletion" }
+  ]
+}

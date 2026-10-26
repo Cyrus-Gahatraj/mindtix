@@ -139,7 +139,7 @@ def setup_site(brain, dest=None, folders=None, replace=False, install=True):
             dest = json.load(open(remembered, encoding="utf-8"))["path"]
         except (OSError, ValueError, KeyError):
             dest = ""
-        if not os.path.isfile(os.path.join(dest, "package.json")):
+        if not dest or not os.path.isfile(os.path.join(dest, "package.json")):
             dest = os.path.join(brain, "exports", "site")
     dest = os.path.abspath(os.path.expanduser(dest))
     inside = os.path.commonpath([brain, dest]) == brain
