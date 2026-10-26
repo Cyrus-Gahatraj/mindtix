@@ -30,7 +30,7 @@ Open your agent in an empty folder and say "set up mindtix". After that, just ta
 "import ~/Downloads/instagram.zip", "save this", "teach me SQL", "quiz me on SQL",
 "what's due?", "reflect on me", "weekly review", "export my profile".
 
-Every brain has `AGENTS.md` and `GEMINI.md` that point the agent to `MIND.md`, so the rules
+Every brain has `AGENTS.md` and `GEMINI.md` that point the agent to `MINDTIX.md` (or `MIND.md`), so the rules
 load in Codex, opencode, Cursor and Gemini CLI the way `CLAUDE.md` does in Claude Code.
 
 ## What's different from Claude Code

@@ -7,6 +7,17 @@ CARD = re.compile(r"^\s*-\s*\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]", re.M
 CONFIG_PATH = os.path.expanduser("~/.config/mindtix/brain")
 
 
+def is_brain_dir(d):
+    """Return True if folder contains MINDTIX.md or legacy MIND.md."""
+    return os.path.isfile(os.path.join(d, "MINDTIX.md")) or os.path.isfile(os.path.join(d, "MIND.md"))
+
+
+def mind_file(d):
+    """Return the absolute path to MINDTIX.md or fallback MIND.md."""
+    tix = os.path.join(d, "MINDTIX.md")
+    return tix if os.path.isfile(tix) else os.path.join(d, "MIND.md")
+
+
 def save_brain(path):
     """Save the path to the primary brain in user config for global discovery."""
     path = os.path.abspath(os.path.expanduser(path))
@@ -16,13 +27,13 @@ def save_brain(path):
 
 
 def find_root(path, allow_global=False):
-    """Return the nearest folder at or above path holding MIND.md, or the global brain."""
+    """Return the nearest folder at or above path holding MINDTIX.md/MIND.md, or the global brain."""
     p = os.path.abspath(path)
     if not os.path.isdir(p):
         p = os.path.dirname(p)
     curr = p
     while True:
-        if os.path.isfile(os.path.join(curr, "MIND.md")):
+        if is_brain_dir(curr):
             return curr
         parent = os.path.dirname(curr)
         if parent == curr:
@@ -36,20 +47,20 @@ def find_root(path, allow_global=False):
     env_brain = os.environ.get("MINDTIX_BRAIN")
     if env_brain:
         env_brain = os.path.abspath(os.path.expanduser(env_brain))
-        if os.path.isfile(os.path.join(env_brain, "MIND.md")):
+        if is_brain_dir(env_brain):
             return env_brain
 
     if os.path.isfile(CONFIG_PATH):
         try:
             with open(CONFIG_PATH, encoding="utf-8") as f:
                 saved = f.read().strip()
-            if saved and os.path.isfile(os.path.join(saved, "MIND.md")):
+            if saved and is_brain_dir(saved):
                 return saved
         except OSError:
             pass
 
     default_mind = os.path.expanduser("~/mind")
-    if os.path.isfile(os.path.join(default_mind, "MIND.md")):
+    if is_brain_dir(default_mind):
         return default_mind
 
     return None

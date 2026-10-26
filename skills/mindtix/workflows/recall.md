@@ -17,7 +17,7 @@ from `s`. Never edit the state or due date by hand; grade through the script.
    no cards, suggest `/mindtix capture` (from their notes) or `/mindtix learn`, then stop.
    Cards written without a box (plain `- question`) count as new and due now.
 2. **Pick up to 10**, lowest box first, then oldest due date, at most 3 per topic, and weaker
-   topics (lower level in `insight/knowledge.md`) first. If they named a topic, use only it.
+   topics (lower level in `self/insight/knowledge.md`) first. If they named a topic, use only it.
    **Interleave:** never two in a row from the same topic, and put easily confused topics
    next to each other.
 3. **Ask one at a time.** They answer from memory, no peeking, then say **sure or guessing**
@@ -44,7 +44,7 @@ from `s`. Never edit the state or due date by hand; grade through the script.
 7. **Log** one line per topic in its `## Log`: `- YYYY-MM-DD recall: 3/4, missed: <question>`.
 8. **Report** in 2-3 lines: the score, the weakest topic, how many cards are due tomorrow.
    If the same kind of mistake shows up 3+ times in `mistakes.md`, suggest
-   `/mindtix learn diagnose`. Don't edit `insight/`.
+   `/mindtix learn diagnose`. Don't edit `self/insight/`.
 
 ## Writing cards
 

@@ -5,7 +5,7 @@ Target folder: $ARGUMENTS (empty = current directory).
 Sets up an empty brain from the `template/` folder in the skill folder.
 
 1. **Pick the folder.** Use the path the user gave, otherwise the current directory. If it
-   already has a `MIND.md`, stop: it's already a brain. If it has other files, list them
+   already has a `MINDTIX.md` or `MIND.md`, stop: it's already a brain. If it has other files, list them
    and ask before mixing the brain into it; suggest a fresh folder such as `~/mind`.
 2. **Copy the template** with its hidden files:
    `cp -R "<this skill's dir>/template/." "<target>/"`. If copying from the plugin folder
@@ -24,7 +24,7 @@ Sets up an empty brain from the `template/` folder in the skill folder.
    - what they want to learn next, and by when
    - how they like to learn (build first, read first, watch, talk it through)
    - one thing they want this brain to remember about them
-5. **Write the answers** into `MIND.md` under "About me" and into `self/profile.md`, each
+5. **Write the answers** into `MINDTIX.md` (or `MIND.md`) under "About me" and into `self/profile.md`, each
    fact labeled `[stated]`. Add `self/profile.md` to `INDEX.md`.
 6. **Show the next steps** in a few lines:
    - drop notes into `raw/notes/`, exports into `raw/imports/`, writing into `raw/writing/`

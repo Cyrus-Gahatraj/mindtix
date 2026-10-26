@@ -19,10 +19,10 @@
    - learning: progress per topic, the most repeated mistake (suggest
      `/mindtix learn diagnose` if one repeats), due cards (offer a `/mindtix recall` round),
      and one line on calibration and the mistake mix (slips, misconceptions, prerequisites).
-     If it contradicts the Teaching plan in `insight/learning.md`, suggest `/mindtix reflect`
+     If it contradicts the Teaching plan in `self/insight/learning.md`, suggest `/mindtix reflect`
    - housekeeping: unprocessed `raw/` files, tidy problems
 7. **Propose growth:** at most 3 changes, each justified by real content (e.g. "8 notes
-   about chess sit in `knowledge/`, so give chess its own `hobbies/chess/` folder"). When 8+
+   about chess sit in `knowledge/`, so give chess its own `projects/chess.md` or a hub page"). When 8+
    notes share a theme and no page ties them together, propose a hub page (a map of content):
    `knowledge/<area>.md` with one line and a link per note, in the order to read them, plus
    the open questions between them. Structure is earned; never make one in advance. If

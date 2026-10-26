@@ -32,19 +32,16 @@ local, readable in [Obsidian](https://obsidian.md), and 100% yours.
 
 ```
 my-mind/
-├── MIND.md        rules for the AI + short "who you are"
+├── MINDTIX.md     rules for the AI + short "who you are" (or MIND.md)
 ├── INDEX.md       one line per note; the AI reads this first
 ├── raw/           everything YOU put in. The AI reads it, never edits it
-│   ├── notes/       your own notes
+│   ├── notes/       your own notes, quick captures, and voice dumps
 │   ├── imports/     data exports, transcripts, articles, PDFs
 │   └── writing/     drafts and creative writing, verbatim
-├── self/          who you are: profile, personality, people, timeline
 ├── knowledge/     one page per topic you understand, with recall cards
-├── learning/      what you're learning now: maps, sessions, mistakes
-├── projects/      one note per thing you make
-├── hobbies/       one subfolder per hobby
-├── extra/         anything else: school, work, health, ...
-├── insight/       the AI's evidence-based read of you
+├── learning/      what you're learning now: maps, challenge sessions, mistakes
+├── projects/      one note per thing you make (auto-linked from project repos)
+├── self/          who you are: profile, personality, people, timeline, insight/
 ├── logs/          chats with your brain (not committed)
 └── private/       anything sensitive (not committed)
 ```
@@ -128,7 +125,7 @@ Ask your brain anything and it answers from your notes, citing each one, and off
 good answer as a new page so the next question starts from it.
 
 **Hooks** ([`hooks/`](hooks/)) enforce the rules that matter most, only inside a folder
-that has `MIND.md`:
+that has `MINDTIX.md` (or `MIND.md`):
 - **Secret guard:** blocks writing API keys, tokens, passwords or private keys into notes
 - **raw/ guard:** blocks editing your own material in `raw/` (adding new files is fine)
 - **Due cards:** at session start, tells Claude how many recall cards are due

@@ -1,6 +1,6 @@
 ---
 name: mindtix
-description: A second brain that gets to know you and helps you actually learn, kept as a folder of plain markdown. Sets up a brain, imports exports (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian), files notes, teaches topics by making the user produce, runs spaced-repetition recall, writes an evidence-based read of the user, and exports a profile, Anki deck, backup or local web app. Use when the user says "mindtix", "set up mindtix", "my brain", "second brain", "save this", "import my export", "teach me X", "quiz me", "what's due", "today", "reflect on me", "weekly review", "tidy the brain", "sort these files", "put this file in my brain", "export my brain", or "forget someone", or works in a folder that has MIND.md.
+description: A second brain that gets to know you and helps you actually learn, kept as a folder of plain markdown. Sets up a brain, imports exports (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian), files notes, teaches topics by making the user produce, runs spaced-repetition recall, writes an evidence-based read of the user, and exports a profile, Anki deck, backup or local web app. Use when the user says "mindtix", "set up mindtix", "my brain", "second brain", "save this", "import my export", "teach me X", "quiz me", "what's due", "today", "reflect on me", "weekly review", "tidy the brain", "sort these files", "put this file in my brain", "export my brain", or "forget someone", or works in a folder that has MINDTIX.md or MIND.md.
 argument-hint: "[workflow] [arguments]"
 ---
 
@@ -36,8 +36,8 @@ the one that fits. Read that file in full and follow it.
 | `know-me` | short interview rounds to fill in `self/` profile (also part of `reflect`) |
 | `forget` | completely scrub a person or topic from the brain (also part of `tidy`) |
 
-No match but a brain exists (local `MIND.md`, `MINDTIX_BRAIN`, `~/.config/mindtix/brain`, or `~/mind`)?
-**Answer from the notes**, following `MIND.md`:
+No match but a brain exists (local `MINDTIX.md` or `MIND.md`, `MINDTIX_BRAIN`, `~/.config/mindtix/brain`, or `~/mind`)?
+**Answer from the notes**, following `MINDTIX.md`:
 - Read `INDEX.md` first and open only the notes that match; grep (outside `raw/imports/` and
   `private/`) for what the index misses.
 - Cite every claim with the note it came from, as `[[note#Heading]]`. Quote at most a line when
@@ -52,7 +52,7 @@ Not in a brain yet and none configured? Offer `init`.
 ## Global Brain & Project Context
 
 Commands run from any folder find your central brain automatically:
-1. Local directory or parent holding `MIND.md` (local brain wins)
+1. Local directory or parent holding `MINDTIX.md` or `MIND.md` (local brain wins)
 2. `MINDTIX_BRAIN` environment variable
 3. Saved path in `~/.config/mindtix/brain`
 4. Default `~/mind`

@@ -3,13 +3,13 @@ import Base from "../layouts/Base.astro";
 import { about, load } from "../lib/brain.js";
 import { rows } from "../lib/ui.js";
 
-// You: your picture (self/photo.jpg), the "About me" in MIND.md, and your notes in self/
+// You: your picture (self/photo.jpg), the "About me" in MINDTIX.md (or MIND.md), and your notes in self/
 const D = load(), me = about(), name = D.name || "You";
 const facts = Object.entries(me).filter(([k]) => k !== "Name" && k !== "Intro");
 const self = D.notes.filter(n => n.folder === "self").sort((a, b) => a.title.localeCompare(b.title));
 ---
 <Base D={D} title="Profile" active="profile">
-  <p class="eyebrow">from MIND.md and self/</p>
+  <p class="eyebrow">from MINDTIX.md and self/</p>
   <div class="profile" style="margin-bottom:28px">
     <button type="button" class={"avatar-lg" + (D.photo ? "" : " empty")} id="avatar" aria-label={D.photo ? "Change your picture" : "Add your picture"}>
       {D.photo ? <img src={`/photo?v=${D.photoV}`} alt=""> : <span aria-hidden="true">{name[0]}</span>}

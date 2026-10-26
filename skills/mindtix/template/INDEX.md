@@ -8,5 +8,3 @@ When a note is added, moved or deleted, update its line here.
 ## Knowledge
 ## Learning now
 ## Projects
-## Hobbies
-## Insight

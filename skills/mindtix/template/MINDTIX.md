@@ -1,4 +1,4 @@
-# Mind
+# Mindtix
 
 This folder is a second brain. Its job is to hold who you are, what you know, and what
 you're learning, so any AI session can start here and know you.
@@ -29,9 +29,9 @@ update it whenever you add, move or delete a note.
 3. No secrets: no passwords, keys, tokens or ID numbers anywhere. Drop them and tell me.
 4. Update, don't duplicate. Search `INDEX.md` first and merge into the existing note.
 5. Grow only when there's content. No empty folders or placeholder notes.
-6. Only `/mindtix reflect` writes `insight/` (`/mindtix forget` may delete from it).
+6. Only `/mindtix reflect` writes `self/insight/` (`/mindtix forget` may delete from it).
 7. `logs/` and `private/` are never committed.
-8. `notes/` is what I write on the site. `/mindtix reflect` may tidy it, but keeps my words.
+8. `raw/notes/` holds quick captures and user notes. Processed assets live in `knowledge/`, `learning/`, `projects/`, and `self/`.
 
 See the folder READMEs for what goes where.
 

@@ -6,12 +6,12 @@ Memory forms when you **produce**: recall, predict, explain, build. Explanations
 like learning. So ask before telling, make the user try first, and explain only the part
 they're stuck on. Method: `docs/learning.md` in the mindtix repo.
 
-Work from the brain root (the folder with `MIND.md`); if there is none, suggest
-`/mindtix init`. **Before any mode**, read: the **Teaching plan** in `insight/learning.md`,
-their level in `insight/knowledge.md`, `learning/<topic>/` if it exists, `knowledge/<topic>.md`,
+Work from the brain root (the folder with `MINDTIX.md` or `MIND.md`); if there is none, suggest
+`/mindtix init`. **Before any mode**, read: the **Teaching plan** in `self/insight/learning.md`,
+their level in `self/insight/knowledge.md`, `learning/<topic>/` if it exists, `knowledge/<topic>.md`,
 and `raw/notes/` on the topic. Pitch everything just above their level: hard enough to
-struggle, not so hard they guess. "How I like to learn" in `MIND.md` is only a first guess;
-what `insight/learning.md` measured wins.
+struggle, not so hard they guess. "How I like to learn" in `MINDTIX.md` is only a first guess;
+what `self/insight/learning.md` measured wins.
 
 Pick the mode from the arguments or what they say. If unclear: no `learning/<topic>/` yet → **start**;
 otherwise **teach** the next module.
@@ -54,7 +54,7 @@ whose `(needs: …)` are all ticked.
 1. **Pretest:** 2-3 quick questions on the module before teaching anything. Trying first
    helps even when they get it wrong. 3/3 right → tick it and move on.
 2. **Teach in the chosen format.** Use examples from their own projects and interests
-   (`projects/`, `hobbies/`). Run code yourself first.
+   (`projects/`). Run code yourself first.
 3. **Let them try.** When stuck, climb the hint ladder one rung at a time, and count the rungs:
    a question that nudges → point at the exact spot → one worked step. Never the whole answer.
 4. **Redo without help.** Once it works, they go back to the start and do the whole task
@@ -113,6 +113,6 @@ broken code to troubleshoot, system architecture trade-offs, or tough counterarg
 - What they now understand goes into `knowledge/<topic>.md` (shape in `/mindtix capture`):
   the code they built, why it works, connections. Add a `## Log` line:
   `- YYYY-MM-DD learn <mode>: score 3/5, missed: …`.
-- Don't edit `insight/`. If their level clearly moved, suggest `/mindtix reflect`.
+- Don't edit `self/insight/`. If their level clearly moved, suggest `/mindtix reflect`.
 
 Keep the pace quick. If they're bored, move faster. Don't do the struggle for them.

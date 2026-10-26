@@ -2,16 +2,16 @@
 
 Format: $ARGUMENTS (if empty, ask which, listing the five in one line each).
 
-Work from the brain root (the folder with `MIND.md`). Exports go to `exports/` in the brain
+Work from the brain root (the folder with `MINDTIX.md` or `MIND.md`). Exports go to `exports/` in the brain
 (gitignored; add `exports/` to `.gitignore` if it's missing) unless the user names another
 path. Never export `private/`, `logs/` or `raw/imports/`, and never put secrets in an export.
 
 ## profile: about-me for other AIs
 Write `exports/profile-YYYY-MM-DD.md`, at most ~400 words, in second person to the AI
-("The user is…"), from `MIND.md`, `self/`, `projects/`, `hobbies/` and the levels in
-`insight/knowledge.md`:
+("The user is…"), from `MINDTIX.md` (or `MIND.md`), `self/`, `projects/`, and the levels in
+`self/insight/knowledge.md`:
 - who they are, what they do, what they're learning now and their level in it
-- how they like to learn and to be answered (from `MIND.md` "How the AI should behave")
+- how they like to learn and to be answered (from `MINDTIX.md` "How the AI should behave")
 - current projects in one line each
 Use **only `[stated]` facts** by default; ask before including `[inferred]` guesses, and
 never include love life, health, mood, other people's details or anything from `private/`.
@@ -82,7 +82,7 @@ PY "<this skill's dir>/export.py" site . [folder path] [brain folder ...]
   ends it.
 
 **What the pages do:**
-- **Write** adds new notes to `INDEX.md`. It refuses `insight/`, `private/`, `logs/` and
+- **Write** adds new notes to `INDEX.md`. It refuses `self/insight/`, `private/`, `logs/` and
   `raw/imports/`, anything that looks like a secret, and a note that changed on disk since it
   was opened.
 - **Recall** asks "I know it" or "not sure" before showing the answer, then schedules the card
@@ -101,9 +101,9 @@ PY "<this skill's dir>/export.py" site . [folder path] [brain folder ...]
     Check which names are set, never their values. Settings saves one to `.env` and keeps `.env`
     in `.gitignore`. Never ask them to paste a key into the chat.
 - **Write** opens notes in tabs and saves every changed one at once (⌘S). New notes go to
-  `notes/` unless another folder is picked. **Quick capture** on Today adds a timed line to
-  `notes/<date>.md`. `/mindtix reflect` tidies `notes/` in place and reads it for `insight/`.
-- Mention that `/mindtix reflect` reads `logs/`, so what they ask shapes `insight/`. What they
+  `raw/notes/` unless another folder is picked. **Quick capture** on Today adds a timed line to
+  `raw/notes/<date>.md`. `/mindtix reflect` tidies `raw/notes/` in place and reads it for `self/insight/`.
+- Mention that `/mindtix reflect` reads `logs/`, so what they ask shapes `self/insight/`. What they
   write and grade on the site lands in the brain right away.
 
 For other changes (pages, look), they or Claude edit their copy in that folder. It's plain Astro

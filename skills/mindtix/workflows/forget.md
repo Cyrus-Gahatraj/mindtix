@@ -2,7 +2,7 @@
 
 Forget: $ARGUMENTS (if empty, ask who or what).
 
-Work from the brain root (the folder with `MIND.md`). This deletes, so show everything
+Work from the brain root (the folder with `MINDTIX.md` or `MIND.md`). This deletes, so show everything
 first and change nothing until they confirm. Never write the name into a new file, a log
 line or a commit message.
 
@@ -39,7 +39,7 @@ line or a commit message.
    - **Delete whole file:** notes that are about them (a page on the person, `learning/<topic>/`,
      `knowledge/<topic>.md`).
    - **Remove lines:** mentions inside other notes (`self/`, `knowledge/`, `projects/`,
-     `insight/`, `logs/`, `INDEX.md`), recall cards and `learning/mistakes.md` rows about them,
+     `self/insight/`, `logs/`, `INDEX.md`), recall cards and `learning/mistakes.md` rows about them,
      `[[links]]` to deleted pages. Where a sentence is mostly about the user, keep it and
      rewrite the other person as "someone"; otherwise drop the line. For a topic, cut the
      example or quote that names it and keep the rest of the sentence when it still says
@@ -48,7 +48,7 @@ line or a commit message.
      say which ones are mostly about them (a chat export with them) and which only mention
      them once.
    - **exports/:** old exports that contain them. Offer to delete them; re-export later.
-   - **Topic only:** its entry in `insight/knowledge.md` and `insight/scores.json`.
+   - **Topic only:** its entry in `self/insight/knowledge.md` and `self/insight/scores.json`.
    - **This chat:** a chat on the site is saved as `logs/<id>.md`, so this request itself
      names them. Offer to delete that log once the rest is done.
    - **Outside the brain (only tell them, don't touch):** the agent's own session history
@@ -57,7 +57,7 @@ line or a commit message.
 
    Then ask once: "Go ahead? You can drop any item from the list." Apply only what they
    approve. `/mindtix forget` is the one workflow besides `/mindtix reflect` allowed to change
-   `insight/`, and only to delete.
+   `self/insight/`, and only to delete.
 4. **Apply it.** Edit lines in place; delete files with `rm` only for the approved files.
    Update `INDEX.md`. Don't add notes about what was forgotten.
 5. **Check:** run the same search again, every spelling and term from step 1, plus `find`.

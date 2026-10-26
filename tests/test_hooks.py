@@ -10,7 +10,7 @@ from guard import check  # noqa: E402
 from commit import autocommit, git  # noqa: E402
 
 with tempfile.TemporaryDirectory() as root:
-    open(os.path.join(root, "MIND.md"), "w", encoding="utf-8").close()
+    open(os.path.join(root, "MINDTIX.md"), "w", encoding="utf-8").close()
     os.makedirs(os.path.join(root, "raw/notes"))
     os.makedirs(os.path.join(root, "knowledge"))
     note = os.path.join(root, "raw/notes/a.md")

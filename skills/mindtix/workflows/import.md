@@ -2,7 +2,7 @@
 
 Arguments: $ARGUMENTS (a path, then optionally what to focus on).
 
-Work from the brain root (the folder with `MIND.md`); if there is none, suggest
+Work from the brain root (the folder with `MINDTIX.md` or `MIND.md`); if there is none, suggest
 `/mindtix init` and stop.
 
 ## 1. Convert (never edit the original)
@@ -40,7 +40,7 @@ From the reports, update (merge, never duplicate; search `INDEX.md` first):
 - `self/profile.md` (background, places, education, work), `self/timeline.md` (dated
   events), `self/people.md` (who each person is to the user, one line each),
   `self/personality.md` (taste, opinions, mood), with every fact `[stated]` or `[inferred]`
-- `projects/`, `hobbies/`, and `knowledge/` for anything they were learning
+- `projects/` and `knowledge/` for anything they were building, practicing, or learning
 - their own creative lines (poems, lyrics they wrote) into `raw/writing/` verbatim
 
 Rules:
@@ -50,7 +50,7 @@ Rules:
 - **Other people:** keep only how they relate to the user. Sensitive details about the
   user (love life, health, mood) are their call: ask once whether to keep them in normal
   notes or in `private/`.
-- Don't write `insight/` (only `/mindtix reflect`); suggest running it afterwards.
+- Don't write `self/insight/` (only `/mindtix reflect`); suggest running it afterwards.
 
 ## 4. Report
 Under 15 lines: what was imported, the notes created or updated, anything left out on

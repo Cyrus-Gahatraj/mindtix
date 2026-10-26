@@ -1,7 +1,7 @@
 # Today
 
 One short session, three steps. Keep it moving: if they want to stop after any step, stop
-and still save. Work from the brain root (the folder with `MIND.md`); if there is none,
+and still save. Work from the brain root (the folder with `MINDTIX.md` or `MIND.md`); if there is none,
 suggest `/mindtix init`.
 
 1. **Recall (about 3 minutes).** Run `/mindtix recall`, but ask at most **5** due cards. If

@@ -28,7 +28,7 @@ with tempfile.TemporaryDirectory() as tmp:
     open(os.path.join(brain, "private", "id.md"), "w", encoding="utf-8").write("secret id")
     open(os.path.join(brain, "raw", "imports", "chat.txt"), "w", encoding="utf-8").write("someone else's message")
 
-    mind = os.path.join(brain, "MIND.md")
+    mind = os.path.join(brain, "MINDTIX.md") if os.path.isfile(os.path.join(brain, "MINDTIX.md")) else os.path.join(brain, "MIND.md")
     text = open(mind, encoding="utf-8").read().replace("- Name:", "- Name: Ada *Lovelace* [stated]", 1)
     open(mind, "w", encoding="utf-8").write(text)
 
@@ -43,7 +43,7 @@ with tempfile.TemporaryDirectory() as tmp:
     run("json", brain, os.path.join(out, "b.json"))
     data = json.load(open(os.path.join(out, "b.json"), encoding="utf-8"))
     paths = {n["path"] for n in data["notes"]}
-    assert "knowledge/sql-joins.md" in paths and "MIND.md" in paths
+    assert "knowledge/sql-joins.md" in paths and ("MINDTIX.md" in paths or "MIND.md" in paths)
     assert not any(p.startswith(("private/", "raw/imports/", "logs/")) for p in paths)
     assert {"box": 1, "due": "2026-10-10"}.items() <= next(c for c in data["cards"] if c["box"] == 1).items()
     assert {"question": "Which join keeps unmatched right rows?", "answer": "right join", "box": 2, "s": 9.1, "d": 4.2}.items() <= \
@@ -52,7 +52,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
     run("bundle", brain, os.path.join(out, "b.zip"))
     names = zipfile.ZipFile(os.path.join(out, "b.zip")).namelist()
-    assert "MIND.md" in names and "knowledge/sql-joins.md" in names
+    assert ("MINDTIX.md" in names or "MIND.md" in names) and "knowledge/sql-joins.md" in names
     assert not any(n.startswith(("private/", "raw/imports/", "exports/", ".git/")) for n in names), names
 
     # site: sets up the Astro app in exports/site/ by default, remembers where, keeps the user's copy

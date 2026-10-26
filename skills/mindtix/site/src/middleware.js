@@ -7,7 +7,7 @@ export function onRequest({ request, url }, next) {
     return new Response("mindtix only serves 127.0.0.1", { status: 403 });
   if (request.method !== "GET" && request.method !== "HEAD" && !(request.headers.get("content-type") || "").startsWith("application/json"))
     return Response.json({ error: "send JSON" }, { status: 415 });
-  if (!isBrain()) return new Response(`${BRAIN} is not a mindtix brain (no MIND.md). Set MINDTIX_BRAIN to the brain's folder.`, { status: 500 });
+  if (!isBrain()) return new Response(`${BRAIN} is not a mindtix brain (no MINDTIX.md or MIND.md). Set MINDTIX_BRAIN to the brain's folder.`, { status: 500 });
   // Old addresses from earlier versions of the site
   const old = url.pathname.match(/^\/(all|stats|f\/([^/]+))\/?$/);
   if (old) return Response.redirect(new URL(old[1] === "stats" ? "/insight" : old[2] ? "/notes?f=" + old[2] : "/notes", url), 301);

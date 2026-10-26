@@ -5,11 +5,11 @@ files inside it (dropped in the root or in the wrong folder) to where they belon
 leaves a line of text in a note, because `/mindtix reflect` reads text, not audio or images.
 Input: $ARGUMENTS, the files or folder to sort. Empty means every stray file in the brain.
 
-Work from the brain root (the folder with `MIND.md`). Never touch `logs/`, `private/` or
-`insight/`, and never move or rename anything already in `raw/`.
+Work from the brain root (the folder with `MINDTIX.md` or `MIND.md`). Never touch `logs/`, `private/` or
+`self/insight/`, and never move or rename anything already in `raw/`.
 
 1. **Find strays.** Without arguments: `git status --porcelain --untracked-files=all`, plus any
-   file in the brain root other than `MIND.md`, `INDEX.md`, the agent files (`CLAUDE.md`,
+   file in the brain root other than `MINDTIX.md` (or `MIND.md`), `INDEX.md`, the agent files (`CLAUDE.md`,
    `AGENTS.md`, `GEMINI.md`), `README.md` and dotfiles. A non-markdown file outside `raw/` (a
    photo in `self/`, audio in `projects/`) is a stray too, unless a note links to it.
    A path outside the brain is moved in (step 4). A data export or a big folder of notes goes
@@ -46,7 +46,7 @@ Work from the brain root (the folder with `MIND.md`). Never touch `logs/`, `priv
    and `mv` for the rest, including files from outside the brain. Never overwrite; on a name
    clash, ask.
 5. **File what they say.** A file that tells you something about them (creative work, a
-   project asset) gets a line in the right note (`hobbies/`, `projects/`, `self/`), labeled
+   project asset) gets a line in the right note (`projects/`, `self/`), labeled
    [stated] or [inferred], with a link to the file and a short summary of what step 2 found.
    Ask one question that the content raises and only they can answer (e.g. context, who is in
    the photo), and file the answer as [stated]. Update `INDEX.md` for every note you create or move.

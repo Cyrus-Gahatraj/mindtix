@@ -1,1 +1,1 @@
-@MIND.md
+@MINDTIX.md

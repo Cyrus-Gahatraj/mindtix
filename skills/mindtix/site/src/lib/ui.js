@@ -21,8 +21,8 @@ export function ago(ts) {
 }
 export const title = s => s[0].toUpperCase() + s.slice(1);
 
-// Every folder has its own colour, --c0 … --c7 (fixed for the usual folders, hashed for the rest)
-const FOLDER = { projects: 0, knowledge: 1, learning: 2, hobbies: 3, self: 4, insight: 5, extra: 6, raw: 7 };
+// Every folder has its own colour, --c0 … --c7 (fixed for the 5 pillars, hashed for the rest)
+const FOLDER = { raw: 0, knowledge: 1, learning: 2, projects: 3, self: 4, notes: 0, hobbies: 3, extra: 3, insight: 4 };
 export const fcIndex = f => FOLDER[f] ?? [...String(f)].reduce((h, c) => h + c.charCodeAt(0), 0) % 8;
 export const fc = f => `var(--c${fcIndex(f)})`;
 export const sum = (list, k) => list.reduce((s, n) => s + n[k], 0);

@@ -309,7 +309,8 @@ function context(question, history) {
   }
   const earlier = sessions().slice(0, 15).flatMap(s => readLog(s.id).filter(t => t.role === "user").map(t => `- ${t.at}: ${t.content.slice(0, 200)}`));
   let stable = SYSTEM;
-  for (const name of ["MIND.md", "INDEX.md"]) {
+  const mindName = fs.existsSync(path.join(BRAIN, "MINDTIX.md")) ? "MINDTIX.md" : "MIND.md";
+  for (const name of [mindName, "INDEX.md"]) {
     try { stable += `\n\n=== ${name} ===\n` + fs.readFileSync(path.join(BRAIN, name), "utf8") } catch {}
   }
   let dynamic = "Notes related to this question:\n\n" + (picked.join("\n\n") || "(none matched)");

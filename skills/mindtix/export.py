@@ -187,11 +187,14 @@ def setup_site(brain, dest=None, folders=None, replace=False, install=True):
 
 
 def main(argv):
+    def is_brain(d):
+        return os.path.isfile(os.path.join(d, "MINDTIX.md")) or os.path.isfile(os.path.join(d, "MIND.md"))
+
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # Windows consoles default to cp1252
     if len(argv) >= 3 and argv[1] == "site":
-        if not os.path.isfile(os.path.join(argv[2], "MIND.md")):
-            print(f"{argv[2]} is not a mindtix brain (no MIND.md)")
+        if not is_brain(argv[2]):
+            print(f"{argv[2]} is not a mindtix brain (no MINDTIX.md or MIND.md)")
             return 1
         rest = [a for a in argv[3:] if not a.startswith("--")]
         paths = [a for a in rest if "/" in a or "\\" in a or a.startswith((".", "~"))]
@@ -207,8 +210,8 @@ def main(argv):
         print(__doc__)
         return 1
     kind, brain, out = argv[1:4]
-    if not os.path.isfile(os.path.join(brain, "MIND.md")):
-        print(f"{brain} is not a mindtix brain (no MIND.md)")
+    if not is_brain(brain):
+        print(f"{brain} is not a mindtix brain (no MINDTIX.md or MIND.md)")
         return 1
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     n = {"anki": export_anki, "json": export_json, "bundle": export_bundle}[kind](brain, out)

@@ -3,10 +3,10 @@
 Input: $ARGUMENTS. Empty or "notes" means job B; anything else is job A.
 
 Find the brain root:
-1. Current folder or any parent holding `MIND.md` (local brain).
+1. Current folder or any parent holding `MINDTIX.md` or `MIND.md` (local brain).
 2. `MINDTIX_BRAIN` environment variable.
 3. User config `~/.config/mindtix/brain`.
-4. Default `~/mind` (if it holds `MIND.md`).
+4. Default `~/mind` (if it holds `MINDTIX.md` or `MIND.md`).
 If none found, suggest `/mindtix init` to create one.
 
 When capturing from an external project repository (cwd outside the brain):
@@ -24,9 +24,7 @@ Rules for both:
   --exclude-dir=raw --exclude-dir=private .`). Merge into an existing note when one fits.
 - **`raw/` is read-only.** Never edit or delete anything in it, except saving new input in
   job A as described below.
-- **`notes/` belongs to `/mindtix reflect`**, which tidies it in place. Job B may file what a
-  note teaches into other folders (citing it under `Sources:`), but leaves the note where it is.
-- **Never write `insight/`** (only `/mindtix reflect`). If something shows how they think or
+- **Never write `self/insight/`** (only `/mindtix reflect`). If something shows how they think or
   what they know, say so and suggest it.
 - Label every fact about the user `[stated]` (they said it) or `[inferred]` (your guess).
 - **Link every new note** to at least one existing note, and turn plain mentions of existing
@@ -47,10 +45,9 @@ Rules for both:
    |---|---|
    | Something they're learning (concept, command, lecture) | `knowledge/<topic>.md`, page shape below |
    | Their creative writing (poem, story, draft) | `raw/writing/`, **verbatim**, never polished |
-   | A fact about them (background, taste, goal, people, feelings) | `self/` (`profile.md`, `personality.md`, `people.md`, `timeline.md`) |
-   | News about something they make | `projects/<project>.md` |
-   | A hobby | `hobbies/<hobby>/` |
-   | Anything else (school, work, health, travel) | `extra/<area>/` |
+   | A quick thought, dump, or voice note | `raw/notes/`, kept verbatim |
+   | A fact about them (background, taste, goal, people, feelings, health) | `self/` (`profile.md`, `personality.md`, `people.md`, `timeline.md`) |
+   | News about something they make, build, or practice | `projects/<project>.md` |
    | A long source (article, book, talk, transcript) | `raw/imports/`, then run job B on it |
    | A quote or highlight from something they read | The source note in `knowledge/sources/` (shape in job B) |
    | A data export or a whole folder of notes | Use `/mindtix import <path>` instead |
@@ -62,7 +59,7 @@ Rules for both:
 
 ## B. Process raw/ into the brain
 
-1. **Find what's pending:** files in `raw/` and `notes/` not yet listed under `Sources:` in any note, or
+1. **Find what's pending:** files in `raw/notes/` and `raw/imports/` not yet listed under `Sources:` in any note, or
    changed since the note that cites them. Skip the READMEs.
 2. **Sort each file:**
 
@@ -72,8 +69,8 @@ Rules for both:
    | An article, book, talk or video transcript | A source note (step 4), then what it teaches into `knowledge/` pages (step 3) |
    | Creative writing | Leave it; mention it to `/mindtix reflect` for writing style |
    | About them (diary, bio, habits) | Facts into `self/`, labeled |
-   | About a project or hobby | Into `projects/` or `hobbies/` |
-   | A data export (chats, social media, Takeout) | Read it fully; extract who they are, people, timeline, interests and projects into `self/`, `projects/`, `hobbies/`. Leave out other people's private matters and every secret |
+   | About a project, build, or hobby endeavor | Into `projects/` |
+   | A data export (chats, social media, Takeout) | Read it fully; extract who they are, people, timeline, interests and projects into `self/`, `projects/`, `knowledge/`. Leave out other people's private matters and every secret |
 
    List what you'll create or update, then go ahead.
 

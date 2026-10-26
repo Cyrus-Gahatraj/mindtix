@@ -32,9 +32,10 @@ const OBS_LINK = /(!?)\[\[([^\]]+)\]\]/g;
 const CALLOUT = /^(\s*>\s*)\[!(\w+)\][+-]?[ \t]*(.*)$/gm;
 const MD_NOISE = /^\s*(#{1,6}\s+|>\s?|[-*+]\s+|\d+\.\s+|\|)|[*_`]|!?\[\[([^\]|#]+)[^\]]*\]\]|\[([^\]]*)\]\([^)]*\)|\[(stated|inferred)[^\]]*\]/gm;
 export const INTERVALS = [1, 3, 7, 14, 30, 90]; // the old Leitner boxes, kept as labels for stability
-const INDEX_SECTIONS = { notes: "Notes", self: "Who I am", knowledge: "Knowledge", learning: "Learning now", projects: "Projects", hobbies: "Hobbies" };
+const INDEX_SECTIONS = { notes: "Notes", self: "Who I am", knowledge: "Knowledge", learning: "Learning now", projects: "Projects" };
 
-export const isBrain = () => fs.existsSync(path.join(BRAIN, "MIND.md"));
+export const isBrain = () => fs.existsSync(path.join(BRAIN, "MINDTIX.md")) || fs.existsSync(path.join(BRAIN, "MIND.md"));
+export const mindFile = () => fs.existsSync(path.join(BRAIN, "MINDTIX.md")) ? path.join(BRAIN, "MINDTIX.md") : path.join(BRAIN, "MIND.md");
 export const today = (plus = 0) => new Date(Date.now() + plus * 864e5).toLocaleDateString("en-CA"); // local YYYY-MM-DD
 export const noteUrl = id => "/n/" + id.split("/").map(encodeURIComponent).join("/");
 // Notes are parsed with \n line ends; a file written back keeps its own (\r\n on Windows checkouts)
@@ -94,10 +95,13 @@ export function cards() {
   return out;
 }
 
-/** The 0-5 levels from the | Topic | Level | table in insight/knowledge.md, highest first. */
+/** The 0-5 levels from the | Topic | Level | table in self/insight/knowledge.md (or insight/), highest first. */
 export function knowledgeLevels() {
   const out = [];
-  for (const line of (read(path.join(BRAIN, "insight", "knowledge.md")) || "").split("\n")) {
+  const kPath = fs.existsSync(path.join(BRAIN, "self", "insight", "knowledge.md"))
+    ? path.join(BRAIN, "self", "insight", "knowledge.md")
+    : path.join(BRAIN, "insight", "knowledge.md");
+  for (const line of (read(kPath) || "").split("\n")) {
     const cells = line.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
     const digits = cells.length > 1 && cells[0] !== "Topic" ? cells[1].match(/\d/g) || [] : [];
     if (digits.length) {
@@ -108,9 +112,9 @@ export function knowledgeLevels() {
   return out.sort((a, b) => b.value - a.value);
 }
 
-/** The "## About ..." section of MIND.md as {Key: value}, or its first paragraph as Intro (and Name). */
+/** The "## About ..." section of MINDTIX.md (or MIND.md) as {Key: value}, or its first paragraph as Intro (and Name). */
 export function about() {
-  const text = read(path.join(BRAIN, "MIND.md")) || "";
+  const text = read(mindFile()) || "";
   const section = (/^## About[^\n]*\n([\s\S]*?)(?=^## |(?![\s\S]))/m.exec(text) || [])[1] || "";
   const out = {};
   for (const l of section.split("\n")) {
@@ -174,8 +178,11 @@ export function load() {
   // The profile picture shows whatever folders are chosen: it's the owner's, on their own machine
   data.photo = photo();
   data.photoV = data.photo ? Math.floor(fs.statSync(path.join(BRAIN, data.photo)).mtimeMs) : 0;
-  if (has("insight")) {
-    try { data.scores = JSON.parse(read(path.join(BRAIN, "insight", "scores.json"))) } catch { data.scores = {} }
+  if (has("self") || has("insight")) {
+    const sPath = fs.existsSync(path.join(BRAIN, "self", "insight", "scores.json"))
+      ? path.join(BRAIN, "self", "insight", "scores.json")
+      : path.join(BRAIN, "insight", "scores.json");
+    try { data.scores = JSON.parse(read(sPath)) } catch { data.scores = {} }
     data.knowledge = knowledgeLevels();
   }
   return data;
@@ -192,7 +199,8 @@ const NOT_A_SECRET = /^(?:os\.|process\.env|getenv|environ|env\b|env\(|config\.|
 export function connections(D) {
   const out = [];
   let kind = "";
-  for (const line of (D.byId["insight/connections"]?.md || "").split(/\r?\n/)) {
+  const connMd = D.byId["self/insight/connections"]?.md || D.byId["insight/connections"]?.md || "";
+  for (const line of connMd.split(/\r?\n/)) {
     const h = line.match(/^## (.+?)\s*(\(.*\))?$/);
     if (h) { kind = h[1]; continue }
     const m = kind && line.match(/^- \*\*(.+?)[:.]?\*\*\s*(.*)/);

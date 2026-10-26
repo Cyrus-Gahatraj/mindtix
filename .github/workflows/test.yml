@@ -32,7 +32,7 @@ jobs:
           python -m json.tool .claude-plugin/plugin.json > /dev/null
           python -m json.tool .claude-plugin/marketplace.json > /dev/null
           python -m json.tool hooks/hooks.json > /dev/null
-          python -m json.tool skills/mindtix/template/insight/scores.json > /dev/null
+          python -m json.tool skills/mindtix/template/self/insight/scores.json > /dev/null
       - name: Every skill has a name and description
         shell: bash
         run: |

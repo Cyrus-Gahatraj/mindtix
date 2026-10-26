@@ -1,2 +1,5 @@
 __pycache__/
 skills/mindtix/site/mindtix.json
+.agents/
+.claude/
+sessions/
