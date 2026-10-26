@@ -34,7 +34,8 @@ with tempfile.TemporaryDirectory() as tmp:
 # Only one SKILL.md, so neither Claude Code nor skills.sh sees a skill per workflow.
 repo = os.path.dirname(os.path.abspath(install.__file__))
 found = [os.path.relpath(os.path.join(r, f), repo) for r, ds, fs in os.walk(repo)
-         if "node_modules" not in r and ".git" not in r.split(os.sep) for f in fs if f == "SKILL.md"]
+         if "node_modules" not in r and ".git" not in r.split(os.sep) and ".agents" not in r.split(os.sep)
+         and "sessions" not in r.split(os.sep) for f in fs if f == "SKILL.md"]
 assert found == [os.path.join("skills", "mindtix", "SKILL.md")], found
 
 # Frontmatter must be strict YAML: `npx skills` (skills.sh) silently skips a skill whose

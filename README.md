@@ -145,15 +145,6 @@ that has `MIND.md`:
 
 Open the folder in [Obsidian](https://obsidian.md) to browse it as a linked graph.
 
-## Instagram Webhook
-
-Mindtix includes a built-in webhook receiver for the Meta / Instagram Graph API, enabling real-time notes capture and events directly into your brain:
-- **Cloud serverless:** Deployable with zero configuration to Vercel (`api/webhook.js`, `vercel.json`)
-- **Web app:** Built directly into the Mindtix web app (`/api/webhook`) to capture incoming Instagram direct messages into `notes/YYYY-MM-DD.md`
-- **Standalone:** Run locally with Node (`node api/webhook.js`) on port 3000
-- **Compliance:** Built-in endpoints for `/privacy`, `/terms`, and `/data-deletion`
-- See [docs/instagram-webhook.md](docs/instagram-webhook.md) for complete setup instructions.
-
 ## Privacy
 
 - Everything stays in a local folder you own. Mindtix has no server.
