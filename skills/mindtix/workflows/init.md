@@ -16,6 +16,8 @@ Sets up an empty brain from the `template/` folder in the skill folder.
    real content arrives.
 3. **Make it a git repo** if it isn't one (`git init`), so every change can be undone.
    `.gitignore` already keeps `logs/` and `private/` out.
+   Save the absolute path of the brain to `~/.config/mindtix/brain` so future commands run
+   from any project directory find this brain automatically.
 4. **First interview.** Ask 4-5 short questions in one message:
    - what to call them, and where they are from or live
    - what they do (study, work, build, make)

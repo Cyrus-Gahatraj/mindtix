@@ -5,7 +5,7 @@ import tempfile
 from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
-from brain import due_cards, find_root  # noqa: E402
+from brain import due_cards, find_root, find_brain, save_brain, detect_project_context  # noqa: E402
 from guard import check  # noqa: E402
 from commit import autocommit, git  # noqa: E402
 
@@ -50,5 +50,17 @@ with tempfile.TemporaryDirectory() as root:
         f.write("my password = Tr0ub4dor&3xyz\n")
     assert "b.md" in (autocommit(root) or ""), "secret: warn, don't commit"
     assert git(root, "rev-list", "--count", "HEAD").stdout.strip() == "2"
+
+    # Global brain discovery and project context tests
+    assert find_brain(note) == root
+    assert detect_project_context(note, root) is None, "inside brain: no project context"
+    with tempfile.TemporaryDirectory() as external_proj:
+        os.makedirs(os.path.join(external_proj, ".git"))
+        os.makedirs(os.path.join(external_proj, "subfolder"))
+        assert detect_project_context(os.path.join(external_proj, "subfolder"), root) == os.path.basename(external_proj)
+        # Test MINDTIX_BRAIN fallback
+        os.environ["MINDTIX_BRAIN"] = root
+        assert find_brain(external_proj) == root
+        del os.environ["MINDTIX_BRAIN"]
 
 print("hooks ok")

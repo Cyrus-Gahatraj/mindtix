@@ -36,8 +36,8 @@ the one that fits. Read that file in full and follow it.
 | `know-me` | short interview rounds to fill in `self/` profile (also part of `reflect`) |
 | `forget` | completely scrub a person or topic from the brain (also part of `tidy`) |
 
-No match but they're in a brain (a folder with `MIND.md`)? **Answer from the notes**, following
-`MIND.md`:
+No match but a brain exists (local `MIND.md`, `MINDTIX_BRAIN`, `~/.config/mindtix/brain`, or `~/mind`)?
+**Answer from the notes**, following `MIND.md`:
 - Read `INDEX.md` first and open only the notes that match; grep (outside `raw/imports/` and
   `private/`) for what the index misses.
 - Cite every claim with the note it came from, as `[[note#Heading]]`. Quote at most a line when
@@ -47,7 +47,18 @@ No match but they're in a brain (a folder with `MIND.md`)? **Answer from the not
   `knowledge/` page titled with its claim ("BFS is Dijkstra with equal weights"), linked from
   each note it used, so the next question starts from it.
 
-Not in a brain yet? Offer `init`.
+Not in a brain yet and none configured? Offer `init`.
+
+## Global Brain & Project Context
+
+Commands run from any folder find your central brain automatically:
+1. Local directory or parent holding `MIND.md` (local brain wins)
+2. `MINDTIX_BRAIN` environment variable
+3. Saved path in `~/.config/mindtix/brain`
+4. Default `~/mind`
+
+When you capture from an active project repository (e.g. `~/Developer/projects/my-app`),
+Mindtix saves to your central vault and automatically links the note to `[[projects/my-app]]`.
 
 ## Reading a workflow
 

@@ -75,6 +75,9 @@ interview → map → try → explain only the stuck part → redo without help
 
 Then, in an empty folder (e.g. `~/mind`), run `/mindtix init`. It copies the empty brain
 from [`skills/mindtix/template/`](skills/mindtix/template/) and asks you a few questions.
+Mindtix remembers your brain location, so you can run `/mindtix capture` from any project
+repository on your machine without switching directories. Notes automatically link back to
+`[[projects/<repo-name>]]`.
 
 **Codex, opencode, Gemini CLI, Cursor and other agents:**
 

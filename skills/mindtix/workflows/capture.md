@@ -2,8 +2,17 @@
 
 Input: $ARGUMENTS. Empty or "notes" means job B; anything else is job A.
 
-Work from the brain root (the folder with `MIND.md`). If there is none, suggest
-`/mindtix init` and stop.
+Find the brain root:
+1. Current folder or any parent holding `MIND.md` (local brain).
+2. `MINDTIX_BRAIN` environment variable.
+3. User config `~/.config/mindtix/brain`.
+4. Default `~/mind` (if it holds `MIND.md`).
+If none found, suggest `/mindtix init` to create one.
+
+When capturing from an external project repository (cwd outside the brain):
+- Detect the active project name from the current folder (or git repo root).
+- Automatically link the captured note to `[[projects/<project-name>]]`.
+- If `projects/<project-name>.md` does not exist in the brain yet, create it with a one-line summary linking to the project path.
 
 Pick the job:
 - **They said or pasted something** → job A

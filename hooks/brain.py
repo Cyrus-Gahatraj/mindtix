@@ -4,20 +4,85 @@ import re
 from datetime import date
 
 CARD = re.compile(r"^\s*-\s*\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]", re.M)
+CONFIG_PATH = os.path.expanduser("~/.config/mindtix/brain")
 
 
-def find_root(path):
-    """Return the nearest folder at or above path that holds MIND.md, else None."""
+def save_brain(path):
+    """Save the path to the primary brain in user config for global discovery."""
+    path = os.path.abspath(os.path.expanduser(path))
+    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
+    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+        f.write(path + "\n")
+
+
+def find_root(path, allow_global=False):
+    """Return the nearest folder at or above path holding MIND.md, or the global brain."""
     p = os.path.abspath(path)
     if not os.path.isdir(p):
         p = os.path.dirname(p)
+    curr = p
     while True:
-        if os.path.isfile(os.path.join(p, "MIND.md")):
-            return p
-        parent = os.path.dirname(p)
-        if parent == p:
-            return None
-        p = parent
+        if os.path.isfile(os.path.join(curr, "MIND.md")):
+            return curr
+        parent = os.path.dirname(curr)
+        if parent == curr:
+            break
+        curr = parent
+
+    if not allow_global:
+        return None
+
+    # Global brain discovery fallbacks
+    env_brain = os.environ.get("MINDTIX_BRAIN")
+    if env_brain:
+        env_brain = os.path.abspath(os.path.expanduser(env_brain))
+        if os.path.isfile(os.path.join(env_brain, "MIND.md")):
+            return env_brain
+
+    if os.path.isfile(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH, encoding="utf-8") as f:
+                saved = f.read().strip()
+            if saved and os.path.isfile(os.path.join(saved, "MIND.md")):
+                return saved
+        except OSError:
+            pass
+
+    default_mind = os.path.expanduser("~/mind")
+    if os.path.isfile(os.path.join(default_mind, "MIND.md")):
+        return default_mind
+
+    return None
+
+
+def find_brain(cwd=None):
+    """Find the active brain root: local ancestor of cwd, or global configuration."""
+    return find_root(cwd or os.getcwd(), allow_global=True)
+
+
+def detect_project_context(cwd, brain_root):
+    """If cwd is outside brain_root, return the project name to link against."""
+    if not brain_root:
+        return None
+    cwd = os.path.abspath(cwd)
+    brain_root = os.path.abspath(brain_root)
+    try:
+        common = os.path.commonpath([cwd, brain_root])
+        if common == brain_root:
+            return None  # Inside the brain
+    except ValueError:
+        pass  # Different drive letters on Windows
+
+    # Outside the brain: find git root or fallback to folder basename
+    curr = cwd
+    while True:
+        if os.path.isdir(os.path.join(curr, ".git")):
+            return os.path.basename(curr)
+        parent = os.path.dirname(curr)
+        if parent == curr:
+            break
+        curr = parent
+    return os.path.basename(cwd)
 
 
 def due_cards(root, today=None):
