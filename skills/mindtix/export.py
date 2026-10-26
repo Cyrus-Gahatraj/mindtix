@@ -78,15 +78,16 @@ def summary(brain, topic):
 
 def export_anki(brain, out):
     """Tab-separated file Anki imports directly (File > Import): Front, Back, Tags."""
-    rows = ["#separator:tab", "#html:false", "#tags column:3"]
-    for c in cards(brain):
+    rows = ["#separator:tab", "#html:false", "#notetype:Basic", "#deck:Mindtix", "#tags column:3"]
+    card_list = cards(brain)
+    for c in card_list:
         s = summary(brain, c["topic"])
         back = c["answer"] or (s + " " if s else "") + f"(Full answer: knowledge/{c['topic']}.md in your mindtix brain)"
         tag = "mindtix " + re.sub(r"[^A-Za-z0-9_/-]", "_", c["topic"])
         rows.append("\t".join(x.replace("\t", " ") for x in (c["question"], back, tag)))
     with open(out, "w", encoding="utf-8") as f:
         f.write("\n".join(rows) + "\n")
-    return len(rows) - 3
+    return len(card_list)
 
 
 def export_json(brain, out):

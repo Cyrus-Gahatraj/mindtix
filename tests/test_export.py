@@ -35,6 +35,7 @@ with tempfile.TemporaryDirectory() as tmp:
     out = os.path.join(brain, "exports")
     assert "3 cards" in run("anki", brain, os.path.join(out, "c.txt"))
     deck = open(os.path.join(out, "c.txt"), encoding="utf-8").read()
+    assert "#deck:Mindtix" in deck and "#notetype:Basic" in deck, "Anki deck header includes deck and notetype"
     assert "What does a left join keep?\t" in deck and "Why use not exists?" in deck
     assert "Which join keeps unmatched right rows?\tright join\t" in deck, "the stored answer is the back"
     assert "_example" not in deck and "n-1" not in deck, "template example cards are not exported"

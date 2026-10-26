@@ -24,6 +24,7 @@ local, readable in [Obsidian](https://obsidian.md), and 100% yours.
 ### Highlights
 - 🧠 **Active Recall over Passive Hoarding:** Doesn't just save notes; quizzes and spars with you until concepts stick.
 - 📇 **Spaced Repetition (FSRS):** Automatically schedules due reviews using modern FSRS algorithms (the same scheduler Anki uses).
+- 🔄 **Anki Mobile Bridge:** Export cards directly into Anki with dedicated tags and decks for seamless mobile reviews.
 - 💎 **100% Local Markdown:** No proprietary databases or vendor lock-in. Reads natively in Obsidian as an interconnected graph.
 - 🛡️ **Zero Cloud / Privacy-First:** Your thoughts stay on your local disk. Built-in secret guards prevent credentials from leaking into notes.
 
@@ -93,25 +94,26 @@ npx skills add Cyrus-Gahatraj/mindtix
 
 ## Workflows
 
+### Core Workflows
+
 | Command | What it does |
 |---|---|
-| `/mindtix init [folder]` | Creates a new brain and runs a first short interview |
-| `/mindtix import <path>` | Imports an export (Instagram, WhatsApp, ChatGPT, Claude, Takeout, Obsidian, any folder or .zip) and files what it says about you |
-| `/mindtix capture [text \| notes]` | Files anything you say or paste; `notes` processes new files in `raw/` |
-| `/mindtix learn <topic>` | Interview + map a new topic, then build-first teaching with redo-without-help |
-| `/mindtix learn quiz <topic> [socratic\|exam\|explain\|check]` | Makes you produce: questions, explain-back, or a check of your work |
-| `/mindtix learn diagnose [topic]` | Finds the one root misunderstanding behind repeated mistakes |
-| `/mindtix learn spar <scenario>` | Timed practice: interviews, live coding, pitches, exams |
-| `/mindtix recall [topic]` | Spaced-repetition review of the cards that are due |
-| `/mindtix today` | The daily 5-10 minutes: a few due cards, one learning step, one old idea or highlight |
-| `/mindtix know-me` | A short interview round that fills in `self/` |
-| `/mindtix reflect [test]` | Tidies `notes/` in place, then rewrites `insight/`; or runs a personality test |
-| `/mindtix connect-dots` | Finds how everything you know connects |
-| `/mindtix export [profile\|anki\|json\|bundle\|site]` | An about-me for other AIs, an Anki deck of your cards, a JSON dump, a zip backup, or your brain as a local web app (Today, Notes, Ask that runs `/mindtix` commands, Write, Recall, Insight, Graph) |
-| `/mindtix forget <person \| topic>` | Removes someone or something from the whole brain, after showing you every hit |
-| `/mindtix sort [files]` | Brings files in from anywhere, or moves loose ones, to the right folder, and notes what's in them (audio key and tempo, photo, PDF text) so `reflect` can use them |
-| `/mindtix tidy` | Health check: broken links, orphans, unlinked mentions, contradictions, stale claims, index drift, secrets, overdue cards |
-| `/mindtix review` | Weekly review: focus, learning progress, what to grow |
+| `/mindtix init [folder]` | Creates a new brain and runs an initial setup interview |
+| `/mindtix capture [text \| notes \| files]` | Fast capture of thoughts, notes, highlights, or loose files into the vault |
+| `/mindtix learn <topic>` | Socratic inquiry, concept maps, mistake diagnostics, and scenario sparring (`spar`) |
+| `/mindtix recall [topic]` | Active spaced-repetition review of due cards using FSRS |
+| `/mindtix today` | The daily 5-10 minutes: due cards, one learning step, one highlight |
+| `/mindtix reflect [test]` | Evidence-based read of you (`insight/`), cognitive profile, and cross-domain connections |
+| `/mindtix export [anki\|profile\|json\|bundle\|site]` | Export an Anki deck (`.apkg` ready), about-me for other AIs, JSON dump, or local web app |
+
+### Utilities & Maintenance
+
+| Command | What it does |
+|---|---|
+| `/mindtix import <path>` | Imports exports (WhatsApp, ChatGPT, Claude, Takeout, Obsidian, any folder or .zip) |
+| `/mindtix tidy` | Health check: broken links, orphans, unlinked mentions, index drift, secrets, or scrub entities |
+| `/mindtix review` | Weekly review: focus, learning progress, what to grow next |
+| `/mindtix sort [files]` | Organizes and routes loose files into appropriate vault folders |
 
 Mindtix is one skill, [`skills/mindtix/`](skills/mindtix/): `SKILL.md` picks the workflow, and
 each workflow is a file in [`workflows/`](skills/mindtix/workflows/). One helper agent,

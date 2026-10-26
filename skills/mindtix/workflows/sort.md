@@ -21,12 +21,12 @@ Work from the brain root (the folder with `MIND.md`). Never touch `logs/`, `priv
 
    | Kind | Read it with |
    |---|---|
-   | Audio | `librosa` (try `uv run --with librosa python`): length, tempo, key and mode from chroma plus the bass notes, the chords used, loudness over time, stereo width. Measured, not heard: say so, and give close candidates (relative modes share notes) |
-   | Image | look at it: what it shows, any text in it |
    | PDF or document | its text (`pdftotext`, or your file reader) |
-   | Video | `ffprobe` for length; frames (`ffmpeg -vf fps=1/10`) and its audio as above |
+   | Image | look at it: what it shows, any text in it |
+   | Audio or Video | file metadata (`ffprobe` or `file`): length and title |
+   | Markdown note | read its title and links to see where it fits |
 
-   No tool for it? Note only what you know (type, length, name) and move on.
+   No tool for it? Note only what you know (type, size, name) and move on.
 3. **Pick a home:**
 
    | File | Goes to |
@@ -45,10 +45,9 @@ Work from the brain root (the folder with `MIND.md`). Never touch `logs/`, `priv
 4. **Show the plan** as `file → destination` lines, then move with `git mv` for tracked files
    and `mv` for the rest, including files from outside the brain. Never overwrite; on a name
    clash, ask.
-5. **File what they say.** A file that tells you something about them (a song they made, a
+5. **File what they say.** A file that tells you something about them (creative work, a
    project asset) gets a line in the right note (`hobbies/`, `projects/`, `self/`), labeled
-   [stated] or [inferred], with a link to the file and a short summary of what step 2 found
-   (marked [inferred], "measured, not heard" for audio). Ask one question that the content
-   raises and only they can answer (which key they meant, who's in the photo), and file the
-   answer as [stated]. Update `INDEX.md` for every note you create or move.
+   [stated] or [inferred], with a link to the file and a short summary of what step 2 found.
+   Ask one question that the content raises and only they can answer (e.g. context, who is in
+   the photo), and file the answer as [stated]. Update `INDEX.md` for every note you create or move.
 6. **Report** in a few lines what moved where, then offer to commit as "Sort YYYY-MM-DD".

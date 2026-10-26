@@ -28,8 +28,9 @@ PY "<this skill's dir>/export.py" bundle . exports/mindtix-YYYY-MM-DD.zip
 ```
 
 - **anki:** one note per recall card (front = question, back = its short `:: answer`, or
-  which page holds the answer, tags = `mindtix` + topic). In Anki: File → Import, pick the file. Mention that the
-  cards keep living in the brain; Anki is a copy.
+  which page holds the answer, tags = `mindtix` + topic). Includes `#deck:Mindtix` and `#notetype:Basic`
+  so Anki routes cards directly into a dedicated Mindtix deck without manual configuration.
+  In Anki: File → Import, pick the file. The cards remain in the brain; Anki acts as a mobile study copy.
 - **json:** every note with its path, title, links and text, plus every card with its answer,
   box, due date and FSRS state (`s`, `d`). Useful for other apps or scripts.
 - **bundle:** a zip of the brain for backup or moving machines. It leaves out `.git`; tell

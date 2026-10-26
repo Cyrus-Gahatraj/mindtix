@@ -8,26 +8,33 @@ argument-hint: "[workflow] [arguments]"
 
 Asked for: $ARGUMENTS
 
-This skill holds fourteen workflows, each in `workflows/<name>.md` in this skill's folder.
+This skill organizes your brain into seven core workflows, plus utility and maintenance tools.
 If the first word asked for is a workflow name, run that workflow on the rest; otherwise pick
 the one that fits. Read that file in full and follow it.
+
+### Core Workflows
 
 | Workflow | Use when the user wants to… |
 |---|---|
 | `init` | create a new brain ("set up mindtix"), with a first short interview |
-| `import` | import an export or a folder/.zip, and file what it says about them |
-| `capture` | save anything they say or paste; `notes` files new files in `raw/` |
-| `learn` | learn a topic: start, teach, quiz, diagnose repeated mistakes, spar |
-| `recall` | review the recall cards that are due |
-| `today` | do the daily 5-10 minutes: due cards, one learning step, one old question |
-| `know-me` | be interviewed so `self/` fills in |
-| `reflect` | get the AI's read of them (`insight/`), or take a personality test |
-| `connect-dots` | find how everything they know connects |
-| `review` | do the weekly review |
-| `sort` | bring files in from anywhere, or move loose ones, to where they belong, noting what they hold |
-| `tidy` | health-check the brain: links, index, secrets, overdue cards |
-| `export` | export a profile, Anki deck, JSON, zip backup, or the local web app |
-| `forget` | remove a person or topic from the whole brain |
+| `capture` | save thoughts, notes, highlights, or route loose files into the vault |
+| `learn` | active learning: teach, quiz, diagnose repeated mistakes, or scenario spar (`spar`) |
+| `recall` | review the recall cards that are due using FSRS |
+| `today` | do the daily 5-10 minutes: due cards, one learning step, one highlight |
+| `reflect` | get the AI's read of them (`insight/`), cognitive profile, and mental connections |
+| `export` | export an Anki deck (`.apkg`), AI profile, JSON dump, zip backup, or local web app |
+
+### Maintenance & Utilities
+
+| Workflow | Use when the user wants to… |
+|---|---|
+| `import` | import an export (WhatsApp, ChatGPT, Claude, Takeout, Obsidian) or folder/.zip |
+| `tidy` | health-check the brain: links, index drift, secrets, overdue cards, or scrub entities |
+| `review` | do the weekly focus and learning review |
+| `sort` | bring files in from anywhere, or move loose ones, to where they belong |
+| `connect-dots` | find how everything they know connects across domains (also part of `reflect`) |
+| `know-me` | short interview rounds to fill in `self/` profile (also part of `reflect`) |
+| `forget` | completely scrub a person or topic from the brain (also part of `tidy`) |
 
 No match but they're in a brain (a folder with `MIND.md`)? **Answer from the notes**, following
 `MIND.md`:

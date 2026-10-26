@@ -83,9 +83,13 @@ lines in `knowledge/` logs. Name the **one** misunderstanding behind them ("you 
 assuming X because you don't yet have Z"), write it in the root-cause column, then teach Z.
 
 ## spar: timed real-world practice
-Interviews, live coding, presentations, sales calls, exams. Play a tough counterpart, one
-question at a time, with a time limit (30-60 s per answer, or what the real thing allows).
-Push back on vague answers. Score at the end, name 2-3 fixes, raise the difficulty next round.
+Scenario-based testing that pushes beyond memorization. Present realistic real-world dilemmas,
+broken code to troubleshoot, system architecture trade-offs, or tough counterarguments:
+- Play an active counterpart (interviewer, skeptical client, senior architect, or examiner).
+- Give concrete scenarios with constraints and competing priorities, not trivia questions.
+- Ask one targeted question or dilemma at a time with a realistic response expectation.
+- Push back forcefully on vague, surface-level, or generic answers. Demand specific mechanics.
+- At the end of the round, give a score (1-5), identify the root reasoning gap, and provide 2-3 actionable fixes. Raise difficulty in the next round.
 
 ## Save every session
 - Append to `learning/<topic>/sessions.md`, always with the format (for quiz, spar and
