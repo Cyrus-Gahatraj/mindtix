@@ -22,7 +22,7 @@ what you know, tracks what you're learning, and quizzes you until it sticks. Eve
 local, readable in [Obsidian](https://obsidian.md), and 100% yours.
 
 ### Highlights
-- 🧠 **Active Recall over Passive Hoarding:** Doesn't just save notes; quizzes and spars with you until concepts stick.
+- 🧠 **Active Recall over Passive Hoarding:** Doesn't just save notes; quizzes and challenges you until concepts stick.
 - 📇 **Spaced Repetition (FSRS):** Automatically schedules due reviews using modern FSRS algorithms (the same scheduler Anki uses).
 - 🔄 **Anki Mobile Bridge:** Export cards directly into Anki with dedicated tags and decks for seamless mobile reviews.
 - 💎 **100% Local Markdown:** No proprietary databases or vendor lock-in. Reads natively in Obsidian as an interconnected graph.
@@ -55,7 +55,7 @@ Details: [docs/structure.md](docs/structure.md).
 
 You don't learn by reading. You learn by producing: recalling, explaining, predicting, doing.
 Mindtix puts the AI in ten roles around that idea (interviewer, mapmaker, explainer, Socratic
-questioner, examiner, checker, listener, diagnostician, sparring partner, clerk) and schedules
+questioner, examiner, checker, listener, diagnostician, challenger, clerk) and schedules
 reviews with spaced repetition (FSRS, the scheduler Anki uses). It also learns *how you* learn:
 every session, card and mistake is labelled, and `/mindtix reflect` works out which teaching
 formats actually stick for you, how well your confidence matches your answers, and writes a
@@ -103,7 +103,7 @@ npx skills add Cyrus-Gahatraj/mindtix
 |---|---|
 | `/mindtix init [folder]` | Creates a new brain and runs an initial setup interview |
 | `/mindtix capture [text \| notes \| files]` | Fast capture of thoughts, notes, highlights, or loose files into the vault |
-| `/mindtix learn <topic>` | Socratic inquiry, concept maps, mistake diagnostics, and scenario sparring (`spar`) |
+| `/mindtix learn <topic>` | Socratic inquiry, concept maps, mistake diagnostics, and scenario challenges (`challenge`) |
 | `/mindtix recall [topic]` | Active spaced-repetition review of due cards using FSRS |
 | `/mindtix today` | The daily 5-10 minutes: due cards, one learning step, one highlight |
 | `/mindtix reflect [test]` | Evidence-based read of you (`insight/`), cognitive profile, and cross-domain connections |

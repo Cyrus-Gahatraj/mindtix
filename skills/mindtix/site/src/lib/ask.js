@@ -30,7 +30,7 @@ const CLAUDE = (() => { try { return JSON.parse(process.env.MINDTIX_CLAUDE) } ca
 export const COMMANDS = [
   ["today", "", "Your daily 5–10 minutes: due cards, one step, one old question"],
   ["recall", "[topic]", "Review the cards that are due"],
-  ["learn", "<topic>", "Learn something by doing: start, teach, quiz, diagnose, spar"],
+  ["learn", "<topic>", "Learn something by doing: start, teach, quiz, diagnose, challenge"],
   ["capture", "<text>", "Save a thought, or file your raw notes into the brain"],
   ["know-me", "", "A short interview so the brain knows you better"],
   ["review", "", "Weekly review: patterns, progress, what to grow"],

@@ -18,7 +18,7 @@ the one that fits. Read that file in full and follow it.
 |---|---|
 | `init` | create a new brain ("set up mindtix"), with a first short interview |
 | `capture` | save thoughts, notes, highlights, or route loose files into the vault |
-| `learn` | active learning: teach, quiz, diagnose repeated mistakes, or scenario spar (`spar`) |
+| `learn` | active learning: teach, quiz, diagnose repeated mistakes, or scenario challenge (`challenge`) |
 | `recall` | review the recall cards that are due using FSRS |
 | `today` | do the daily 5-10 minutes: due cards, one learning step, one highlight |
 | `reflect` | get the AI's read of them (`insight/`), cognitive profile, and mental connections |

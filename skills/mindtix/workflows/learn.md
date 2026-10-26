@@ -82,7 +82,7 @@ When mistakes repeat, read `learning/mistakes.md`, every `sessions.md`, and the 
 lines in `knowledge/` logs. Name the **one** misunderstanding behind them ("you keep
 assuming X because you don't yet have Z"), write it in the root-cause column, then teach Z.
 
-## spar: timed real-world practice
+## challenge (or spar): timed real-world practice
 Scenario-based testing that pushes beyond memorization. Present realistic real-world dilemmas,
 broken code to troubleshoot, system architecture trade-offs, or tough counterarguments:
 - Play an active counterpart (interviewer, skeptical client, senior architect, or examiner).
@@ -92,7 +92,7 @@ broken code to troubleshoot, system architecture trade-offs, or tough counterarg
 - At the end of the round, give a score (1-5), identify the root reasoning gap, and provide 2-3 actionable fixes. Raise difficulty in the next round.
 
 ## Save every session
-- Append to `learning/<topic>/sessions.md`, always with the format (for quiz, spar and
+- Append to `learning/<topic>/sessions.md`, always with the format (for quiz, challenge and
   diagnose, the mode is enough):
   ```markdown
   ## YYYY-MM-DD · teach · worked
