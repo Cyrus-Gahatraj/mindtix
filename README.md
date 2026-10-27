@@ -31,7 +31,7 @@ local, readable in [Obsidian](https://obsidian.md), and 100% yours.
 ## The layout
 
 ```
-my-mind/
+~/.config/mindtix/brain/ (or ~/brain)
 ├── MINDTIX.md     rules for the AI + short "who you are" (or MIND.md)
 ├── INDEX.md       one line per note; the AI reads this first
 ├── raw/           everything YOU put in. The AI reads it, never edits it
@@ -136,7 +136,7 @@ that has `MINDTIX.md` (or `MIND.md`):
 ## A first week
 
 ```
-/mindtix init ~/mind                      # 5 questions, your brain exists
+/mindtix init                             # 5 questions, your central brain exists in ~/.config/mindtix/brain
 /mindtix import ~/Downloads/instagram.zip # who you are, people, timeline, interests
 /mindtix capture notes                    # your notes in raw/notes/ become topic pages + cards
 /mindtix learn sql                        # interview → map → build first → redo without help

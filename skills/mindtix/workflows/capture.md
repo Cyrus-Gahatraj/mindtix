@@ -5,8 +5,8 @@ Input: $ARGUMENTS. Empty or "notes" means job B; anything else is job A.
 Find the brain root:
 1. Current folder or any parent holding `MINDTIX.md` or `MIND.md` (local brain).
 2. `MINDTIX_BRAIN` environment variable.
-3. User config `~/.config/mindtix/brain`.
-4. Default `~/mind` (if it holds `MINDTIX.md` or `MIND.md`).
+3. Central brain `~/.config/mindtix/brain`.
+4. `~/.mindtix`, `~/brain`, or `~/mind` (if they hold `MINDTIX.md` or `MIND.md`).
 If none found, suggest `/mindtix init` to create one.
 
 When capturing from an external project repository (cwd outside the brain):

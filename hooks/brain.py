@@ -4,7 +4,8 @@ import re
 from datetime import date
 
 CARD = re.compile(r"^\s*-\s*\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]", re.M)
-CONFIG_PATH = os.path.expanduser("~/.config/mindtix/brain")
+DEFAULT_BRAIN = os.path.expanduser("~/.config/mindtix/brain")
+CONFIG_FILE = os.path.expanduser("~/.config/mindtix/brain_path")
 
 
 def is_brain_dir(d):
@@ -21,8 +22,8 @@ def mind_file(d):
 def save_brain(path):
     """Save the path to the primary brain in user config for global discovery."""
     path = os.path.abspath(os.path.expanduser(path))
-    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
-    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         f.write(path + "\n")
 
 
@@ -50,18 +51,25 @@ def find_root(path, allow_global=False):
         if is_brain_dir(env_brain):
             return env_brain
 
-    if os.path.isfile(CONFIG_PATH):
-        try:
-            with open(CONFIG_PATH, encoding="utf-8") as f:
-                saved = f.read().strip()
-            if saved and is_brain_dir(saved):
-                return saved
-        except OSError:
-            pass
+    # Dedicated ~/.config/mindtix/brain folder
+    if os.path.isdir(DEFAULT_BRAIN) and is_brain_dir(DEFAULT_BRAIN):
+        return DEFAULT_BRAIN
 
-    default_mind = os.path.expanduser("~/mind")
-    if is_brain_dir(default_mind):
-        return default_mind
+    # Explicit pointer file
+    for cfile in [CONFIG_FILE, DEFAULT_BRAIN]:
+        if os.path.isfile(cfile):
+            try:
+                with open(cfile, encoding="utf-8") as f:
+                    saved = f.read().strip()
+                if saved and is_brain_dir(saved):
+                    return os.path.abspath(os.path.expanduser(saved))
+            except OSError:
+                pass
+
+    # Standard home paths
+    for candidate in [os.path.expanduser("~/.mindtix"), os.path.expanduser("~/brain"), os.path.expanduser("~/mind")]:
+        if os.path.isdir(candidate) and is_brain_dir(candidate):
+            return candidate
 
     return None
 
