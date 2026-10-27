@@ -36,7 +36,7 @@ the one that fits. Read that file in full and follow it.
 | `know-me` | short interview rounds to fill in `self/` profile (also part of `reflect`) |
 | `forget` | completely scrub a person or topic from the brain (also part of `tidy`) |
 
-No match but a brain exists (local `MINDTIX.md` or `MIND.md`, `MINDTIX_BRAIN`, `~/.config/mindtix/brain`, `~/.mindtix`, or `~/brain`)?
+No match but a brain exists (local `MINDTIX.md` or `MIND.md`, `MINDTIX_BRAIN`, `~/.config/mindtix`, `~/.mindtix`, or `~/brain`)?
 **Answer from the notes**, following `MINDTIX.md`:
 - Read `INDEX.md` first and open only the notes that match; grep (outside `raw/imports/` and
   `private/`) for what the index misses.
@@ -54,7 +54,7 @@ Not in a brain yet and none configured? Offer `init`.
 Commands run from any folder find your central brain automatically:
 1. Local directory or parent holding `MINDTIX.md` or `MIND.md` (local brain wins)
 2. `MINDTIX_BRAIN` environment variable
-3. Central brain `~/.config/mindtix/brain`
+3. Central brain `~/.config/mindtix`
 4. `~/.mindtix`, `~/brain`, or `~/mind`
 
 When you capture from an active project repository (e.g. `~/Developer/projects/my-app`),

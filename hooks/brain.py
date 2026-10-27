@@ -4,8 +4,8 @@ import re
 from datetime import date
 
 CARD = re.compile(r"^\s*-\s*\[b([0-5])\s*·\s*due\s+(\d{4}-\d{2}-\d{2})\]", re.M)
-DEFAULT_BRAIN = os.path.expanduser("~/.config/mindtix/brain")
-CONFIG_FILE = os.path.expanduser("~/.config/mindtix/brain_path")
+DEFAULT_BRAIN = os.path.expanduser("~/.config/mindtix")
+CONFIG_FILE = os.path.expanduser("~/.config/mindtix_brain_path")
 
 
 def is_brain_dir(d):
@@ -51,20 +51,19 @@ def find_root(path, allow_global=False):
         if is_brain_dir(env_brain):
             return env_brain
 
-    # Dedicated ~/.config/mindtix/brain folder
+    # Dedicated ~/.config/mindtix folder
     if os.path.isdir(DEFAULT_BRAIN) and is_brain_dir(DEFAULT_BRAIN):
         return DEFAULT_BRAIN
 
     # Explicit pointer file
-    for cfile in [CONFIG_FILE, DEFAULT_BRAIN]:
-        if os.path.isfile(cfile):
-            try:
-                with open(cfile, encoding="utf-8") as f:
-                    saved = f.read().strip()
-                if saved and is_brain_dir(saved):
-                    return os.path.abspath(os.path.expanduser(saved))
-            except OSError:
-                pass
+    if os.path.isfile(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, encoding="utf-8") as f:
+                saved = f.read().strip()
+            if saved and is_brain_dir(saved):
+                return os.path.abspath(os.path.expanduser(saved))
+        except OSError:
+            pass
 
     # Standard home paths
     for candidate in [os.path.expanduser("~/.mindtix"), os.path.expanduser("~/brain"), os.path.expanduser("~/mind")]:

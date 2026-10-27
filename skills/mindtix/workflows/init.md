@@ -1,13 +1,13 @@
 # Init
 
-Target folder: $ARGUMENTS (empty = `~/.config/mindtix/brain`).
+Target folder: $ARGUMENTS (empty = `~/.config/mindtix`).
 
 Sets up an empty brain from the `template/` folder in the skill folder.
 
-1. **Pick the folder.** Use the path the user gave, otherwise default to `~/.config/mindtix/brain`
+1. **Pick the folder.** Use the path the user gave, otherwise default to `~/.config/mindtix`
    (or current directory if already inside one). If it already has a `MINDTIX.md` or `MIND.md`,
    stop: it's already a brain. If it has other files, list them and ask before mixing the brain
-   into it; suggest `~/.config/mindtix/brain`.
+   into it; suggest `~/.config/mindtix`.
 2. **Copy the template** with its hidden files:
    `cp -R "<this skill's dir>/template/." "<target>/"`. If copying from the plugin folder
    is blocked, read each template file (including `.gitignore`) and write it to the same
@@ -17,7 +17,7 @@ Sets up an empty brain from the `template/` folder in the skill folder.
    real content arrives.
 3. **Make it a git repo** if it isn't one (`git init`), so every change can be undone.
    `.gitignore` already keeps `logs/` and `private/` out.
-   If target is not `~/.config/mindtix/brain`, save the path to `~/.config/mindtix/brain_path`
+   If target is not `~/.config/mindtix`, save the path to `~/.config/mindtix_brain_path`
    so future commands run from any project directory find this brain automatically.
 4. **First interview.** Ask 4-5 short questions in one message:
    - what to call them, and where they are from or live
